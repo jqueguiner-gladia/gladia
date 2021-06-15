@@ -16,12 +16,9 @@ from ai_api_utils.io import _open
 from ai_api_utils.model_management import download_models
 from deoldify.visualize import *
 
-# Handle switch between GPU and CPU
-if torch.cuda.is_available():
-    torch.backends.cudnn.benchmark = True
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-else:
-    del os.environ["CUDA_VISIBLE_DEVICES"]
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
 
 urls = {
     "deoldify-stable": {
@@ -36,13 +33,10 @@ current_model_path = os.path.join(models_path["deoldify-stable"]["output_path"])
 
 
 # define a predict function as an endpoint
-def predict(content, options={}):
-    if "render_factor" in options:
-        render_factor = int(options["render_factor"])
-    else:
-        render_factor = 30
+def predict(image):
+    render_factor = 30
 
-    image = _open(content)
+    image = _open(image)
 
     image_colorizer = get_image_colorizer(
         root_folder=Path(current_model_path).parent,
@@ -50,8 +44,8 @@ def predict(content, options={}):
         artistic=False,
     )
 
-    result = image_colorizer.get_transformed_image_from_bytes(
-        image=image, render_factor=render_factor
+    result = image_colorizer.get_transformed_image(
+        path=image, render_factor=render_factor
     )
 
     return result

@@ -1,0 +1,39 @@
+[global]
+  sendAnonymousUsage = false
+
+
+
+[log]
+  level = "INFO"
+  format = "common"
+
+[providers]
+  [providers.docker]
+    endpoint = "unix:///var/run/docker.sock"
+    watch = true
+    exposedByDefault = true
+    swarmMode = false
+
+[api]
+  dashboard = false
+  debug = false
+  insecure = false
+
+defaultEntryPoints = ["http", "https"]
+
+[entryPoints]
+  [entryPoints.http]
+    address = ":80"
+    [entryPoints.http.redirect]
+      entrypoint = "https"
+    [entryPoints.https]
+      address = ":443"
+      [entryPoints.https.tls]
+
+[certificatesResolvers.letsencrypt.acme]
+  email = "contact@the-deep-learning-project.eu"
+  storage = "acme.json"
+  entrypoint = "https"
+  [certificatesResolvers.letsencrypt.acme.httpChallenge]
+    entryPoint = "http"
+

@@ -1,0 +1,80 @@
+# TO DO
+## Deployment
+TODO: docker compose =>
+- neeed dockerfile
+- need Traefik
+TODO: create a dockerhub
+TODO: github org
+TODO: add service
+TODO: CI/CD - autobuild docker
+TODO: helm chart
+
+## Framework
+TODO: manage casting of output
+TODO: hide the mess behind the main.py
+TODO: make the forge a decorator to make it an extension
+
+## Configuration management
+TODO: make sure customizaton of prometheuse works
+TODO: module activation based on database settings
+
+## Features Front
+TODO: gradio integration
+TODO: streamlit integration
+TODO: SOTA front
+
+TODO: admin panel
+
+## Features Back
+TODO: better model cache management
+TODO: better GPU cache management
+TODO: better dashboard in grafana
+TODO: SOTA qualitative comparer
+TODO: SOTA quantitative comparer
+TODO: DOI wrapper
+TODO: Arxiv wrapper
+TODO: CPU/GPU switch ? is it possible ?
+
+TODO: example data for qualitative SOTA from SOTA dataset
+
+
+## SDK
+TODO: make sure sdk are working
+
+## Usage Examples
+TODO: examples of integrations in javascript
+TODO: examples of integrations in react
+TODO: examples of integrations in python
+TODO: examples of integrations in php
+TODO: examples of integrations in bash
+TODO: examples of integrations in *
+TODO: integration examples
+
+## SOTA Integration Examples
+
+## Documentation
+TODO: create the readme
+TODO: build the doc
+TODO: doc generator
+TODO: changelog
+
+## Community
+TODO: project website
+TODO: project forum
+TODO: create the discord channel
+
+
+## Security
+TODO: security / ACL
+TODO: oauth
+TODO: SSO GH etc..
+TODO: SSL
+TODO: reverse proxy integration Traefik
+TODO: guide to https
+
+
+
+CLIENT
+715247412988-di9krofgs3msc1ua51mhvidsrkn8nt4h.apps.googleusercontent.com
+SECRET
+qQ4ov0PXSSmK2yptxtiayJ2h

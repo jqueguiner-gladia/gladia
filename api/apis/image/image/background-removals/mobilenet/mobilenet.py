@@ -57,9 +57,10 @@ def run(image, fast=True):
     return resized_image, seg_map
 
 
-def predict(content, options={}):
-    image = _open(content)
+def predict(image):
+    image = _open(image)
     resized_im, seg_map = run(image, True)
 
     img = draw_segment(resized_im, seg_map)
+
     return img

@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter
 
 from ai_api_utils.submodules import TaskRouter

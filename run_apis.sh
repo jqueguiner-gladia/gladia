@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [[ "$1" == '-h' ]]; then
   echo "Usage: $0 FASTAPI_HOST FASTAPI_PORT"
   exit 0
