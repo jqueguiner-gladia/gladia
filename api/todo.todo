@@ -1,8 +1,5 @@
 # TO DO
 ## Deployment
-TODO: docker compose =>
-- neeed dockerfile
-- need Traefik
 TODO: create a dockerhub
 TODO: github org
 TODO: add service
@@ -15,7 +12,7 @@ TODO: hide the mess behind the main.py
 TODO: make the forge a decorator to make it an extension
 
 ## Configuration management
-TODO: make sure customizaton of prometheuse works
+TODO: make sure customizaton of prometheus works
 TODO: module activation based on database settings
 
 ## Features Front

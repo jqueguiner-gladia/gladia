@@ -2,8 +2,7 @@
     "CORS": {
         "allow_origins": [
             "*",
-            "http://localhost",
-            "http://146.59.193.116"
+            "http://localhost"
         ],
         "allow_methods": [
             "*",
@@ -47,49 +46,49 @@
     },
     "active_tasks": {
         "image": {
-            "image":["None"],
-            "text": ["asciify"],
-            "video": ["None"],
-            "audio": ["None"]
+            "image":["*"],
+            "text": ["*"],
+            "video": ["*"],
+            "audio": ["*"]
         },
         "video": {
-            "image":["None"],
-            "text": ["None"],
-            "video": ["None"],
-            "audio": ["None"]
+            "image":["*"],
+            "text": ["*"],
+            "video": ["*"],
+            "audio": ["*"]
         },
         "text": {
-            "image":["None"],
-            "text": ["None"],
-            "video": ["None"],
-            "audio": ["None"]
+            "image":["*"],
+            "text": ["*"],
+            "video": ["*"],
+            "audio": ["*"]
         },
         "audio": {
-            "image":["None"],
-            "text": ["None"],
-            "video": ["None"],
-            "audio": ["None"]
+            "image":["*"],
+            "text": ["*"],
+            "video": ["*"],
+            "audio": ["*"]
         }
     },
     "cookie": {
-        "cookie_domain": "the-deep-learning-project.eu"
+        "cookie_domain": "paperswithapi.com"
     },
     "server": {
-        "port": 8081,
-        "protocol": "http://",
-        "full_host_name": "the-deep-learning-project.eu",
+        "port": 443,
+        "protocol": "https://",
+        "full_host_name": "paperswithapi.com",
         "api_location": "{protocol}{full_host_name}:{port_number}"
     },
     "authorizations": {
         "google": {
             "active": true,
             "cookie_authorization_name": "Authorization",
-            "client_id": "1007436511433-1o329ffhgodf6ipbmgqm99r2kkjsoj9u.apps.googleusercontent.com",
-            "client_secrets_json": "client_secret_1007436511433-1o329ffhgodf6ipbmgqm99r2kkjsoj9u.apps.googleusercontent.com.json",
+            "client_id": "",
+            "client_secrets_json": "",
             "swap_token_endpoint": "/swap_token",
             "success_route": "/users/me",
             "error_route": "/login_error",
-            "secret_key": "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7",
+            "secret_key": "",
             "algorithm": "HS256",
             "access_token_expire_minutes": 30
         }
