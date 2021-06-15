@@ -4,8 +4,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Logs
+*.log
+
 # C extensions
 *.so
+
+# Remove production docker-compose
+docker-compose.prod.yml
 
 # Distribution / packaging
 .Python

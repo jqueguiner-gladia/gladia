@@ -14,4 +14,4 @@ RUN pip3 install -r requirements.txt
 
 RUN pip3 install git+https://github.com/jqueguiner/ai-api-utils.git
 
-ENTRYPOINT [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8081", "--reload" ]
+ENTRYPOINT [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload" ]
