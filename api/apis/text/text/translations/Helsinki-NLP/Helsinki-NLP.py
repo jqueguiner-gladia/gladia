@@ -82,4 +82,4 @@ def predict(input_string, source_language, target_language):
     translator = Translator("models")
 
     translation = translator.translate(source_language, target_language, input_string)
-    return translation
+    return translation[0]

@@ -9,18 +9,15 @@ from ai_api_utils.options import get_option
 from ai_api_utils.citation import get_doi
 from icecream import ic
 from skimage.filters import gaussian
-from ai_api_utils.file_management import input_to_files
-from PIL import Image
-@input_to_files
-def predict(image):
-    sigma = 50
-    print(image)
 
-    image = face_recognition.load_image_file(image)
+
+def predict(content, options={}):
+    sigma = get_option("sigma", options, 50)
+
+    image = _open(content, "numpy")
 
     locations = face_recognition.face_locations(image)
-    
-    image = io.imread(image)
+
     for location in locations:
         startY = location[0]
         endY = location[2]

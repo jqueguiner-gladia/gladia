@@ -14,6 +14,8 @@ from icecream import ic
 from PIL import Image
 from skimage.filters import gaussian
 
+tf.disable_v2_behavior()
+
 
 urls = {
     "mobile-net": {
@@ -58,7 +60,8 @@ def run(image, fast=True):
 
 
 def predict(image):
-    image = _open(image)
+    
+    image = Image.open(BytesIO(image))
     resized_im, seg_map = run(image, True)
 
     img = draw_segment(resized_im, seg_map)
