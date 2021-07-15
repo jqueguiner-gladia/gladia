@@ -7,18 +7,21 @@ TODO: CI/CD - autobuild docker
 TODO: helm chart
 
 ## Framework
-TODO: manage casting of output
 TODO: hide the mess behind the main.py
 TODO: make the forge a decorator to make it an extension
+TODO: support Openvino
+
+## other features:
+TODO: train your own (drag+drop)
+TODO: serve your own
 
 ## Configuration management
-TODO: make sure customizaton of prometheus works
+TODO: make sure customization of prometheus works
 TODO: module activation based on database settings
 
 ## Features Front
-TODO: gradio integration
-TODO: streamlit integration
-TODO: SOTA front
+2) TODO: gradio integration
+TODO: SOTA front ?
 
 TODO: admin panel
 
@@ -27,13 +30,11 @@ TODO: better model cache management
 TODO: better GPU cache management
 TODO: better dashboard in grafana
 TODO: SOTA qualitative comparer
-TODO: SOTA quantitative comparer
 TODO: DOI wrapper
 TODO: Arxiv wrapper
 TODO: CPU/GPU switch ? is it possible ?
 
 TODO: example data for qualitative SOTA from SOTA dataset
-
 
 ## SDK
 TODO: make sure sdk are working
@@ -60,18 +61,12 @@ TODO: project website
 TODO: project forum
 TODO: create the discord channel
 
-
 ## Security
 TODO: security / ACL
+TODO: app Key
 TODO: oauth
 TODO: SSO GH etc..
 TODO: SSL
-TODO: reverse proxy integration Traefik
 TODO: guide to https
 
 
-
-CLIENT
-715247412988-di9krofgs3msc1ua51mhvidsrkn8nt4h.apps.googleusercontent.com
-SECRET
-qQ4ov0PXSSmK2yptxtiayJ2h
