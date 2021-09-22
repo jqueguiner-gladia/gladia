@@ -113,4 +113,7 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
 EXPOSE 80
 WORKDIR /app
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+ENV FASTAPI_HOST=0.0.0.0
+ENV FASTAPI_PORT=80
+
+CMD ["uvicorn", "main:app", "--host", "$FASTAPI_HOST", "--port", "$FASTAPI_PORT", "--reload"]
