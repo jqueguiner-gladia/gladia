@@ -3,11 +3,9 @@ import numpy as np
 import json
 from transformers import AutoTokenizer, AutoModelWithLMHead
 
-tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-model = AutoModelWithLMHead.from_pretrained("distilbert-base-uncased")
-
 def predict(text, source_language, min_length, max_length):
-
+    tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+    model = AutoModelWithLMHead.from_pretrained("distilbert-base-uncased")
     input_ids = torch.tensor(tokenizer.encode(text, add_special_tokens=True)).unsqueeze(0)
     outputs = model(input_ids, labels=input_ids)
     loss, prediction_scores = outputs[:2]
