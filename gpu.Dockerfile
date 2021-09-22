@@ -115,6 +115,7 @@ WORKDIR /app/api
 
 ENV FASTAPI_HOST=0.0.0.0
 ENV FASTAPI_PORT=80
+ENV TOKENIZERS_PARALLELISM=true
 
 RUN pip uninstall tensorflow
 
