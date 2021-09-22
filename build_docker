@@ -25,7 +25,7 @@ while :; do
             ;;
         -g|--gpu)
             IMAGE_TAG='databuzzword/ai-api-marketplace'
-            DOCKERFILE='Dockerfile'
+            DOCKERFILE='gpu.Dockerfile'
             ;;
         -c|--use-cache)
             CACHE_FLAG=''

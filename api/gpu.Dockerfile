@@ -1,7 +1,6 @@
 ARG BASE_TAG=staging
 
 FROM nvidia/cuda:11.0-cudnn8-devel-ubuntu18.04 AS nvidia
-FROM gcr.io/kaggle-images/python-tensorflow-whl:2.4.1-py37-2 as tensorflow_whl
 FROM gcr.io/kaggle-images/python:${BASE_TAG}
 
 ADD clean-layer.sh  /tmp/clean-layer.sh
@@ -10,11 +9,7 @@ ADD clean-layer.sh  /tmp/clean-layer.sh
 COPY --from=nvidia /etc/apt/sources.list.d/cuda.list /etc/apt/sources.list.d/
 COPY --from=nvidia /etc/apt/sources.list.d/nvidia-ml.list /etc/apt/sources.list.d/
 COPY --from=nvidia /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/cuda.gpg
-# See b/142337634#comment28
-RUN sed -i 's/deb https:\/\/developer.download.nvidia.com/deb http:\/\/developer.download.nvidia.com/' /etc/apt/sources.list.d/*.list
 
-# Ensure the cuda libraries are compatible with the custom Tensorflow wheels.
-# TODO(b/120050292): Use templating to keep in sync or COPY installed binaries from it.
 ENV CUDA_MAJOR_VERSION=11
 ENV CUDA_MINOR_VERSION=0
 ENV CUDA_VERSION=$CUDA_MAJOR_VERSION.$CUDA_MINOR_VERSION
@@ -26,11 +21,8 @@ ENV PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:/opt/bin:${PATH}
 # CUDA user libraries, either manually or through the use of nvidia-docker) exclude them. One
 # convenient way to do so is to obscure its contents by a bind mount:
 #   docker run .... -v /non-existing-directory:/usr/local/cuda/lib64/stubs:ro ...
-ENV LD_LIBRARY_PATH_NO_STUBS="/usr/local/nvidia/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
-ENV LD_LIBRARY_PATH="/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH"
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
-ENV NVIDIA_REQUIRE_CUDA="cuda>=$CUDA_MAJOR_VERSION.$CUDA_MINOR_VERSION"
+# b/197989446#comment7 libgnutls version at /opt/conda/lib causes apt to fail to fetch packages using https URLs.
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
 RUN apt-get update && apt-get install -y --no-install-recommends \
       cuda-cupti-$CUDA_VERSION \
       cuda-cudart-$CUDA_VERSION \
@@ -48,6 +40,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
     /tmp/clean-layer.sh
 
+ENV LD_LIBRARY_PATH_NO_STUBS="/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/opt/conda/lib"
+ENV LD_LIBRARY_PATH="/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:/opt/conda/lib"
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV NVIDIA_REQUIRE_CUDA="cuda>=$CUDA_MAJOR_VERSION.$CUDA_MINOR_VERSION"
+
 # Install OpenCL & libboost (required by LightGBM GPU version)
 RUN apt-get install -y ocl-icd-libopencl1 clinfo libboost-all-dev && \
     mkdir -p /etc/OpenCL/vendors && \
@@ -58,8 +56,12 @@ RUN apt-get install -y ocl-icd-libopencl1 clinfo libboost-all-dev && \
 # the remaining pip commands: https://www.anaconda.com/using-pip-in-a-conda-environment/
 # However, because this image is based on the CPU image, this isn't possible but better
 # to put them at the top of this file to minize conflicts.
-#RUN conda remove --force -y pytorch torchvision torchaudio cpuonly 
-RUN conda install "pytorch=1.7" "torchvision=0.8" "torchaudio=0.9.0" "torchtext=0.10.0" "cudf=0.16" "cuml=0.16" cudatoolkit=$CUDA_VERSION && \
+RUN conda install cudf=21.08 cuml=21.08 cudatoolkit=$CUDA_VERSION && \
+    /tmp/clean-layer.sh
+
+# Install Pytorch and torchvision with GPU support.
+# Note: torchtext and torchaudio do not require a separate GPU package.
+RUN pip install torch==1.7.1+cu$CUDA_MAJOR_VERSION$CUDA_MINOR_VERSION torchvision==0.8.2+cu$CUDA_MAJOR_VERSION$CUDA_MINOR_VERSION -f https://download.pytorch.org/whl/torch_stable.html && \
     /tmp/clean-layer.sh
 
 # Install LightGBM with GPU
@@ -67,7 +69,7 @@ RUN pip uninstall -y lightgbm && \
     cd /usr/local/src && \
     git clone --recursive https://github.com/microsoft/LightGBM && \
     cd LightGBM && \
-    git checkout tags/v3.2.0 && \
+    git checkout tags/v3.2.1 && \
     mkdir build && cd build && \
     cmake -DUSE_GPU=1 -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ .. && \
     make -j$(nproc) && \
@@ -78,28 +80,19 @@ RUN pip uninstall -y lightgbm && \
     /tmp/clean-layer.sh
 
 # Install JAX (Keep JAX version in sync with CPU image)
-RUN  pip install jax==0.2.12 jaxlib==0.1.64+cuda$CUDA_MAJOR_VERSION$CUDA_MINOR_VERSION -f https://storage.googleapis.com/jax-releases/jax_releases.html && \
-     /tmp/clean-layer.sh
-
-# Reinstall packages with a separate version for GPU support.
-COPY --from=tensorflow_whl /tmp/tensorflow_gpu/*.whl /tmp/tensorflow_gpu/
-RUN pip uninstall -y tensorflow && \
-    pip install /tmp/tensorflow_gpu/tensorflow*.whl && \
-    rm -rf /tmp/tensorflow_gpu && \
-    pip uninstall -y mxnet && \
-    pip install mxnet-cu$CUDA_MAJOR_VERSION$CUDA_MINOR_VERSION && \
+RUN pip install jax[cuda$CUDA_MAJOR_VERSION$CUDA_MINOR_VERSION]==0.2.19 -f https://storage.googleapis.com/jax-releases/jax_releases.html && \
     /tmp/clean-layer.sh
 
- # Reinstall TensorFlow addons (TFA) with GPU support.
-COPY --from=tensorflow_whl /tmp/tfa_gpu/*.whl /tmp/tfa_gpu/
-RUN pip install /tmp/tfa_gpu/tensorflow*.whl && \
-    rm -rf /tmp/tfa_gpu/ && \
+# Reinstall packages with a separate version for GPU support.
+RUN pip uninstall -y mxnet && \
+    pip install mxnet-cu$CUDA_MAJOR_VERSION$CUDA_MINOR_VERSION && \
     /tmp/clean-layer.sh
 
 # Install GPU-only packages
 RUN pip install pycuda && \
-    pip install cupy-cuda$CUDA_MAJOR_VERSION$CUDA_MINOR_VERSION && \
     pip install pynvrtc && \
+    # b/190622765 latest version is causing issue. nnabla fixed it in https://github.com/sony/nnabla/issues/892, waiting for new release before we can remove this pin.
+    pip install pynvml==8.0.4 && \
     pip install nnabla-ext-cuda$CUDA_MAJOR_VERSION$CUDA_MINOR_VERSION && \
     /tmp/clean-layer.sh
 
@@ -109,16 +102,15 @@ RUN pip install pycuda && \
 
 # Remove the CUDA stubs.
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH_NO_STUBS"
-ARG APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 
-RUN apt-get update && apt-get install -y ca-certificates dirmngr ntp
-RUN curl -L https://packagecloud.io/github/git-lfs/gpgkey | apt-key add -
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6B05F25D762E3157
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.python.sh | bash
-#RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash 
-RUN apt-get update && apt-get install -y git-lfs
-COPY requirements.txt requirements.txt
+# unifAI additional packages
+COPY requirements.txt /tmp/unifai-requirements.txt
+RUN pip install -r /tmp/unifai-requirements.txt
 
-RUN pip3 install -r requirements.txt
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash & \ 
+    apt-get install git-lfs
 
+EXPOSE 80
+WORKDIR /app
 
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]

@@ -27,7 +27,7 @@ else
   FASTAPI_PORT=$2
 fi
 
-echo "uvicorn main:app --host $FASTAPI_HOST --port $FASTAPI_PORT --reload "
+echo "c $FASTAPI_HOST --port $FASTAPI_PORT --reload "
 
 cd api && uvicorn main:app --host $FASTAPI_HOST --port $FASTAPI_PORT --reload
 
