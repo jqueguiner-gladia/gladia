@@ -1,4 +1,3 @@
-# import the necessary packages
 import io
 import os
 import ssl
@@ -8,16 +7,21 @@ from os import path
 from pathlib import Path
 
 import deoldify
+from deoldify import device
+from deoldify.device_id import DeviceId
+from deoldify import visualize
+
 import fastai
 import numpy as np
 import requests
 import torch
 from ai_api_utils.io import _open
 from ai_api_utils.model_management import download_models
-from deoldify.visualize import *
+
+from icecream import ic
 
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+device.set(device=DeviceId.GPU0)
 
 
 urls = {
@@ -38,7 +42,7 @@ def predict(image):
 
     image = _open(image)
 
-    image_colorizer = get_image_colorizer(
+    image_colorizer = visualize.get_image_colorizer(
         root_folder=Path(current_model_path).parent,
         render_factor=render_factor,
         artistic=False,
