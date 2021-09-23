@@ -6,25 +6,18 @@ router = APIRouter()
 input = [
     {
         "type": "text",
-        "name": "code_snippet",
-        "default": """
-def recur_fibo(n):
-   if n <= 1:
-       return n
-   else:
-       return(recur_fibo(n-1) + recur_fibo(n-2))
-""",
-        "placeholder": "Code snippet to analyze",
-        "tooltip": "Insert the code snippet to analyze",
-    }
+        "name": "text",
+        "default": "def is_palendrome(s):",
+        "placeholder": "Input code to get programing language from",
+        "tooltip": "Input code to get programing language from",
+    },
 ]
 
 output = [
     {
         "type": str,
-        "name": "programming-language",
+        "name": "classified_code",
     }
 ]
-
 
 TaskRouter(router=router, input=input, output=output, default_model="aliostad")
