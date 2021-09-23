@@ -1,0 +1,24 @@
+from fastapi import APIRouter
+from ai_api_utils.submodules import TaskRouter
+
+router = APIRouter()
+
+input = [
+    {
+        "type": "text",
+        "name": "input_string",
+        "default": "Text to extract entities from",
+        "placeholder": "Text to extract entities from",
+        "tooltip": "Insert the text to extract entities from",
+    }
+]
+
+output = [
+    {
+        "type": str,
+        "name": "extracted_entities",
+    }
+]
+
+
+TaskRouter(router=router, input=input, output=output, default_model="dbmdz-bert-large-cased-finetuned-conll03-english")
