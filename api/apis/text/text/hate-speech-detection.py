@@ -7,8 +7,8 @@ input = [
     {
         "type": "text",
         "name": "text",
-        "default": "GPT-2 was created by OpenAI",
-        "placeholder": "GPT-2 was created by OpenAI",
+        "default": "I hate you piece of shit",
+        "placeholder": "I hate you piece of shit",
         "tooltip": "Insert the text to classify as hate or not",
     },
 ]
