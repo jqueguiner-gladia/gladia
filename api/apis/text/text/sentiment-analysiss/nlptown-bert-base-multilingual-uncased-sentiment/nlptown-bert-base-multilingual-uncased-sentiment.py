@@ -1,18 +1,22 @@
 import torch
 
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
+tokenizer = AutoTokenizer.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")
+
+model = AutoModelForSequenceClassification.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")
 
 def predict(text):
-    barthez_tokenizer = AutoTokenizer.from_pretrained("moussaKam/barthez")
-    barthez_model = AutoModelForSeq2SeqLM.from_pretrained("moussaKam/barthez-orangesum-abstract")
 
+    input_ids = tokenizer.encode_plus(text, return_tensors="pt")
 
-    input_ids = torch.tensor(
-        [barthez_tokenizer.encode(text, add_special_tokens=True)]
-    )
+    sequence_classifier = model(**input_ids)
+    predict_softmax = torch.softmax(sequence_classifier[0], dim=1)
 
-    predict = barthez_model.forward(input_ids)[0]
-    print(predict)
-    return ("positive" if predict.argmax(dim=-1).item()==1 else "negative") 
+    predicted_idx = predict_softmax.argmax(dim=-1)
+
+    #return ("positive" if predicted_idx >=3 else "negative") 
+    return str(predicted_idx.item() + 1)
     
