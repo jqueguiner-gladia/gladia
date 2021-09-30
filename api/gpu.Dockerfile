@@ -103,9 +103,17 @@ RUN pip install pycuda && \
 # Remove the CUDA stubs.
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH_NO_STUBS"
 
+
+RUN apt-get install -y libcurl4-openssl-dev
 # unifAI additional packages
 COPY requirements.txt /tmp/unifai-requirements.txt
-RUN pip install -r /tmp/unifai-requirements.txt
+
+
+RUN for l in $(cat /tmp/unifai-requirements.txt); do echo "================="; echo $l; echo "==============";pip3 install $l; done
+#pip install -r /tmp/unifai-requirements.txt
+
+RUN pip3 uninstall -y botocore transformers
+RUN pip3 install botocore transformers
 
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash & \ 
     apt-get install git-lfs
@@ -113,7 +121,9 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
 EXPOSE 80
 WORKDIR /app
 
+RUN rm /tmp/clean-layer.sh /tmp/kaggle.log
+
 ENV FASTAPI_HOST=0.0.0.0
 ENV FASTAPI_PORT=80
 
-CMD ["uvicorn", "main:app", "--host", "$FASTAPI_HOST", "--port", "$FASTAPI_PORT", "--reload"]
+CMD ["sh", "-c", "echo $PWD && uvicorn main:app --host $FASTAPI_HOST --port $FASTAPI_PORT --reload"]
