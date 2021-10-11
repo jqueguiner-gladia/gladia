@@ -13,3 +13,4 @@ prometheus-fastapi-instrumentator==5.7.1
 tensorflow-gpu==2.4.1
 python-forge==18.6.0
 googledrivedownloader==0.4
+inflect

@@ -13,11 +13,10 @@ input = [
     }
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "corrected_text",
+        "type": "str",
+        "example": "corrected_text"
     }
-]
 
 TaskRouter(router=router, input=input, output=output, default_model="flexudy-t5-base-multi-sentence-doctor")

@@ -19,12 +19,11 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "answer",
+        "type": "str",
+        "example": "answer"
     }
-]
 
 
 TaskRouter(router=router, input=input, output=output, default_model="deepset_bert-base-cased-squad2")

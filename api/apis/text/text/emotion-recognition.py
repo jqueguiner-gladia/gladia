@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from ai_api_utils.submodules import TaskRouter
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -13,11 +14,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": list,
+output = {
         "name": "results",
+        "type": "str",
+        "example": "results"
     }
-]
 
 TaskRouter(router=router, input=input, output=output, default_model="mrm8488-t5-base-finetuned-emotion")

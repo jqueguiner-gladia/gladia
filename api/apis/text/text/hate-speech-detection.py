@@ -13,11 +13,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
-        "name": "classified text.",
+output = {
+        "name": "classified_text",
+        "type": "str",
+        "example": "offensive"
     }
-]
 
 TaskRouter(router=router, input=input, output=output, default_model="Hate-speech-CNERG-dehatebert-mono-english")

@@ -13,12 +13,11 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
-        "name": "answer",
+output = {
+        "name": "next_word",
+        "type": "str",
+        "example": "next word"
     }
-]
 
 
 TaskRouter(router=router, input=input, output=output, default_model="distilbert-base-uncased")

@@ -19,12 +19,12 @@ input = [
     }
 ]
 
-output = [
-    {
-        "type": list,
+output = {
         "name": "extracted_text",
+        "type": "list",
+        "example": "extracted_text"
     }
-]
 
 router = APIRouter()
+
 TaskRouter(router=router, input=input, output=output, default_model="easy-ocr")

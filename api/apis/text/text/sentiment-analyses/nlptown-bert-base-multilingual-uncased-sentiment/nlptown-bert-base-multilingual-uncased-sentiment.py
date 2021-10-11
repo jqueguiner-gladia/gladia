@@ -2,13 +2,13 @@ import torch
 
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
-
-tokenizer = AutoTokenizer.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")
-
-model = AutoModelForSequenceClassification.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")
 
 def predict(text):
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
+    tokenizer = AutoTokenizer.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")
+
+    model = AutoModelForSequenceClassification.from_pretrained("nlptown/bert-base-multilingual-uncased-sentiment")
 
     input_ids = tokenizer.encode_plus(text, return_tensors="pt")
 

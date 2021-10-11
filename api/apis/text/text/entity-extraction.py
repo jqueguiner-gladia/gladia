@@ -13,12 +13,11 @@ input = [
     }
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "extracted_entities",
+        "type": "list",
+        "example": "extracted_entities"
     }
-]
 
 
 TaskRouter(router=router, input=input, output=output, default_model="dbmdz-bert-large-cased-finetuned-conll03-english")

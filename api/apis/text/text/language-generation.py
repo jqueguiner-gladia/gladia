@@ -13,11 +13,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "generated_text",
+        "type": "str",
+        "example": "generated_text"
     }
-]
 
 TaskRouter(router=router, input=input, output=output, default_model="EleutherAI-gpt-neo-2_7B")

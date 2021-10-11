@@ -11,5 +11,8 @@ def predict(text):
     outputs = model.generate(input_ids)
     
     decoded = tokenizer.decode(outputs[0])
-    return decoded.replace("<pad>", "").replace("</s>", "").strip()
+    output = decoded.replace("<pad>", "").replace("</s>", "").strip()
+
+    print(type(output))
+    return output
 

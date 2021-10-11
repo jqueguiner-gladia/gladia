@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from ai_api_utils.submodules import TaskRouter
+from typing import List
 
 router = APIRouter()
 
@@ -31,11 +32,10 @@ input = [
     }
 ]
 
-output = [
-    {
-        "type": str,
-        "name": "summarized text.",
+output = { 
+        "name": "summarized_text",
+        "type": "str",
+        "example": "summarized_text"
     }
-]
 
 TaskRouter(router=router, input=input, output=output, default_model="distilbart-cnn-12-6")

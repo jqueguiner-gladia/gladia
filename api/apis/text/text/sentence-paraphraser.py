@@ -13,12 +13,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "paraphrased_text",
+        "type": "str",
+        "example": "paraphrased_text"
     }
-]
-
 
 TaskRouter(router=router, input=input, output=output, default_model="ramsrigouthamg-t5-large-paraphraser-diverse-high-quality")

@@ -18,11 +18,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
-        "name": "transliterated text.",
+output = {
+        "name": "transliterated_text",
+        "type": "str",
+        "example": "transliterated_text"
     }
-]
 
 TaskRouter(router=router, input=input, output=output, default_model="transliterate")

@@ -20,12 +20,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": dict,
+output = {
         "name": "word_aligment",
+        "type": "dict",
+        "example": "word_aligment"
     }
-]
-
 
 TaskRouter(router=router, input=input, output=output, default_model="bert-base-multilingual-cased")

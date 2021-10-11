@@ -13,12 +13,11 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "analyzed_text",
+        "type": "str",
+        "example": "analyzed_text"
     }
-]
 
 
 TaskRouter(router=router, input=input, output=output, default_model="LAL-Parser")

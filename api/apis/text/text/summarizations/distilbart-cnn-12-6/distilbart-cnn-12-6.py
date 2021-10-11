@@ -21,5 +21,7 @@ def predict(text, source_language, min_length, max_length):
 
     inputs = tokenizer.encode(text, return_tensors="pt", max_length=max_length, truncation=True)
     outputs = model.generate(inputs, max_length=max_length, min_length=min_length, length_penalty=2.0, num_beams=4, early_stopping=True)
-    
+    output = tokenizer.decode(outputs[0]).replace('<s>','').replace('</s>','').strip()
+
+    print(type(output))
     return tokenizer.decode(outputs[0]).replace('<s>','').replace('</s>','').strip()

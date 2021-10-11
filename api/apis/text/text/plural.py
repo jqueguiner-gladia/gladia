@@ -20,12 +20,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "pluralized_text",
+        "type": "str",
+        "example": "cats"
     }
-]
-
 
 TaskRouter(router=router, input=input, output=output, default_model="inflect")

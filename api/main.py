@@ -18,8 +18,15 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 import apis
+import os
+from fastapi.responses import ORJSONResponse
 
-if os.path.isfile("config.json"):
+from pattern.text.en import singularize
+
+config_file = os.getenv('API_CONFIG_FILE', 'config.json')
+
+
+if os.path.isfile(config_file):
     with open("config.json", "r") as f:
         config = json.load(f)
 
@@ -31,7 +38,9 @@ except:
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+
+
+app = FastAPI(default_response_class=ORJSONResponse)
 
 if config["prometheus"]["active"]:
     instrumentator = Instrumentator(
@@ -90,10 +99,10 @@ def import_submodules(package, recursive=True):
 
         if "router" in dir(this_module):
             module_input, module_output, module_task = module_short_name.split(".")
-            module_task = module_task.rstrip("s").upper()
+            module_task = singularize(module_task).upper()
             active_task_list = list(
                 map(
-                    lambda each: each.rstrip("s").upper(),
+                    lambda each: singularize(each).upper(),
                     config["active_tasks"][module_input][module_output],
                 )
             )

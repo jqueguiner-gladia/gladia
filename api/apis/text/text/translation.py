@@ -25,12 +25,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "translated_text",
+        "type": "str",
+        "example": "translated_text"
     }
-]
-
 
 TaskRouter(router=router, input=input, output=output, default_model="Helsinki-NLP")

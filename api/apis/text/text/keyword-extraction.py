@@ -13,11 +13,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "keywords",
+        "type": "list",
+        "example": "[[\"crown\", 0.5544], [\"queen\", 0.4428], [\"kingdom\", 0.4382], [\"macmillan\", 0.4289], [\"prince\", 0.3954]]"
     }
-]
 
 TaskRouter(router=router, input=input, output=output, default_model="keybert-paraphrase-MiniLM-L6-v2")

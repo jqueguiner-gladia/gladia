@@ -20,11 +20,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": list,
+output = {
         "name": "results",
+        "type": "list",
+        "example": "results"
     }
-]
 
 TaskRouter(router=router, input=input, output=output, default_model="bert-base-uncased")

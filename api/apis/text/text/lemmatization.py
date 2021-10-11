@@ -13,12 +13,11 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
-        "name": "answer",
+output = {
+        "name": "lemmatized_text",
+        "type": "str",
+        "example": "lemmatized_text"
     }
-]
 
 
 TaskRouter(router=router, input=input, output=output, default_model="wordnet")

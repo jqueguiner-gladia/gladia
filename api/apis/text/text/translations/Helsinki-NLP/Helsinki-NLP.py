@@ -9,6 +9,7 @@ from ai_api_utils.model_management import download_model
 from ai_api_utils.system import path_to_absolute
 from icecream import ic
 from transformers import MarianMTModel, MarianTokenizer
+from fastapi import FastAPI, HTTPException
 
 
 class Translator:
@@ -55,6 +56,8 @@ class Translator:
 def predict(input_string, source_language, target_language):
 
     translator = Translator("models")
-
-    translation = translator.translate(source_language, target_language, input_string)
-    return translation[0]
+    try:
+        translation = translator.translate(source_language, target_language, input_string)
+        return translation[0]
+    except:
+        raise HTTPException(status_code=422, detail="language not found")

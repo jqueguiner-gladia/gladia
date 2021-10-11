@@ -13,12 +13,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": str,
+output = {
         "name": "analyzed_sentence",
+        "type": "str",
+        "example": "analyzed_sentence"
     }
-]
-
 
 TaskRouter(router=router, input=input, output=output, default_model="UKPLab-all-MiniLM-L6-v2")

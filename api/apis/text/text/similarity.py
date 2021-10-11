@@ -20,11 +20,10 @@ input = [
     },
 ]
 
-output = [
-    {
-        "type": float,
+output = {
         "name": "similarity",
+        "type": "float",
+        "example": "similarity"
     }
-]
 
 TaskRouter(router=router, input=input, output=output, default_model="all-MiniLM-L6-v2")
