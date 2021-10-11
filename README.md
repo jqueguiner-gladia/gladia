@@ -3,5 +3,6 @@
 </p>
 <p align="center">
   <em>UnifAI the fastest way to develop and deploy AI APIs.</em>
+  <br/>
   <em>The fastest way to implement and compare AI research models for a given task.</em>
 </p>
