@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from ai_api_utils.submodules import TaskRouter
+from unifai-api-utils.submodules import TaskRouter
 
 input = [
     {

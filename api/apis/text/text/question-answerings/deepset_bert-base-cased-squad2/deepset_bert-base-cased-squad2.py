@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 
-from ai_api_utils.model_management import download_models
+from unifai-api-utils.model_management import download_models
 import torch
 
 def load_model():

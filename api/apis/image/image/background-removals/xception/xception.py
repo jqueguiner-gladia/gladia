@@ -7,9 +7,9 @@ import cv2
 import numpy as np
 import requests
 import tensorflow.compat.v1 as tf
-from ai_api_utils.image_management import draw_segment
-from ai_api_utils.model_management import download_models
-from ai_api_utils.io import _open
+from unifai-api-utils.image_management import draw_segment
+from unifai-api-utils.model_management import download_models
+from unifai-api-utils.io import _open
 from PIL import Image
 from skimage.filters import gaussian
 from icecream import ic

@@ -3,13 +3,13 @@ import io
 import cv2
 import face_recognition
 import numpy as np
-from ai_api_utils.image_management import blur_image
-from ai_api_utils.io import _open
-from ai_api_utils.options import get_option
-from ai_api_utils.citation import get_doi
+from unifai-api-utils.image_management import blur_image
+from unifai-api-utils.io import _open
+from unifai-api-utils.options import get_option
+from unifai-api-utils.citation import get_doi
 from icecream import ic
 from skimage.filters import gaussian
-from ai_api_utils.file_management import input_to_files
+from unifai-api-utils.file_management import input_to_files
 from PIL import Image
 @input_to_files
 def predict(image):
