@@ -16,3 +16,21 @@
 **Framework Source Code**: <a href="https://github.com/jqueguiner/unifai-apis-core/" target="_blank">https://github.com/jqueguiner/unifai-apis-core</a>
 
 ---
+
+# Quickstart
+```sh
+git clone https://github.com/jqueguiner/unifai-apis-core.git
+cd unifai-apis-core/api
+
+## DEV ENV
+#building the development Docker Image
+docker build -t unifai-apis -f gpu.Dockerfile.dev .
+# OR use our magic wrapper
+./build_and_dev.sh
+
+## PROD ENV
+#building the production Docker Image
+docker build -t unifai-apis -f gpu.Dockerfile.prod .
+# OR use our magic wrapper
+./build_and_prod.sh
+``` 
