@@ -125,4 +125,4 @@ RUN rm /tmp/clean-layer.sh /tmp/kaggle.log
 
 COPY . /app
 
-CMD ["sh", "-c", "echo $PWD && run_server_prod.sh --reload"]
+CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
