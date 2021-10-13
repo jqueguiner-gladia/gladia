@@ -123,7 +123,6 @@ WORKDIR /app
 
 RUN rm /tmp/clean-layer.sh /tmp/kaggle.log
 
-ENV FASTAPI_HOST=0.0.0.0
-ENV FASTAPI_PORT=80
+COPY . /app
 
-CMD ["sh", "-c", "echo $PWD && uvicorn main:app --host $FASTAPI_HOST --port $FASTAPI_PORT --reload"]
+CMD ["sh", "-c", "echo $PWD && run_server_prod.sh --reload"]
