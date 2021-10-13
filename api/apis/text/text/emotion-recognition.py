@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from unifai-api-utils.submodules import TaskRouter
+from unifai_api_utils.submodules import TaskRouter
 from pydantic import BaseModel
 
 router = APIRouter()

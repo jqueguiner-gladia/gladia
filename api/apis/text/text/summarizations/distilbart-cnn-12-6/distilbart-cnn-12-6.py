@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import List
 
 import redis
-from unifai-api-utils.model_management import download_model
-from unifai-api-utils.system import path_to_absolute
+from unifai_api_utils.model_management import download_model
+from unifai_api_utils.system import path_to_absolute
 from icecream import ic
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 

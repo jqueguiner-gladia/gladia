@@ -15,8 +15,8 @@ import fastai
 import numpy as np
 import requests
 import torch
-from unifai-api-utils.io import _open
-from unifai-api-utils.model_management import download_models
+from unifai_api_utils.io import _open
+from unifai_api_utils.model_management import download_models
 
 from icecream import ic
 
