@@ -53,4 +53,4 @@ LanguageIdentifier==1.1.1
 orjson==3.6.4
 git+https://github.com/ramsrigouthamg/Questgen.ai
 git+https://github.com/boudinfl/pke.git
-git+https://github.com/jqueguiner/unifai-api-utils.git
+git+https://github.com/theunifai/unifai-api-utils.git
