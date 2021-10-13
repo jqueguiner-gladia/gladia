@@ -3,10 +3,10 @@ import io
 import cv2
 import face_recognition
 import numpy as np
-from ai_api_utils.image_management import blur_image
-from ai_api_utils.io import _open
-from ai_api_utils.options import get_option
-from ai_api_utils.citation import get_doi
+from unifai_api_utils.image_management import blur_image
+from unifai_api_utils.io import _open
+from unifai_api_utils.options import get_option
+from unifai_api_utils.citation import get_doi
 from icecream import ic
 from skimage.filters import gaussian
 

@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 import tensorflow as tf
-from ai_api_utils.model_management import download_models
+from unifai_api_utils.model_management import download_models
 from tensorflow import keras
 
 import data_helper
