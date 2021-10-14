@@ -18,6 +18,12 @@
 ---
 
 # Quickstart
+## Magic Start
+```sh
+docker run -d -p 8080:80 unifai/unifai-apis-core:prod
+```
+
+## What's behind the Quickstart scene
 ```sh
 git clone https://github.com/jqueguiner/unifai-apis-core.git
 cd unifai-apis-core/api
