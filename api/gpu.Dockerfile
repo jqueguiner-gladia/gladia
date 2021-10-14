@@ -1,7 +1,7 @@
 ARG BASE_TAG=staging
 
 FROM nvidia/cuda:11.0-cudnn8-devel-ubuntu18.04 AS nvidia
-FROM gcr.io/kaggle-images/python:${BASE_TAG}
+FROM gcr.io/kaggle-images/python:${BASE_TAG} AS dev
 
 ADD clean-layer.sh  /tmp/clean-layer.sh
 
@@ -47,7 +47,10 @@ ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV NVIDIA_REQUIRE_CUDA="cuda>=$CUDA_MAJOR_VERSION.$CUDA_MINOR_VERSION"
 
 # Install OpenCL & libboost (required by LightGBM GPU version)
-RUN apt-get install -y ocl-icd-libopencl1 clinfo libboost-all-dev && \
+RUN apt-get install -y \
+    ocl-icd-libopencl1 \
+    clinfo \
+    libboost-all-dev && \
     mkdir -p /etc/OpenCL/vendors && \
     echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd && \
     /tmp/clean-layer.sh
@@ -56,7 +59,11 @@ RUN apt-get install -y ocl-icd-libopencl1 clinfo libboost-all-dev && \
 # the remaining pip commands: https://www.anaconda.com/using-pip-in-a-conda-environment/
 # However, because this image is based on the CPU image, this isn't possible but better
 # to put them at the top of this file to minize conflicts.
-RUN conda install cudf=21.08 cuml=21.08 cudatoolkit=$CUDA_VERSION && \
+RUN conda install --yes --freeze-installed \
+    nomkl \
+    cudf=21.08 \
+    cuml=21.08 \
+    cudatoolkit=$CUDA_VERSION && \
     /tmp/clean-layer.sh
 
 # Install Pytorch and torchvision with GPU support.
@@ -121,8 +128,13 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
 EXPOSE 80
 WORKDIR /app
 
+
 RUN rm /tmp/clean-layer.sh /tmp/kaggle.log
 
-COPY . /app
+CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
 
+
+FROM scratch AS prod
+COPY --from=dev / /
+COPY . /app
 CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
