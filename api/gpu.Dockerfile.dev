@@ -56,7 +56,11 @@ RUN apt-get install -y ocl-icd-libopencl1 clinfo libboost-all-dev && \
 # the remaining pip commands: https://www.anaconda.com/using-pip-in-a-conda-environment/
 # However, because this image is based on the CPU image, this isn't possible but better
 # to put them at the top of this file to minize conflicts.
-RUN conda install cudf=21.08 cuml=21.08 cudatoolkit=$CUDA_VERSION && \
+RUN conda install --yes --freeze-installed \
+    nomkl \
+    cudf=21.08 \
+    cuml=21.08 \
+    cudatoolkit=$CUDA_VERSION && \
     /tmp/clean-layer.sh
 
 # Install Pytorch and torchvision with GPU support.
@@ -110,7 +114,6 @@ COPY requirements.txt /tmp/unifai-requirements.txt
 
 
 RUN for l in $(cat /tmp/unifai-requirements.txt); do echo "================="; echo $l; echo "==============";pip3 install $l; done
-#pip install -r /tmp/unifai-requirements.txt
 
 RUN pip3 uninstall -y botocore transformers
 RUN pip3 install botocore transformers
