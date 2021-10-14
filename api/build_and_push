@@ -6,11 +6,9 @@ else
 fi
 if [ "$env" = "dev" ] || [ "$env" = "prod" ]; then
     docker build --target $env -t unifai/unifai-apis-core -f gpu.Dockerfile .
+    if [ "$env" = "prod" ];then
+        env="latest"
+    fi
     docker tag $env unifai/unifai-apis-core
     docker push unifai/unifai-apis-core
-    
-    if [ "$env" = "prod" ];then
-        docker tag latest unifai/unifai-apis-core
-        docker push unifai/unifai-apis-core
-    fi
 fi
