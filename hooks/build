@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+ENVS=('dev' 'prod')
+
+cd ../api
+
+for env in "${ENVS[@]}"
+do
+    echo "Buidling $env environment"
+    sh build_and_push $env
+done
