@@ -155,3 +155,7 @@ Pipfile
 
 #models
 models
+
+# GO
+go.sum
+go.mod
