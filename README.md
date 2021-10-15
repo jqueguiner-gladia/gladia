@@ -35,13 +35,13 @@ cd unifai-apis-core/api
 
 ## DEV ENV
 #building the development Docker Image
-docker build -t unifai-apis -f gpu.Dockerfile.dev .
+docker build --target dev -t unifai-apis -f gpu.Dockerfile .
 # OR use our magic wrapper
-./build_and_dev.sh
+./build_and_dev
 
 ## PROD ENV
 #building the production Docker Image
-docker build -t unifai-apis -f gpu.Dockerfile.prod .
+docker build --target prod -t unifai-apis -f gpu.Dockerfile .
 # OR use our magic wrapper
-./build_and_prod.sh
+./build_and_prod
 ``` 
