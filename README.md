@@ -17,6 +17,8 @@
 
 ---
 
+[![CircleCI](https://circleci.com/gh/theunifai/unifai-apis-core/tree/main.svg?style=svg)](https://circleci.com/gh/theunifai/unifai-apis-core/tree/main)
+
 # Quickstart
 ## Magic Start
 ```sh
