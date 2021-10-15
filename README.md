@@ -11,9 +11,9 @@
 
 **Documentation**: <a href="https://unifai-1.gitbook.io/unifai/" target="_blank">https://unifai-1.gitbook.io/unifai/</a>
 
-**Documentation Source Code**: <a href="https://github.com/jqueguiner/unifai-docs/" target="_blank">https://github.com/jqueguiner/unifai-docs</a>
+**Documentation Source Code**: <a href="https://github.com/theunifai/unifai-docs/" target="_blank">https://github.com/theunifai/unifai-docs</a>
 
-**Framework Source Code**: <a href="https://github.com/jqueguiner/unifai-apis-core/" target="_blank">https://github.com/jqueguiner/unifai-apis-core</a>
+**Framework Source Code**: <a href="https://github.com/theunifai/unifai-apis-core/" target="_blank">https://github.com/theunifai/unifai-apis-core</a>
 
 ---
 
