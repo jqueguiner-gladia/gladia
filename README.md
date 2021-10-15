@@ -20,7 +20,7 @@
 # Quickstart
 ## Magic Start
 ```sh
-docker run -d -p 8080:80 unifai/unifai-apis-core:prod
+docker run -d -p 8080:80 unifai/unifai-apis-core:latest
 ```
 
 ## What's behind the Quickstart scene
