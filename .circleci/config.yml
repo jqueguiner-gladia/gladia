@@ -10,7 +10,11 @@ jobs:
          echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 
      # build the application image
-     - run: cd api && sh build_and_push dev
+     - run:
+        command: cd api && sh build_and_push dev
+        no_output_timeout: 30m
 
      # deploy the image
-     - run: cd api && sh build_and_push prod
+     - run:
+        command: cd api && sh build_and_push prod
+        no_output_timeout: 30m
