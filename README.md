@@ -30,7 +30,7 @@ docker run -d -p 8080:80 unifai/unifai-apis-core:latest
 
 ## What's behind the Quickstart scene
 ```sh
-git clone https://github.com/jqueguiner/unifai-apis-core.git
+git clone https://github.com/theunifai/unifai-apis-core.git
 cd unifai-apis-core/api
 
 ## DEV ENV
