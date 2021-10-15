@@ -18,7 +18,7 @@
 ---
 
 [![CircleCI](https://circleci.com/gh/theunifai/unifai-apis-core/tree/main.svg?style=svg)](https://circleci.com/gh/theunifai/unifai-apis-core/tree/main)
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # Quickstart
 ## Magic Start
 ```sh
