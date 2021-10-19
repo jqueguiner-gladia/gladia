@@ -16,7 +16,6 @@ RUN rm /tmp/clean-layer.sh /tmp/kaggle.log
 
 CMD ["sh", "-c", "echo $PWD && sh run_server_dev.sh"]
 
-
 FROM scratch AS prod
 COPY --from=dev / /
 COPY . /app
