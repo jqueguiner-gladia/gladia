@@ -8,12 +8,15 @@
 </p>
 
 ---
+**Open Source Project Website**: <a href="https://www.unifai.store/" target="_blank">https://www.unifai.store/</a>
 
 **Documentation**: <a href="https://docs.unifai.store/unifai/" target="_blank">https://docs.unifai.store/unifai/</a>
 
 **Documentation Source Code**: <a href="https://github.com/theunifai/unifai-docs/" target="_blank">https://github.com/theunifai/unifai-docs</a>
 
 **Framework Source Code**: <a href="https://github.com/theunifai/unifai-apis-core/" target="_blank">https://github.com/theunifai/unifai-apis-core</a>
+
+**Discord**: <a href="https://discord.com/invite/S9zFnPNG" target="_blank">https://discord.com/invite/S9zFnPNG</a>
 
 ---
 
