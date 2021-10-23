@@ -42,4 +42,7 @@ docker build --target dev -t unifai-apis -f gpu.Dockerfile .
 docker build --target prod -t unifai-apis -f gpu.Dockerfile .
 # OR use our magic wrapper
 ./build_and_prod
-``` 
+```
+
+# CI
+CI power by [CDS](https://github.com/ovh/cds)
