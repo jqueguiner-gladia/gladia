@@ -9,7 +9,7 @@
 
 ---
 
-**Documentation**: <a href="https://unifai-1.gitbook.io/unifai/" target="_blank">https://unifai-1.gitbook.io/unifai/</a>
+**Documentation**: <a href="https://docs.unifai.store/unifai/" target="_blank">https://docs.unifai.store/unifai/</a>
 
 **Documentation Source Code**: <a href="https://github.com/theunifai/unifai-docs/" target="_blank">https://github.com/theunifai/unifai-docs</a>
 
