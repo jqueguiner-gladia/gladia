@@ -1,14 +1,10 @@
 # TO DO
 ## Deployment
-TODO: create a dockerhub
-TODO: github org
 TODO: add service
-TODO: CI/CD - autobuild docker
 TODO: helm chart
 
 ## Framework
 TODO: hide the mess behind the main.py
-TODO: make the forge a decorator to make it an extension
 TODO: support Openvino
 
 ## other features:
@@ -51,22 +47,7 @@ TODO: integration examples
 ## SOTA Integration Examples
 
 ## Documentation
-TODO: create the readme
-TODO: build the doc
-TODO: doc generator
 TODO: changelog
 
 ## Community
-TODO: project website
 TODO: project forum
-TODO: create the discord channel
-
-## Security
-TODO: security / ACL
-TODO: app Key
-TODO: oauth
-TODO: SSO GH etc..
-TODO: SSL
-TODO: guide to https
-
-
