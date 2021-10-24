@@ -49,3 +49,55 @@ docker build --target prod -t unifai-apis -f gpu.Dockerfile .
 
 # CI
 CI power by [CDS](https://github.com/ovh/cds)
+
+# Todo
+## Deployment
+- [ ] add service
+- [ ] helm chart
+
+## Framework
+- [ ] hide the mess behind the main.py
+- [ ] support Openvino
+
+## other features:
+- [ ] train your own (drag+drop)
+- [ ] serve your own
+
+## Configuration management
+- [ ] make sure customization of prometheus works
+- [ ] module activation based on database settings
+
+## Features Front
+- [ ] gradio integration
+- [ ] SOTA frontend
+- [ ] admin panel
+
+## Features Back
+- [ ] better model cache management
+- [ ] better GPU cache management
+- [ ] better dashboard in grafana
+- [ ] SOTA qualitative comparer
+- [ ] DOI wrapper
+- [ ] Arxiv wrapper
+- [ ] CPU/GPU switch ? is it possible ?
+
+## SOTA Integration Examples
+- [ ] example data for qualitative SOTA from SOTA dataset
+
+## SDK
+- [ ] make sure sdk are working
+
+## Usage Examples
+- [ ] examples of integrations in javascript
+- [ ] examples of integrations in react
+- [ ] examples of integrations in python
+- [ ] examples of integrations in php
+- [ ] examples of integrations in bash
+- [ ] examples of integrations in *
+- [ ] integration examples
+
+## Documentation
+- [ ] changelog
+
+## Community
+- [ ] project forum
