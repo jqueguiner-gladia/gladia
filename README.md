@@ -19,7 +19,16 @@
 **Discord**: <a href="https://discord.com/invite/S9zFnPNG" target="_blank">https://discord.com/invite/S9zFnPNG</a>
 
 ---
-
+<p align="left">
+    <a href="https://github.com/theunifai/unifai-apis-core/issues" alt="Issues">
+        <img src="https://img.shields.io/github/issues/theunifai/unifai-apis-core" /></a>
+    <a href="https://github.com/theunifai/unifai-apis-core/pulls" alt="Pull Requests">
+        <img src="https://img.shields.io/github/issues-pr/theunifai/unifai-apis-core" /></a>
+    <a href="https://github.com/theunifai/unifai-apis-core/network/members" alt="Forks">
+        <img src="https://img.shields.io/github/forks/theunifai/unifai-apis-core" /></a>
+    <a href="https://github.com/theunifai/unifai-apis-core/stargazers" alt="Stars">
+        <img src="https://img.shields.io/github/stars/theunifai/unifai-apis-core" /></a>
+</p>
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DockerHub](https://dockeri.co/image/unifai/unifai-apis-core)](https://hub.docker.com/repository/docker/unifai/unifai-apis-core)
 
