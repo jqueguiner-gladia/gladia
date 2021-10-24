@@ -29,6 +29,7 @@
     <a href="https://github.com/theunifai/unifai-apis-core/stargazers" alt="Stars">
         <img src="https://img.shields.io/github/stars/theunifai/unifai-apis-core" /></a>
 </p>
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DockerHub](https://dockeri.co/image/unifai/unifai-apis-core)](https://hub.docker.com/repository/docker/unifai/unifai-apis-core)
 
