@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+docker build --target prod -t unifai-apis -f gpu.Dockerfile . && docker run -d -p 8088:80 unifai-apis $1
