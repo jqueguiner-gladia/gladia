@@ -49,6 +49,7 @@ aiofiles==0.7.0
 LanguageIdentifier==1.1.1
 orjson==3.6.1
 exitstatus==2.1.0
+easyargs==0.9.4
 git+https://github.com/ramsrigouthamg/Questgen.ai
 git+https://github.com/boudinfl/pke.git
 git+https://github.com/theunifai/unifai-api-utils.git
