@@ -1,21 +1,14 @@
-import io
 import os
-from io import BytesIO
-from pathlib import Path
 
-import cv2
-import numpy as np
-import requests
 import tensorflow.compat.v1 as tf
-from unifai_api_utils.image_management import draw_segment
-from unifai_api_utils.model_management import download_models
-from unifai_api_utils.io import _open
 from icecream import ic
 from PIL import Image
-from skimage.filters import gaussian
+from unifai_api_utils.image_management import draw_segment
+from unifai_api_utils.io import _open
+from unifai_api_utils.model_management import download_models
+import numpy as np
 
 tf.disable_v2_behavior()
-
 
 urls = {
     "mobile-net": {
@@ -61,7 +54,7 @@ def run(image, fast=True):
 
 def predict(image):
     
-    image = Image.open(BytesIO(image))
+    image = _open(image)
     resized_im, seg_map = run(image, True)
 
     img = draw_segment(resized_im, seg_map)
