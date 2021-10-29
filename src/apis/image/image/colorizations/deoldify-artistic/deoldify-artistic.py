@@ -1,25 +1,17 @@
-import io
 import os
-import ssl
-import sys
-import traceback
-from os import path
-from pathlib import Path
 
 import deoldify
 from deoldify import device
 from deoldify.device_id import DeviceId
 from deoldify import visualize
 
-import fastai
-import numpy as np
-import requests
-import torch
-from unifai_api_utils.io import _open
-from unifai_api_utils.model_management import download_models
+from pathlib import Path
 
 from icecream import ic
 
+from unifai_api_utils.io import _open
+from unifai_api_utils.model_management import download_models
+import numpy as np
 
 device.set(device=DeviceId.GPU0)
 
@@ -35,7 +27,6 @@ models_path = download_models(urls)
 
 current_model_path = os.path.join(models_path["deoldify-artistic"]["output_path"])
 
-# define a predict function as an endpoint
 def predict(image):
     render_factor = 30
 
