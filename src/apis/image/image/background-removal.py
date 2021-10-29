@@ -20,4 +20,4 @@ output = {
 
 router = APIRouter()
 
-TaskRouter(router=router, input=input, output=output, default_model="mobilenet")
+TaskRouter(router=router, input=input, output=output, default_model="rembg")

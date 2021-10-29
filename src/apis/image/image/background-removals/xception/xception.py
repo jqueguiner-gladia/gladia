@@ -1,18 +1,12 @@
-import io
 import os
-from io import BytesIO
-from pathlib import Path
 
-import cv2
-import numpy as np
-import requests
-import tensorflow.compat.v1 as tf
-from unifai_api_utils.image_management import draw_segment
+from icecream import ic
 from unifai_api_utils.model_management import download_models
 from unifai_api_utils.io import _open
+from unifai_api_utils.image_management import draw_segment
+import tensorflow.compat.v1 as tf
 from PIL import Image
-from skimage.filters import gaussian
-from icecream import ic
+import numpy as np
 
 sess = None
 
@@ -30,7 +24,6 @@ ic(models_path)
 # using xcetpion checkpoint 00000
 current_model_path = os.path.join(models_path["xception"]["output_path"], "00000")
 ic(current_model_path)
-
 
 def run(image, fast=True):
     global sess
