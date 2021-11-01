@@ -38,6 +38,7 @@
 ```sh
 docker run -d -p 8080:80 unifai/unifai-apis-core:latest
 ```
+Access the service through [http://localhost:8080/docs](http://localhost:8080/docs) or [http://localhost:8080/redoc](http://localhost:8080/redoc) or whatever public/private IP of the server you are running on?
 
 ## What's behind the Quickstart scene
 ```sh
