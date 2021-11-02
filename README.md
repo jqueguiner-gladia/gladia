@@ -28,6 +28,7 @@
         <img src="https://img.shields.io/github/forks/theunifai/unifai-apis-core" /></a>
     <a href="https://github.com/theunifai/unifai-apis-core/stargazers" alt="Stars">
         <img src="https://img.shields.io/github/stars/theunifai/unifai-apis-core" /></a>
+    [![Follow UnifAI Twitter account to get the latest update](https://img.shields.io/twitter/follow/theunifai.svg?style=social&label=Follow)](https://twitter.com/theunifai)
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
