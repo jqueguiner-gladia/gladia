@@ -14,6 +14,7 @@ RUN pip3 install botocore transformers
 
 RUN rm /tmp/clean-layer.sh
 
+ENV PIPENV_VENV_IN_PROJECT="enabled"
 COPY . /app
 WORKDIR /app
 EXPOSE 80
