@@ -17,6 +17,8 @@ RUN rm /tmp/clean-layer.sh
 ENV PIPENV_VENV_IN_PROJECT="enabled"
 COPY . /app
 WORKDIR /app
+
+RUN python3 setup_custom_envs.py
 EXPOSE 80
 
 CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
