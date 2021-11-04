@@ -24,4 +24,4 @@ for dirName, subdirList, fileList in os.walk(rootDir):
             
             packages_to_install = ' '.join(env_yaml['packages'])
             os.system(f"cd {dirName} && echo Y | pipenv --python {env_yaml['python']['version']}")
-            os.system(f"cd {dirName} && pipenv install {packages_to_install}")
+            os.system(f"cd {dirName} && pipenv run pip install {packages_to_install}")
