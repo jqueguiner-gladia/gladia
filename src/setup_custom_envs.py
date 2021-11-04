@@ -22,6 +22,6 @@ for dirName, subdirList, fileList in os.walk(rootDir):
             except:
                 print("Could not remove .env and Pipfile")
             
-            packages_to_install = ' '.join(env_yaml['packages'])
+            packages_to_install = ' '.join(env_yaml['packages']) + ' git+https://github.com/theunifai/unifai-api-utils.git'
             os.system(f"cd {dirName} && echo Y | pipenv --python {env_yaml['python']['version']}")
             os.system(f"cd {dirName} && pipenv run pip install {packages_to_install}")
