@@ -36,6 +36,7 @@ def perform_test(details, url, header, path):
     global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
     global status_passed, status_failed, status_skipped
+    global nb_total_tests
 
     tag = details['get']['tags'][0]
     
@@ -43,7 +44,6 @@ def perform_test(details, url, header, path):
     models = response.json()
     
     for model in models:
-        nb_test_ran += 1
         input, output, task = details['post']['tags'][0].split('.')
         status = ""
 
@@ -61,10 +61,12 @@ def perform_test(details, url, header, path):
             if response.status_code == 200:
                 nb_test_passed += 1
                 status = status_passed
+                
             else:
                 nb_test_failed += 1
                 status = status_failed
                 test_final_status = ExitStatus.failure
+                
 
         elif input == 'text':
             params = [
@@ -80,12 +82,17 @@ def perform_test(details, url, header, path):
 
             if response.status_code == 200:
                 status = status_passed
+                nb_test_passed += 1
+                
             else:
                 status = status_failed
+                nb_test_failed += 1
                 test_final_status = ExitStatus.failure
+                
+        nb_test_ran += 1
         
-        ratio = round((nb_test_ran / nb_total_tests)*100, 2)
-        print(f"|  |__ {status} {model} ({ratio}%)  <{response.status_code}>")
+        progress = round((nb_test_ran / nb_total_tests)*100, 2)
+        print(f"|  |__ {status} {model} ({progress}%)  <{response.status_code}>")
     print("|")
 
 

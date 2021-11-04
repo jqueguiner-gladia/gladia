@@ -27,3 +27,5 @@ inflect==5.3.0
 rembg==1.0.14
 h5py==2.10.0
 pipenv==2020.11.15
+easyargs==0.9.4
+exitstatus==2.1.0
