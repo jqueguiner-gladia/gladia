@@ -159,3 +159,7 @@ models
 # GO
 go.sum
 go.mod
+
+#pipenv
+Pipfile.lock
+log_file
