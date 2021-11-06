@@ -129,7 +129,7 @@ def create_model(input_type, output_type, task_name, model_name, inputs, output)
     task_routeur_path = os.path.join("apis", input_type, output_type, f"{task_name}.py")
     task_path = os.path.join("apis", input_type, output_type, p.plural(task_name))
 
-    model_path = os.path.join(task_path, p.plural(model_name))
+    model_path = os.path.join(task_path, model_name)
     
 
     if not os.path.isdir(model_path):
@@ -277,7 +277,7 @@ def scaffold_task():
         while added_element["element"] != "done":
             added_element = inquirer.prompt(add_element, theme=GreenPassion())
             if added_element["element"] == "input":
-                inputs.append(inquirer.prompt(set_input))
+                inputs.append(inquirer.prompt(set_input, theme=GreenPassion()))
             elif added_element["element"] == "output":
                 output = inquirer.prompt(set_output, theme=GreenPassion())
             else:
@@ -314,4 +314,4 @@ if __name__ == "__main__":
     input_type, output_type, task_name, inputs, output = scaffold_task()
     model_file = scaffold_model(input_type, output_type, task_name, inputs, output)
     
-    print("you can now edit {model_file}")
+    print(f"you can now edit {model_file}")
