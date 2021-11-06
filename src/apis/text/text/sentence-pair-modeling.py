@@ -3,7 +3,7 @@ from unifai_api_utils.submodules import TaskRouter
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "sentence",
@@ -19,4 +19,4 @@ output = {
         "example": "analyzed_sentence"
     }
 
-TaskRouter(router=router, input=input, output=output, default_model="UKPLab-all-MiniLM-L6-v2")
+TaskRouter(router=router, input=inputs, output=output, default_model="UKPLab-all-MiniLM-L6-v2")

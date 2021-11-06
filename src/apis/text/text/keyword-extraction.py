@@ -3,7 +3,7 @@ from unifai_api_utils.submodules import TaskRouter
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "text",
@@ -19,4 +19,4 @@ output = {
         "example": "[[\"crown\", 0.5544], [\"queen\", 0.4428], [\"kingdom\", 0.4382], [\"macmillan\", 0.4289], [\"prince\", 0.3954]]"
     }
 
-TaskRouter(router=router, input=input, output=output, default_model="keybert-paraphrase-MiniLM-L6-v2")
+TaskRouter(router=router, input=inputs, output=output, default_model="keybert-paraphrase-MiniLM-L6-v2")

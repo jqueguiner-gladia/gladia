@@ -3,7 +3,7 @@ from unifai_api_utils.submodules import TaskRouter
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "input_string",
@@ -20,4 +20,4 @@ output = {
     }
 
 
-TaskRouter(router=router, input=input, output=output, default_model="dbmdz-bert-large-cased-finetuned-conll03-english")
+TaskRouter(router=router, input=inputs, output=output, default_model="dbmdz-bert-large-cased-finetuned-conll03-english")

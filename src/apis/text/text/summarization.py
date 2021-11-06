@@ -4,7 +4,7 @@ from typing import List
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "text",
@@ -38,4 +38,4 @@ output = {
         "example": "summarized_text"
     }
 
-TaskRouter(router=router, input=input, output=output, default_model="distilbart-cnn-12-6")
+TaskRouter(router=router, input=inputs, output=output, default_model="distilbart-cnn-12-6")

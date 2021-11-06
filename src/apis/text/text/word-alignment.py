@@ -3,7 +3,7 @@ from unifai_api_utils.submodules import TaskRouter
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "input_string_language_1",
@@ -26,4 +26,4 @@ output = {
         "example": "word_aligment"
     }
 
-TaskRouter(router=router, input=input, output=output, default_model="bert-base-multilingual-cased")
+TaskRouter(router=router, input=inputs, output=output, default_model="bert-base-multilingual-cased")
