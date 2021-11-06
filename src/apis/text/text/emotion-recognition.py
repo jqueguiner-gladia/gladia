@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "text",
@@ -20,4 +20,4 @@ output = {
         "example": "results"
     }
 
-TaskRouter(router=router, input=input, output=output, default_model="mrm8488-t5-base-finetuned-emotion")
+TaskRouter(router=router, input=inputs, output=output, default_model="mrm8488-t5-base-finetuned-emotion")

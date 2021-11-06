@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from unifai_api_utils.submodules import TaskRouter
 
-input = [
+inputs = [
     {
         "type": "image",
         "name": "image",
@@ -19,4 +19,4 @@ output = {
 
 router = APIRouter()
 
-TaskRouter(router=router, input=input, output=output, default_model="esrgan")
+TaskRouter(router=router, input=inputs, output=output, default_model="esrgan")

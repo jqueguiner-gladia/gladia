@@ -3,7 +3,7 @@ from unifai_api_utils.submodules import TaskRouter
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "sentence",
@@ -19,4 +19,4 @@ output = {
         "example": "corrected_text"
     }
 
-TaskRouter(router=router, input=input, output=output, default_model="flexudy-t5-base-multi-sentence-doctor")
+TaskRouter(router=router, input=inputs, output=output, default_model="flexudy-t5-base-multi-sentence-doctor")

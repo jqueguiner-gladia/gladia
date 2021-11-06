@@ -3,7 +3,7 @@ from unifai_api_utils.submodules import TaskRouter
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "text",
@@ -24,4 +24,4 @@ output = {
         "example": "transliterated_text"
     }
 
-TaskRouter(router=router, input=input, output=output, default_model="transliterate")
+TaskRouter(router=router, input=inputs, output=output, default_model="transliterate")

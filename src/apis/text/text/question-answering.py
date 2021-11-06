@@ -3,7 +3,7 @@ from unifai_api_utils.submodules import TaskRouter
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "context",
@@ -26,4 +26,4 @@ output = {
     }
 
 
-TaskRouter(router=router, input=input, output=output, default_model="deepset_bert-base-cased-squad2")
+TaskRouter(router=router, input=inputs, output=output, default_model="deepset_bert-base-cased-squad2")

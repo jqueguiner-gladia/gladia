@@ -3,7 +3,7 @@ from unifai_api_utils.submodules import TaskRouter
 
 router = APIRouter()
 
-input = [
+inputs = [
     {
         "type": "text",
         "name": "context",
@@ -19,4 +19,4 @@ output = {
         "example": "paraphrased_text"
     }
 
-TaskRouter(router=router, input=input, output=output, default_model="ramsrigouthamg-t5-large-paraphraser-diverse-high-quality")
+TaskRouter(router=router, input=inputs, output=output, default_model="ramsrigouthamg-t5-large-paraphraser-diverse-high-quality")

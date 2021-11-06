@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from unifai_api_utils.submodules import TaskRouter
 
-input = [
+inputs = [
     {
         "type": "video",
         "name": "video",
