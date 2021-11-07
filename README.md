@@ -45,19 +45,16 @@ Access the service through [http://localhost:8080/docs](http://localhost:8080/do
 ## What's behind the Quickstart scene
 ```sh
 git clone https://github.com/theunifai/unifai-apis-core.git
-cd unifai-apis-core/api
+cd unifai-apis-core/src
+
+#building the Docker Image
+docker build -t unifai-apis -f gpu.Dockerfile .
 
 ## DEV ENV
-#building the development Docker Image
-docker build --target dev -t unifai-apis -f gpu.Dockerfile .
-# OR use our magic wrapper
-./build_and_dev
+docker run -d -p 8080:80 -v $PWD:/app unifai/unifai-apis-core:latest
 
-## PROD ENV
-#building the production Docker Image
-docker build --target prod -t unifai-apis -f gpu.Dockerfile .
-# OR use our magic wrapper
-./build_and_prod
+##PROD ENV
+docker run -d -p 8080:80 unifai/unifai-apis-core:latest
 ```
 
 # CI
