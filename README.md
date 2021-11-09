@@ -28,16 +28,25 @@
         <img src="https://img.shields.io/github/forks/theunifai/unifai-apis-core" /></a>
     <a href="https://github.com/theunifai/unifai-apis-core/stargazers" alt="Stars">
         <img src="https://img.shields.io/github/stars/theunifai/unifai-apis-core" /></a>
+    <a href="https://opensource.org/licenses/MIT" alt="License">
+        <img src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a>
+  
 
 </p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)]
-[![DockerHub](https://dockeri.co/image/unifai/unifai-apis-core)](https://hub.docker.com/repository/docker/unifai/unifai-apis-core)]
-[![Follow UnifAI Twitter account to get the latest update](https://img.shields.io/twitter/follow/theunifai.svg?style=social&label=Follow)]
-[![Join our Discord Community Server](https://discord.gg/2T36ybdDRS)]
-[![Follow on Twitter](https://twitter.com/theunifai)]
+<p align="left">
 
-[![Created by jilijeanlouis => on Twitter](https://twitter.com/jilijeanlouis)]
+  <a href="https://hub.docker.com/repository/docker/unifai/unifai-apis-core" alt="Dockerhub">
+        <img src="https://dockeri.co/image/unifai/unifai-apis-core" /></a>
+</p>
+
+[Follow UnifAI Twitter account to get the latest update](https://img.shields.io/twitter/follow/theunifai.svg?style=social&label=Follow)
+
+[Join our Discord Community Server](https://discord.gg/2T36ybdDRS)
+
+[Follow on Twitter](https://twitter.com/theunifai)
+
+[Created by jilijeanlouis => on Twitter](https://twitter.com/jilijeanlouis)
 
 
 # Quickstart
