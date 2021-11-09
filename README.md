@@ -31,9 +31,14 @@
 
 </p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![DockerHub](https://dockeri.co/image/unifai/unifai-apis-core)](https://hub.docker.com/repository/docker/unifai/unifai-apis-core)
-[![Follow UnifAI Twitter account to get the latest update](https://img.shields.io/twitter/follow/theunifai.svg?style=social&label=Follow)](https://twitter.com/theunifai)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)]
+[![DockerHub](https://dockeri.co/image/unifai/unifai-apis-core)](https://hub.docker.com/repository/docker/unifai/unifai-apis-core)]
+[![Follow UnifAI Twitter account to get the latest update](https://img.shields.io/twitter/follow/theunifai.svg?style=social&label=Follow)]
+[![Join our Discord Community Server](https://discord.gg/2T36ybdDRS)]
+[![Follow on Twitter](https://twitter.com/theunifai)]
+
+[![Created by jilijeanlouis => on Twitter](https://twitter.com/jilijeanlouis)]
+
 
 # Quickstart
 ## Magic Start
