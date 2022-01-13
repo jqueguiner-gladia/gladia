@@ -20,24 +20,27 @@
 
 ---
 <p align="left">
-    <a href="https://github.com/gladiaio/gladia/issues" alt="Issues">
-        <img src="https://img.shields.io/github/issues/gladiaio/gladia" /></a>
-    <a href="https://github.com/gladiaio/gladia/pulls" alt="Pull Requests">
-        <img src="https://img.shields.io/github/issues-pr/gladiaio/gladia" /></a>
-    <a href="https://github.com/theunifai/gladiaio/network/members" alt="Forks">
-        <img src="https://img.shields.io/github/forks/gladiaio/gladia" /></a>
-    <a href="https://github.com/gladiaio/gladia/stargazers" alt="Stars">
-        <img src="https://img.shields.io/github/stars/gladiaio/gladia" /></a>
-    <a href="https://opensource.org/licenses/MIT" alt="License">
-        <img src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a>
-  
-
+  <a href="https://github.com/gladiaio/gladia/issues" alt="Issues">
+    <img src="https://img.shields.io/github/issues/gladiaio/gladia" />
+  </a>
+  <a href="https://github.com/gladiaio/gladia/pulls" alt="Pull Requests">
+    <img src="https://img.shields.io/github/issues-pr/gladiaio/gladia" />
+  </a>
+  <a href="https://github.com/theunifai/gladiaio/network/members" alt="Forks">
+    <img src="https://img.shields.io/github/forks/gladiaio/gladia" />
+  </a>
+  <a href="https://github.com/gladiaio/gladia/stargazers" alt="Stars">
+    <img src="https://img.shields.io/github/stars/gladiaio/gladia" />
+  </a>
+  <a href="https://opensource.org/licenses/MIT" alt="License">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+  </a>
 </p>
 
 <p align="left">
-
   <a href="https://hub.docker.com/repository/docker/gladiaio/gladia" alt="Dockerhub">
-        <img src="https://dockeri.co/image/gladiaio/gladia" /></a>
+    <img src="https://dockeri.co/image/gladiaio/gladia" />
+  </a>
 </p>
 
 [Follow Gladia Twitter account to get the latest update](https://img.shields.io/twitter/follow/gladiaio.svg?style=social&label=Follow)
