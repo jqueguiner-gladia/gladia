@@ -5,10 +5,10 @@ else
     env=$1
 fi
 if [ "$env" = "dev" ] || [ "$env" = "prod" ]; then
-    docker build --target $env -t unifai/unifai-apis-core -f gpu.Dockerfile .
+    docker build --target $env -t gladiaio/gladia -f gpu.Dockerfile .
     if [ "$env" = "prod" ];then
         env="latest"
     fi
-    docker tag $env unifai/unifai-apis-core
-    docker push unifai/unifai-apis-core
+    docker tag $env gladiaio/gladia
+    docker push gladiaio/gladia
 fi
