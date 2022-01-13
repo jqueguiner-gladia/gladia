@@ -55,7 +55,6 @@ Follow Gladia Twitter account to get the latest update
 
 [Join our Discord Community Server](https://discord.gg/2T36ybdDRS)
 
-[Follow on Twitter](https://twitter.com/gladia_io)
 
 
 # Quickstart
