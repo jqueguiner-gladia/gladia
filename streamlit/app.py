@@ -12,7 +12,7 @@ from icecream import ic
 import time
 from streamlit.uploaded_file_manager import UploadedFileRec, UploadedFile
 import json
-from unifai_api_utils.io import get_buffer_type, get_buffer_category
+from gladia_api_utils.io import get_buffer_type, get_buffer_category
 import pandas as pd
 import time
 import urllib

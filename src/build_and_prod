@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker build --target prod -t unifai-apis -f gpu.Dockerfile . && docker run -d -p 8080:80 unifai-apis $1
+docker build --target prod -t gladia -f gpu.Dockerfile . && docker run -d -p 8080:80 gladia $1
