@@ -43,11 +43,19 @@
   </a>
 </p>
 
+
+Follow Gladia Twitter account to get the latest update
+<p align="left">
+  <a href="https://twitter.com/gladia_io" alt="Twitter">
+    <img src="https://img.shields.io/twitter/follow/gladia_io.svg?style=social&label=Follow" />
+  </a>
+</p>
+
 [Follow Gladia Twitter account to get the latest update](https://img.shields.io/twitter/follow/gladiaio.svg?style=social&label=Follow)
 
 [Join our Discord Community Server](https://discord.gg/2T36ybdDRS)
 
-[Follow on Twitter](https://twitter.com/gladia)
+[Follow on Twitter](https://twitter.com/gladia_io)
 
 
 # Quickstart
