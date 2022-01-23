@@ -1,4 +1,4 @@
-from unifai_api_utils.io import _open
+from gladia_api_utils.io import _open
 from PIL import Image
 
 ASCII_CHARS = ['.',',',':',';','+','*','?','%','S','#','@']

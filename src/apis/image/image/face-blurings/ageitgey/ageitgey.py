@@ -3,8 +3,8 @@ import io
 import face_recognition
 from icecream import ic
 from skimage.filters import gaussian
-from unifai_api_utils.file_management import input_to_files
-from unifai_api_utils.image_management import blur_image
+from gladia_api_utils.file_management import input_to_files
+from gladia_api_utils.image_management import blur_image
 from PIL import Image
 import cv2
 

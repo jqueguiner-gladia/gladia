@@ -26,7 +26,7 @@
   <a href="https://github.com/gladiaio/gladia/pulls" alt="Pull Requests">
     <img src="https://img.shields.io/github/issues-pr/gladiaio/gladia" />
   </a>
-  <a href="https://github.com/theunifai/gladiaio/network/members" alt="Forks">
+  <a href="https://github.com/gladiaio/gladia/network/members" alt="Forks">
     <img src="https://img.shields.io/github/forks/gladiaio/gladia" />
   </a>
   <a href="https://github.com/gladiaio/gladia/stargazers" alt="Stars">
@@ -60,7 +60,7 @@ Follow Gladia Twitter account to get the latest update
 # Quickstart
 ## Magic Start
 ```sh
-docker run -d -p 8080:80 unifai/unifai-apis-core:latest
+docker run -d -p 8080:80 gladiaio/gladio:latest
 ```
 Access the service through [http://localhost:8080/docs](http://localhost:8080/docs) or [http://localhost:8080/redoc](http://localhost:8080/redoc) or whatever public/private IP of the server you are running on?
 

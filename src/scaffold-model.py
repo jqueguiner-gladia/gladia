@@ -81,7 +81,7 @@ def create_task_routeur(input_type, output_type, task_name, inputs, output, mode
 
     with open(task_routeur_path, "w") as f:
         f.write(f"""from fastapi import APIRouter
-from unifai_api_utils.submodules import TaskRouter
+from gladia_api_utils.submodules import TaskRouter
 
 router = APIRouter()""")
 

@@ -9,8 +9,8 @@ from pathlib import Path
 
 from icecream import ic
 
-from unifai_api_utils.io import _open
-from unifai_api_utils.model_management import download_models
+from gladia_api_utils.io import _open
+from gladia_api_utils.model_management import download_models
 import numpy as np
 
 device.set(device=DeviceId.GPU0)
