@@ -1,9 +1,9 @@
 import os
 
 from icecream import ic
-from unifai_api_utils.model_management import download_models
-from unifai_api_utils.io import _open
-from unifai_api_utils.image_management import draw_segment
+from gladia_api_utils.model_management import download_models
+from gladia_api_utils.io import _open
+from gladia_api_utils.image_management import draw_segment
 import tensorflow.compat.v1 as tf
 from PIL import Image
 import numpy as np

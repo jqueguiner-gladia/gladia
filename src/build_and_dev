@@ -1,2 +1,2 @@
-docker build --target dev -t unifai-apis -f gpu.Dockerfile . && docker run -it -v $PWD:/app -p 8080:80 unifai-apis $1
+docker build --target dev -t gladia -f gpu.Dockerfile . && docker run -it -v $PWD:/app -p 8080:80 gladia $1
 
