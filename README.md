@@ -51,7 +51,7 @@ Follow Gladia Twitter account to get the latest update
   </a>
 </p>
 
-[Follow Gladia Twitter account to get the latest update](https://img.shields.io/twitter/follow/gladiaio.svg?style=social&label=Follow)
+[Follow Gladia Twitter account to get the latest update](https://twitter.com/gladia_io)
 
 [Join our Discord Community Server](https://discord.gg/2T36ybdDRS)
 
