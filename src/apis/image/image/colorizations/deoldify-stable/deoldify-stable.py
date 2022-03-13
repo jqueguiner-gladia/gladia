@@ -1,20 +1,14 @@
 import os
 
-import deoldify
-from deoldify import device
-from deoldify.device_id import DeviceId
-from deoldify import visualize
-
 from pathlib import Path
-
-from icecream import ic
-
+from deoldify import device
+from deoldify import visualize
+from deoldify.device_id import DeviceId
 from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
-import numpy as np
+
 
 device.set(device=DeviceId.GPU0)
-
 
 urls = {
     "deoldify-stable": {
@@ -26,6 +20,7 @@ urls = {
 models_path = download_models(urls)
 
 current_model_path = os.path.join(models_path["deoldify-stable"]["output_path"])
+
 
 def predict(image):
     render_factor = 30
