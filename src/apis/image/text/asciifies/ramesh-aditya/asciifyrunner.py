@@ -56,12 +56,14 @@ method runner():
 '''
 def runner(path):
     image = None
+
     try:
         image = Image.open(path)
     except Exception:
-        print("Unable to find image in",path)
-        #print(e)
+        print("Unable to find image in", path)
+
         return
+
     image = do(image)
 
     # To print on console
@@ -74,4 +76,5 @@ def runner(path):
     #f = open('img.txt','w')
     #f.write(image)
     #f.close()
+
     return image
