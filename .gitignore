@@ -163,3 +163,6 @@ go.mod
 #pipenv
 Pipfile.lock
 log_file
+
+# IDEs
+.idea
