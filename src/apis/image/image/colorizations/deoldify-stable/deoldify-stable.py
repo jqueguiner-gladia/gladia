@@ -1,5 +1,6 @@
 import os
 
+from PIL import Image
 from pathlib import Path
 from deoldify import device
 from deoldify import visualize
@@ -22,7 +23,14 @@ models_path = download_models(urls)
 current_model_path = os.path.join(models_path["deoldify-stable"]["output_path"])
 
 
-def predict(image):
+def predict(image: bytes) -> Image:
+    """
+    Call the model to return the image colorized
+
+    :param image: image to colorize
+    :return: colorized image
+    """
+
     render_factor = 30
 
     image = _open(image)
