@@ -2,7 +2,14 @@ import cv2
 import numpy as np
 
 
-def predict(image):
+def predict(image: bytes) -> np.ndarray:
+    """
+    Take an image as input and return it as grayscale
+
+    :param image: image to remove the color from
+    :return: gray scale image
+    """
+
     img = cv2.imdecode(
         np.fromstring(image, np.uint8),
         cv2.IMREAD_COLOR
