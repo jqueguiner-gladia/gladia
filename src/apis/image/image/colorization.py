@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from fastapi.responses import StreamingResponse
 from gladia_api_utils.submodules import TaskRouter
 
 inputs = [
