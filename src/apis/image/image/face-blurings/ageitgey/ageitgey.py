@@ -1,12 +1,20 @@
 import cv2
 import face_recognition
 
+from numpy import ndarray
 from gladia_api_utils.image_management import blur_image
 from gladia_api_utils.file_management import input_to_files
 
 
 @input_to_files
-def predict(image):
+def predict(image: bytes) -> ndarray:
+    """
+    Call the model returning the image with the faces blured
+
+    :param image: the image to blur the faces from
+    :return: the image with the faces blured
+    """
+
     sigma = 50
 
     image = face_recognition.load_image_file(image)
