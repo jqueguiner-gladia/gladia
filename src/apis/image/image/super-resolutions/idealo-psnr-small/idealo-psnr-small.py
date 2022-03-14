@@ -4,7 +4,14 @@ import numpy as np
 from PIL import Image
 
 
-def predict(image):
+def predict(image: str) -> str:
+    """
+    Apply super resolution on the provided image
+
+    :param image: path to the input image
+    :return: path to the output image
+    """
+
     from ISR.models import RDN, RRDN
 
     # open image from path
