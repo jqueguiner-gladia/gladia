@@ -1,12 +1,12 @@
 import os
+import numpy as np
+import tensorflow.compat.v1 as tf
 
-from icecream import ic
-from gladia_api_utils.model_management import download_models
+from PIL import Image
 from gladia_api_utils.io import _open
 from gladia_api_utils.image_management import draw_segment
-import tensorflow.compat.v1 as tf
-from PIL import Image
-import numpy as np
+from gladia_api_utils.model_management import download_models
+
 
 sess = None
 
@@ -19,13 +19,18 @@ urls = {
 
 models_path = download_models(urls)
 
-ic(models_path)
-
 # using xcetpion checkpoint 00000
 current_model_path = os.path.join(models_path["xception"]["output_path"], "00000")
-ic(current_model_path)
 
-def run(image, fast=True):
+def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
+    """
+    Call the model to return the image without its background
+
+    :param image: Image to remove the background from
+    :param fast: unused
+    :return: image without its background
+    """
+
     global sess
     sess = tf.Session()
     INPUT_TENSOR_NAME = "ImageTensor:0"
@@ -53,9 +58,17 @@ def run(image, fast=True):
     return resized_image, seg_map
 
 
-def predict(image):
+def predict(image: bytes) -> Image:
+    """
+    Call the model to return the image without its background
+
+    :param image: Image to remove the background from
+    :return: image without its background
+    """
+
     image = _open(image)
     resized_im, seg_map = run(image, True)
 
     img = draw_segment(resized_im, seg_map)
+
     return img
