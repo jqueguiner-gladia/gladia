@@ -1,12 +1,12 @@
 import os
-
-import tensorflow.compat.v1 as tf
-from icecream import ic
-from PIL import Image
-from gladia_api_utils.image_management import draw_segment
-from gladia_api_utils.io import _open
-from gladia_api_utils.model_management import download_models
 import numpy as np
+import tensorflow.compat.v1 as tf
+
+from PIL import Image
+from gladia_api_utils.io import _open
+from gladia_api_utils.image_management import draw_segment
+from gladia_api_utils.model_management import download_models
+
 
 tf.disable_v2_behavior()
 
@@ -23,7 +23,15 @@ models_path = download_models(urls)
 current_model_path = os.path.join(models_path["mobile-net"]["output_path"], "30000")
 
 
-def run(image, fast=True):
+def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
+    """
+    Call the model to return the image without its background
+
+    :param image: Image to remove the background from
+    :param fast: unused
+    :return: image without its background
+    """
+
     global sess
     sess = tf.Session()
     INPUT_TENSOR_NAME = "ImageTensor:0"
@@ -37,7 +45,6 @@ def run(image, fast=True):
     resized_image = image.convert("RGB").resize(target_size, Image.ANTIALIAS)
 
     graph_path = os.path.join(current_model_path, "frozen_inference_graph.pb")
-    ic(graph_path)
     slow_graph_def = tf.GraphDef.FromString(open(graph_path, "rb").read())
 
     tf.import_graph_def(slow_graph_def, name="")
@@ -52,8 +59,14 @@ def run(image, fast=True):
     return resized_image, seg_map
 
 
-def predict(image):
-    
+def predict(image: bytes) -> Image:
+    """
+    Call the model to return the image without its background
+
+    :param image: Image to remove the background from
+    :return: image without its background
+    """
+
     image = _open(image)
     resized_im, seg_map = run(image, True)
 
