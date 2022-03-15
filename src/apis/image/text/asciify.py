@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-
 from gladia_api_utils.submodules import TaskRouter
 
 
@@ -7,9 +6,9 @@ inputs = [
     {
         "type": "image",
         "name": "image",
-        "default": "Image to background removal",
-        "placeholder": "Image to background removal",
-        "tooltip": "Image to background removal",
+        "default": "Image to convert to ascii",
+        "placeholder": "Image to convert to ascii",
+        "tooltip": "Insert the image to convert to ascii",
     }
 ]
 
