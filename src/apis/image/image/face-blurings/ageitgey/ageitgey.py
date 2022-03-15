@@ -1,15 +1,20 @@
-import io
-
-import face_recognition
-from icecream import ic
-from skimage.filters import gaussian
-from gladia_api_utils.file_management import input_to_files
-from gladia_api_utils.image_management import blur_image
-from PIL import Image
 import cv2
+import face_recognition
+
+from numpy import ndarray
+from gladia_api_utils.image_management import blur_image
+from gladia_api_utils.file_management import input_to_files
+
 
 @input_to_files
-def predict(image):
+def predict(image: bytes) -> ndarray:
+    """
+    Call the model returning the image with the faces blured
+
+    :param image: the image to blur the faces from
+    :return: the image with the faces blured
+    """
+
     sigma = 50
 
     image = face_recognition.load_image_file(image)
@@ -17,12 +22,14 @@ def predict(image):
     locations = face_recognition.face_locations(image)
     
     for location in locations:
-        startY = location[0]
-        endY = location[2]
-        startX = location[1]
-        endX = location[3]
+        (startY, endY) = location[0:2]
+        (startX, endX) = location[2:4]
+
         image = blur_image(image, startX, endX, startY, endY, sigma=sigma)
 
-    res, im_png = cv2.imencode(".png", image)
+    is_successful, im_png = cv2.imencode(".png", image)
 
-    return im_png
+    if is_successful:
+        return im_png
+
+    raise Exception("Error encoding image")
