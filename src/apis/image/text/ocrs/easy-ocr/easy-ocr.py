@@ -1,8 +1,5 @@
 import easyocr
 
-import os
-import re
-from icecream import ic
 
 def predict(image, source_language):
 
