@@ -1,5 +1,7 @@
 import torch
+
 from transformers import AutoTokenizer, AutoModelForTokenClassification
+
 
 def predict(text):
     tokenizer = AutoTokenizer.from_pretrained("dbmdz/bert-large-cased-finetuned-conll03-english")
@@ -17,12 +19,9 @@ def predict(text):
         "I-LOC"    # Location
     ]
 
-    sequence = "Hugging Face Inc. is a company based in New York City. Its headquarters are in DUMBO, therefore very" \
-            "close to the Manhattan Bridge."
-
     # Bit of a hack to get the tokens with the special tokens
-    tokens = tokenizer.tokenize(tokenizer.decode(tokenizer.encode(sequence)))
-    inputs = tokenizer.encode(sequence, return_tensors="pt")
+    tokens = tokenizer.tokenize(tokenizer.decode(tokenizer.encode(text)))
+    inputs = tokenizer.encode(text, return_tensors="pt")
 
     outputs = model(inputs)[0]
     predictions = torch.argmax(outputs, dim=2)
