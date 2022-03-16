@@ -1,7 +1,8 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
+
 def predict(text):
-    
+
     tokenizer = AutoTokenizer.from_pretrained("mrm8488/t5-base-finetuned-emotion")
 
     model = AutoModelForSeq2SeqLM.from_pretrained("mrm8488/t5-base-finetuned-emotion")
