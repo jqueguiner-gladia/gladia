@@ -24,5 +24,4 @@ def predict(text):
     else:
         label = "normal"
 
-
     return label
