@@ -5,10 +5,21 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification
 
 def predict(text: str) -> [(str, str)]:
     """
-    Apply NER on the given task
+    Apply NER on the given task and return each token within the sentence associated to its label.
+
+    **Labels**:\n
+    O : Outside of a named entity\n
+    B-MISC : Beginning of a miscellaneous entity right after another miscellaneous entity\n
+    I-MISC : Miscellaneous entity\n
+    B-PER : Beginning of a person's name right after another person's name\n
+    I-PER : Person's name\n
+    B-ORG : Beginning of an organisation right after another organisation\n
+    I-ORG : Organisation\n
+    B-LOC : Beginning of a location right after another location\n
+    I-LOC : Location\n
 
     :param text: sentence to search the named entities in
-    :return: named entities founded in the given sentence
+    :return: each token within the sentence associated to its label
     """
 
     tokenizer = AutoTokenizer.from_pretrained("dbmdz/bert-large-cased-finetuned-conll03-english")
