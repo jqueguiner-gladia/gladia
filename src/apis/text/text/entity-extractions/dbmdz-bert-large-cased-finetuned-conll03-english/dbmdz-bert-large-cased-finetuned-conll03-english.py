@@ -1,5 +1,6 @@
 from transformers import pipeline
 
+
 def predict(input_string):
 
     ner_pipeline = pipeline("ner")
