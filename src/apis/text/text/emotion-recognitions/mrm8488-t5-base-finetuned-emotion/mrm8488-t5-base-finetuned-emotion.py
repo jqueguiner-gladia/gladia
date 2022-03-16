@@ -1,7 +1,13 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 
-def predict(text):
+def predict(text: str) -> str:
+    """
+    From a given sentence, return the emotion detected in it
+
+    :param text: sentence to analyse emotion from
+    :return: emotion contained in the sentence
+    """
 
     model_name = "mrm8488/t5-base-finetuned-emotion"
 
