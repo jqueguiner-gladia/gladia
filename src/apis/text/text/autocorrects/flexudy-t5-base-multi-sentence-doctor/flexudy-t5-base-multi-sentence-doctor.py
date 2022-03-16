@@ -1,10 +1,18 @@
 from transformers import AutoTokenizer, AutoModelWithLMHead
 
 
-def predict(sentence):
-    tokenizer = AutoTokenizer.from_pretrained("flexudy/t5-base-multi-sentence-doctor")
+def predict(sentence: str) -> str:
+    """
+    Remove typos from the given string.
 
-    model = AutoModelWithLMHead.from_pretrained("flexudy/t5-base-multi-sentence-doctor")
+    :param sentence: sentence to correct
+    :return: sentence corrected
+    """
+
+    model_name = "flexudy/t5-base-multi-sentence-doctor"
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelWithLMHead.from_pretrained(model_name)
 
     input_text = f"repair_sentence: {sentence}</s>"
 
