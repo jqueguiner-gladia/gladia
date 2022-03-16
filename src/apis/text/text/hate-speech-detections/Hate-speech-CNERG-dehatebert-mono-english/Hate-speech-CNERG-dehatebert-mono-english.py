@@ -3,7 +3,14 @@ import torch
 from transformers import BertTokenizer, BertForSequenceClassification
 
 
-def predict(text):
+def predict(text: str) -> str:
+    """
+    Detect hate from a given text
+
+    :param text: text to analyze
+    :return: normal, hate-speech or offensive regarding the level of hate in the text
+    """
+
     labels = ["hate-speech", "normal", "offensive"]
     model_name = 'Hate-speech-CNERG/bert-base-uncased-hatexplain'
 
