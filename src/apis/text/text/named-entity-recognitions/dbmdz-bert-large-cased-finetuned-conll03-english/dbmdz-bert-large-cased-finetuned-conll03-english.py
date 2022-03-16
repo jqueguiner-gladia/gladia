@@ -3,7 +3,14 @@ import torch
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 
 
-def predict(text):
+def predict(text: str) -> [(str, str)]:
+    """
+    Apply NER on the given task
+
+    :param text: sentence to search the named entities in
+    :return: named entities founded in the given sentence
+    """
+
     tokenizer = AutoTokenizer.from_pretrained("dbmdz/bert-large-cased-finetuned-conll03-english")
     model = AutoModelForTokenClassification.from_pretrained("dbmdz/bert-large-cased-finetuned-conll03-english")
 
