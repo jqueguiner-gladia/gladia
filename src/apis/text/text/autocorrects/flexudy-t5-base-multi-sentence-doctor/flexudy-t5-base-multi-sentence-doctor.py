@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer, AutoModelWithLMHead
 
+
 def predict(sentence):
     tokenizer = AutoTokenizer.from_pretrained("flexudy/t5-base-multi-sentence-doctor")
 
