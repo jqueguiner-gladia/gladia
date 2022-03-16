@@ -1,7 +1,8 @@
-#https://github.com/hate-alert/HateXplain/blob/master/manual_training_inference.py
+# https://github.com/hate-alert/HateXplain/blob/master/manual_training_inference.py
 from pydantic import BaseModel
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
+
 
 def predict(text):
     # load model
@@ -14,7 +15,7 @@ def predict(text):
 
     inputs = tokenizer(text, return_tensors="pt")
     outputs = model(**inputs)
-    label = torch.argmax(torch.nn.functional.softmax(outputs.logits,dim=1))
+    label = torch.argmax(torch.nn.functional.softmax(outputs.logits, dim=1))
 
     if (label == 0):
         label = "hate-speech"
