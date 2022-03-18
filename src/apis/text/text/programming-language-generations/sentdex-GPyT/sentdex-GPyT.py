@@ -9,8 +9,8 @@ def generate(code, tokenizer, model, max_length=100):
     tokenizes, feeds thru model, decodes, 
     then reformats the newlines back in'''
     newlinechar = "<N>"
-    tokenizer = AutoTokenizer.from_pretrained("Sentdex/GPyT")
-    model = AutoModelWithLMHead.from_pretrained("Sentdex/GPyT").to(device)
+
+    model = model.to(device)
 
     converted = code.replace("\n", newlinechar)
     tokenized = tokenizer.encode(converted, return_tensors='pt').to(device)
