@@ -3,7 +3,13 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 
-def predict(context):
+def predict(context: str) -> [str]:
+    """
+    Generates paraphrases of the given sentence
+
+    :param context: sentence to paraphrase
+    :return: list of paraphrases
+    """
 
     model_name = "ramsrigouthamg/t5-large-paraphraser-diverse-high-quality"
 
