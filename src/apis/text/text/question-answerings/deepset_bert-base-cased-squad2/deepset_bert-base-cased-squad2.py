@@ -1,28 +1,16 @@
-from transformers import AutoTokenizer, AutoModelForQuestionAnswering
-
-from gladia_api_utils.model_management import download_models
 import torch
 
-def load_model():
-    """
-    Load a model given a model name
-    """
-    urls = {
-    "dee": {
-            "url": "https://huggingface.co/deepset/bert-base-cased-squad2",
-            "output_path": "models",
-        }
-    }
+from transformers import AutoTokenizer, AutoModelForQuestionAnswering, PreTrainedTokenizer, PreTrainedModel
 
-    model_path = download_models(urls)
 
-    #model_path = Path(model_name)
+def load_model() -> (PreTrainedTokenizer, PreTrainedModel):
+    model_name = "deepset/bert-base-cased-squad2"
 
-    tokenizer = AutoTokenizer.from_pretrained("deepset/bert-base-cased-squad2")
-    model = AutoModelForQuestionAnswering.from_pretrained("deepset/bert-base-cased-squad2")
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForQuestionAnswering.from_pretrained(model_name)
+
     return tokenizer, model
     
-
 
 def predict(context, question):
 
