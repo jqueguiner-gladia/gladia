@@ -1,27 +1,28 @@
-#https://github.com/hate-alert/HateXplain/blob/master/manual_training_inference.py
-from pydantic import BaseModel
 import torch
+
 from transformers import BertTokenizer, BertForSequenceClassification
 
-def predict(text):
-    # load model
-    model = BertForSequenceClassification.from_pretrained('Hate-speech-CNERG/bert-base-uncased-hatexplain')
-    tokenizer = BertTokenizer.from_pretrained('Hate-speech-CNERG/bert-base-uncased-hatexplain')
 
-    # load model into gpu
+def predict(text: str) -> str:
+    """
+    Detect hate from a given text
+
+    :param text: text to analyze
+    :return: normal, hate-speech or offensive regarding the level of hate in the text
+    """
+
+    labels = ["hate-speech", "normal", "offensive"]
+    model_name = 'Hate-speech-CNERG/bert-base-uncased-hatexplain'
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    model = BertForSequenceClassification.from_pretrained(model_name)
     model.to(device)
 
+    tokenizer = BertTokenizer.from_pretrained(model_name)
+
     inputs = tokenizer(text, return_tensors="pt")
+
     outputs = model(**inputs)
-    label = torch.argmax(torch.nn.functional.softmax(outputs.logits,dim=1))
 
-    if (label == 0):
-        label = "hate-speech"
-    elif (label == 2):
-        label = "offensive"
-    else:
-        label = "normal"
-
-
-    return label
+    return labels[torch.argmax(outputs.logits, dim=1)]

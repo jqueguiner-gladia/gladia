@@ -1,18 +1,21 @@
-from transformers import pipeline
-import numpy as np
 import json
+import numpy as np
 
-def predict(text):
+from transformers import pipeline
+
+
+def predict(text: str) -> str:
+    """
+    For a given text, predict if it's POSITIVE, NEUTRAL or NEGATIVE
+
+    :param text: text to analyze.
+    :return: JSON formatted str containing the label (POSITIVE/NEUTRAL/NEGATIVE) with it score
+    """
+
     classifier = pipeline("zero-shot-classification")
-    prediction = classifier(
-        text,
-        candidate_labels=["POSITIVE", "NEUTRAL", "NEGATIVE"],
-    )
+    prediction = classifier(text, candidate_labels=["POSITIVE", "NEUTRAL", "NEGATIVE"])
 
-#    {'sequence': 'This is a course about the Transformers library',
-#     'labels': ['education', 'business', 'politics'],
-#    'scores': [0.8445963859558105, 0.111976258456707, 0.043427448719739914]}
     label = prediction['labels'][np.argmax(prediction['scores'])]
     score = np.amax(prediction['scores'])
-    return json.dumps({"label": label, "score": score})
 
+    return json.dumps({"label": label, "score": score})
