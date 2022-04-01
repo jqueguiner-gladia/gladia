@@ -1,27 +1,19 @@
-import importlib
+import os
+import apis
 import json
 import logging
-import os
 import pkgutil
+import importlib
 
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.encoders import jsonable_encoder
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.openapi.utils import get_openapi
-from fastapi.security.oauth2 import (OAuth2, OAuthFlowsModel,
-                                     get_authorization_scheme_param)
-from fastapi_utils.timing import add_timing_middleware, record_timing
 from icecream import ic
-from prometheus_fastapi_instrumentator import Instrumentator, metrics
-from starlette.requests import Request
-from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
-
-import apis
-import os
-from fastapi.responses import ORJSONResponse
-
+from fastapi import FastAPI
 from pattern.text.en import singularize
+from fastapi.responses import ORJSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_utils.timing import add_timing_middleware
+from prometheus_fastapi_instrumentator import Instrumentator
+
+
 
 config_file = os.getenv('API_CONFIG_FILE', 'config.json')
 
