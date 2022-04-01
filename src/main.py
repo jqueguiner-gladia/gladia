@@ -68,25 +68,35 @@ def __init_prometheus_instrumentator(instrumentator_config: dict) -> Instrumenta
     )
 
 
+def __set_app_middlewares(api_app: FastAPI, api_config: dict) -> None:
+    """
+    Set up the api middlewares
+
+    :param api_app: FastAPI representing the API
+    :param api_config: config telling which middlewares to use
+    """
+
+    if api_config["logs"]["timing_activated"]:
+        add_timing_middleware(api_app, record=logger.info, prefix="app")
+
+    api_app.add_middleware(
+        CORSMiddleware,
+        allow_origins=api_config["CORS"]["allow_origins"],
+        allow_credentials=api_config["CORS"]["allow_credentials"],
+        allow_methods=api_config["CORS"]["allow_methods"],
+        allow_headers=api_config["CORS"]["allow_headers"],
+    )
+
+
 config = __init_config()
 logger = __init_logging(config)
+
 app = FastAPI(default_response_class=ORJSONResponse)
+
+__set_app_middlewares(app, config)
 
 if config["prometheus"]["active"]:
     instrumentator = __init_prometheus_instrumentator(config["prometheus"]["instrumentator"])
-
-
-if config["logs"]["timing_activated"]:
-    add_timing_middleware(app, record=logger.info, prefix="app")
-
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=config["CORS"]["allow_origins"],
-    allow_credentials=config["CORS"]["allow_credentials"],
-    allow_methods=config["CORS"]["allow_methods"],
-    allow_headers=config["CORS"]["allow_headers"],
-)
 
 
 def import_submodules(package, recursive=True):
@@ -151,7 +161,7 @@ def import_submodules(package, recursive=True):
                 ic(f"importing {full_name}")
                 import_submodules(full_name)
             else:
-                ic(f"skipping {module_short_name}")
+                ic(f"--------> skipping {module_short_name}")
 
 
 import_submodules(apis)
