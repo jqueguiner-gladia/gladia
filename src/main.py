@@ -30,16 +30,24 @@ def __init_config() -> dict:
             return json.load(f)
 
 
+def __init_logging(api_config: dict) -> logging.Logger:
+    """
+    Create a logging.Logger with it format set to config["logs"]["log_format"] f exist, else default.
+
+    :param api_config: api config dict
+    :return: logger initialized
+    """
+
+    try:
+        logging.basicConfig(level=logging.INFO, format=api_config["logs"]["log_format"])
+    except KeyError:
+        logging.basicConfig(level=logging.INFO)
+
+    return logging.getLogger(__name__)
+
+
 config = __init_config()
-
-
-try:
-    logging.basicConfig(level=logging.INFO, format=config["logs"]["log_format"])
-except:
-    logging.basicConfig(level=logging.INFO)
-
-
-logger = logging.getLogger(__name__)
+logger = __init_logging(config)
 
 
 
