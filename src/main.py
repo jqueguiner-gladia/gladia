@@ -88,6 +88,89 @@ def __set_app_middlewares(api_app: FastAPI, api_config: dict) -> None:
     )
 
 
+def __add_router(module: 'module', module_path: str) -> None:
+    """
+    Add the module router to the API app
+
+    :param module: module to get the router from
+    :param module_path: name of the module
+    """
+
+    module_input, module_output, module_task = module_path.replace("apis", "")[1:].split(".")
+
+    module_task = singularize(module_task).upper()
+    module_config = config["active_tasks"][module_input][module_output]
+
+    active_task_list = list(map(lambda each: singularize(each).upper(), module_config))
+
+    if "NONE" not in active_task_list and (
+        module_task in active_task_list
+        or "*" in module_config
+    ):
+        module_prefix = module_path.replace(".", "/").replace("apis", "")
+        app.include_router(module.router, prefix=module_prefix)
+
+
+def __module_is_an_input_type(split_module_path):
+    return len(split_module_path) == 1
+
+
+def __module_is_a_modality(split_module_path, module_config):
+    return (
+            len(split_module_path) == 2
+            and "None".upper not in map(lambda each: each.upper(), module_config)
+            or len(module_config) == 0
+        )
+
+
+def __module_is_a_task(split_module_path, module_config):
+    return len(split_module_path) == 3 \
+       and (
+        split_module_path[2].rstrip("s") in map(lambda each: each.rstrip("s"), module_config)
+        or "*" in module_config
+    )
+
+
+def __module_is_a_model(split_module_path: [str]):
+    return len(split_module_path) == 4
+
+
+def import_submodules(package: 'module', recursive: bool = True) -> None:
+    """
+    Import every task presents in the API by loading each submodule (recursively by default)
+
+    :param package: root package to import every submodule from
+    :param recursive: will load recursively if set to True (by default)
+    """
+
+    if isinstance(package, str):
+        package = importlib.import_module(package)
+
+    for _, name, is_pkg in pkgutil.walk_packages(package.__path__):
+
+        module_path = f"{package.__name__}.{name}"
+        module = importlib.import_module(module_path)
+
+        module_relative_path = module_path.replace("apis", "")[1:]
+
+        if "router" in dir(module):
+            __add_router(module, module_path)
+
+        if not recursive or not is_pkg:
+            continue
+
+        module_split = module_relative_path.split(".")
+        module_config = config["active_tasks"][module_split[0]][module_split[1]] if len(module_split) > 1 else []
+
+        if __module_is_an_input_type \
+        or __module_is_a_modality(module_split, module_config) \
+        or __module_is_a_task(module_split, module_config) \
+        or __module_is_a_model(module_split):
+            import_submodules(module_path)
+        else:
+            ic(f"skipping {module_relative_path}")
+
+
 config = __init_config()
 logger = __init_logging(config)
 
@@ -97,71 +180,5 @@ __set_app_middlewares(app, config)
 
 if config["prometheus"]["active"]:
     instrumentator = __init_prometheus_instrumentator(config["prometheus"]["instrumentator"])
-
-
-def import_submodules(package, recursive=True):
-    global active_tasks
-
-    if isinstance(package, str):
-        current_package = package.split(".")
-        package = importlib.import_module(package)
-
-    for loader, name, is_pkg in pkgutil.walk_packages(package.__path__):
-        full_name = package.__name__ + "." + name
-        this_module = importlib.import_module(full_name)
-        module_short_name = full_name.replace("apis", "")[1:]
-
-        if "router" in dir(this_module):
-            module_input, module_output, module_task = module_short_name.split(".")
-            module_task = singularize(module_task).upper()
-            active_task_list = list(
-                map(
-                    lambda each: singularize(each).upper(),
-                    config["active_tasks"][module_input][module_output],
-                )
-            )
-
-            if "None".upper() not in active_task_list and (
-                "*" in config["active_tasks"][module_input][module_output]
-                or module_task in active_task_list
-            ):
-
-                module_prefix = full_name.replace(".", "/").replace("apis", "")
-                ic(f"Loading module: {full_name}")
-                app.include_router(this_module.router, prefix=module_prefix)
-
-        if recursive and is_pkg:
-            ic(module_short_name)
-            module_split = module_short_name.split(".")
-
-            if len(module_split) == 1:
-                import_submodules(full_name)
-            elif (
-                len(module_split) == 2
-                and "None".upper
-                not in map(
-                    lambda each: each.upper(),
-                    config["active_tasks"][module_split[0]][module_split[1]],
-                )
-                or len(config["active_tasks"][module_split[0]][module_split[1]]) == 0
-            ):
-                ic(f"importing {full_name}")
-                import_submodules(full_name)
-            elif len(module_split) == 3 and (
-                module_split[2].rstrip("s")
-                in map(
-                    lambda each: each.rstrip("s"),
-                    config["active_tasks"][module_split[0]][module_split[1]],
-                )
-                or "*" in config["active_tasks"][module_split[0]][module_split[1]]
-            ):
-                ic(f"importing {full_name}")
-                import_submodules(full_name)
-            elif len(module_split) == 4:
-                ic(f"importing {full_name}")
-                import_submodules(full_name)
-            else:
-                ic(f"--------> skipping {module_short_name}")
-
 
 import_submodules(apis)
