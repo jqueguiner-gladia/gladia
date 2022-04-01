@@ -14,13 +14,24 @@ from fastapi_utils.timing import add_timing_middleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
 
+def __init_config() -> dict:
+    """
+    Load config file and return it as a dict.
 
-config_file = os.getenv('API_CONFIG_FILE', 'config.json')
+    Default path is `config.json`, use API_CONFIG_FILE varenv to change it.
+
+    :return: config dict
+    """
+
+    config_file = os.getenv('API_CONFIG_FILE', 'config.json')
+
+    if os.path.isfile(config_file):
+        with open("config.json", "r") as f:
+            return json.load(f)
 
 
-if os.path.isfile(config_file):
-    with open("config.json", "r") as f:
-        config = json.load(f)
+config = __init_config()
+
 
 try:
     logging.basicConfig(level=logging.INFO, format=config["logs"]["log_format"])
