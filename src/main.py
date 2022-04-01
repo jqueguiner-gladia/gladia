@@ -46,41 +46,34 @@ def __init_logging(api_config: dict) -> logging.Logger:
     return logging.getLogger(__name__)
 
 
+def __init_prometheus_instrumentator(instrumentator_config: dict) -> Instrumentator:
+    """
+    Initialize the prometheus_fastapi_instrumentator.Instrumentator using api config dict
+    :param instrumentator_config: instrumentator config
+    :return: Initialized Instrumentator
+    """
+
+    return Instrumentator(
+        should_group_status_codes=instrumentator_config["should_group_status_codes"],
+        should_ignore_untemplated=instrumentator_config["should_ignore_untemplated"],
+        should_group_untemplated=instrumentator_config["should_group_untemplated"],
+        should_respect_env_var=instrumentator_config["should_respect_env_var"],
+        env_var_name=instrumentator_config["env_var_name"],
+        excluded_handlers=instrumentator_config["excluded_handlers"],
+        should_round_latency_decimals=instrumentator_config["should_round_latency_decimals"],
+        round_latency_decimals=instrumentator_config["round_latency_decimals"],
+        should_instrument_requests_inprogress=instrumentator_config["should_instrument_requests_inprogress"],
+        inprogress_name=instrumentator_config["inprogress_name"],
+        inprogress_labels=instrumentator_config["inprogress_labels"],
+    )
+
+
 config = __init_config()
 logger = __init_logging(config)
-
-
-
 app = FastAPI(default_response_class=ORJSONResponse)
 
 if config["prometheus"]["active"]:
-    instrumentator = Instrumentator(
-        should_group_status_codes=config["prometheus"]["instrumentator"][
-            "should_group_status_codes"
-        ],
-        should_ignore_untemplated=config["prometheus"]["instrumentator"][
-            "should_ignore_untemplated"
-        ],
-        should_group_untemplated=config["prometheus"]["instrumentator"][
-            "should_group_untemplated"
-        ],
-        should_respect_env_var=config["prometheus"]["instrumentator"][
-            "should_respect_env_var"
-        ],
-        env_var_name=config["prometheus"]["instrumentator"]["env_var_name"],
-        excluded_handlers=config["prometheus"]["instrumentator"]["excluded_handlers"],
-        should_round_latency_decimals=config["prometheus"]["instrumentator"][
-            "should_round_latency_decimals"
-        ],
-        round_latency_decimals=config["prometheus"]["instrumentator"][
-            "round_latency_decimals"
-        ],
-        should_instrument_requests_inprogress=config["prometheus"]["instrumentator"][
-            "should_instrument_requests_inprogress"
-        ],
-        inprogress_name=config["prometheus"]["instrumentator"]["inprogress_name"],
-        inprogress_labels=config["prometheus"]["instrumentator"]["inprogress_labels"],
-    )
+    instrumentator = __init_prometheus_instrumentator(config["prometheus"]["instrumentator"])
 
 
 if config["logs"]["timing_activated"]:
