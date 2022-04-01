@@ -1,153 +1,184 @@
-import importlib
+import os
+import apis
 import json
 import logging
-import os
 import pkgutil
+import importlib
 
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.encoders import jsonable_encoder
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.openapi.utils import get_openapi
-from fastapi.security.oauth2 import (OAuth2, OAuthFlowsModel,
-                                     get_authorization_scheme_param)
-from fastapi_utils.timing import add_timing_middleware, record_timing
 from icecream import ic
-from prometheus_fastapi_instrumentator import Instrumentator, metrics
-from starlette.requests import Request
-from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
-
-import apis
-import os
-from fastapi.responses import ORJSONResponse
-
+from fastapi import FastAPI
 from pattern.text.en import singularize
-
-config_file = os.getenv('API_CONFIG_FILE', 'config.json')
-
-
-if os.path.isfile(config_file):
-    with open("config.json", "r") as f:
-        config = json.load(f)
-
-try:
-    logging.basicConfig(level=logging.INFO, format=config["logs"]["log_format"])
-except:
-    logging.basicConfig(level=logging.INFO)
+from fastapi.responses import ORJSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_utils.timing import add_timing_middleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 
-logger = logging.getLogger(__name__)
+def __init_config() -> dict:
+    """
+    Load config file and return it as a dict.
+
+    Default path is `config.json`, use API_CONFIG_FILE varenv to change it.
+
+    :return: config dict
+    """
+
+    config_file = os.getenv('API_CONFIG_FILE', 'config.json')
+
+    if os.path.isfile(config_file):
+        with open("config.json", "r") as f:
+            return json.load(f)
 
 
+def __init_logging(api_config: dict) -> logging.Logger:
+    """
+    Create a logging.Logger with it format set to config["logs"]["log_format"] f exist, else default.
 
-app = FastAPI(default_response_class=ORJSONResponse)
+    :param api_config: api config dict
+    :return: logger initialized
+    """
 
-if config["prometheus"]["active"]:
-    instrumentator = Instrumentator(
-        should_group_status_codes=config["prometheus"]["instrumentator"][
-            "should_group_status_codes"
-        ],
-        should_ignore_untemplated=config["prometheus"]["instrumentator"][
-            "should_ignore_untemplated"
-        ],
-        should_group_untemplated=config["prometheus"]["instrumentator"][
-            "should_group_untemplated"
-        ],
-        should_respect_env_var=config["prometheus"]["instrumentator"][
-            "should_respect_env_var"
-        ],
-        env_var_name=config["prometheus"]["instrumentator"]["env_var_name"],
-        excluded_handlers=config["prometheus"]["instrumentator"]["excluded_handlers"],
-        should_round_latency_decimals=config["prometheus"]["instrumentator"][
-            "should_round_latency_decimals"
-        ],
-        round_latency_decimals=config["prometheus"]["instrumentator"][
-            "round_latency_decimals"
-        ],
-        should_instrument_requests_inprogress=config["prometheus"]["instrumentator"][
-            "should_instrument_requests_inprogress"
-        ],
-        inprogress_name=config["prometheus"]["instrumentator"]["inprogress_name"],
-        inprogress_labels=config["prometheus"]["instrumentator"]["inprogress_labels"],
+    try:
+        logging.basicConfig(level=logging.INFO, format=api_config["logs"]["log_format"])
+    except KeyError:
+        logging.basicConfig(level=logging.INFO)
+
+    return logging.getLogger(__name__)
+
+
+def __init_prometheus_instrumentator(instrumentator_config: dict) -> Instrumentator:
+    """
+    Initialize the prometheus_fastapi_instrumentator.Instrumentator using api config dict
+    :param instrumentator_config: instrumentator config
+    :return: Initialized Instrumentator
+    """
+
+    return Instrumentator(
+        should_group_status_codes=instrumentator_config["should_group_status_codes"],
+        should_ignore_untemplated=instrumentator_config["should_ignore_untemplated"],
+        should_group_untemplated=instrumentator_config["should_group_untemplated"],
+        should_respect_env_var=instrumentator_config["should_respect_env_var"],
+        env_var_name=instrumentator_config["env_var_name"],
+        excluded_handlers=instrumentator_config["excluded_handlers"],
+        should_round_latency_decimals=instrumentator_config["should_round_latency_decimals"],
+        round_latency_decimals=instrumentator_config["round_latency_decimals"],
+        should_instrument_requests_inprogress=instrumentator_config["should_instrument_requests_inprogress"],
+        inprogress_name=instrumentator_config["inprogress_name"],
+        inprogress_labels=instrumentator_config["inprogress_labels"],
     )
 
 
-if config["logs"]["timing_activated"]:
-    add_timing_middleware(app, record=logger.info, prefix="app")
+def __set_app_middlewares(api_app: FastAPI, api_config: dict) -> None:
+    """
+    Set up the api middlewares
+
+    :param api_app: FastAPI representing the API
+    :param api_config: config telling which middlewares to use
+    """
+
+    if api_config["logs"]["timing_activated"]:
+        add_timing_middleware(api_app, record=logger.info, prefix="app")
+
+    api_app.add_middleware(
+        CORSMiddleware,
+        allow_origins=api_config["CORS"]["allow_origins"],
+        allow_credentials=api_config["CORS"]["allow_credentials"],
+        allow_methods=api_config["CORS"]["allow_methods"],
+        allow_headers=api_config["CORS"]["allow_headers"],
+    )
 
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=config["CORS"]["allow_origins"],
-    allow_credentials=config["CORS"]["allow_credentials"],
-    allow_methods=config["CORS"]["allow_methods"],
-    allow_headers=config["CORS"]["allow_headers"],
-)
+def __add_router(module: 'module', module_path: str) -> None:
+    """
+    Add the module router to the API app
+
+    :param module: module to get the router from
+    :param module_path: name of the module
+    """
+
+    module_input, module_output, module_task = module_path.replace("apis", "")[1:].split(".")
+
+    module_task = singularize(module_task).upper()
+    module_config = config["active_tasks"][module_input][module_output]
+
+    active_task_list = list(map(lambda each: singularize(each).upper(), module_config))
+
+    if "NONE" not in active_task_list and (
+        module_task in active_task_list
+        or "*" in module_config
+    ):
+        module_prefix = module_path.replace(".", "/").replace("apis", "")
+        app.include_router(module.router, prefix=module_prefix)
 
 
-def import_submodules(package, recursive=True):
-    global active_tasks
+def __module_is_an_input_type(split_module_path):
+    return len(split_module_path) == 1
+
+
+def __module_is_a_modality(split_module_path, module_config):
+    return (
+            len(split_module_path) == 2
+            and "None".upper not in map(lambda each: each.upper(), module_config)
+            or len(module_config) == 0
+        )
+
+
+def __module_is_a_task(split_module_path, module_config):
+    return len(split_module_path) == 3 \
+       and (
+        split_module_path[2].rstrip("s") in map(lambda each: each.rstrip("s"), module_config)
+        or "*" in module_config
+    )
+
+
+def __module_is_a_model(split_module_path: [str]):
+    return len(split_module_path) == 4
+
+
+def import_submodules(package: 'module', recursive: bool = True) -> None:
+    """
+    Import every task presents in the API by loading each submodule (recursively by default)
+
+    :param package: root package to import every submodule from
+    :param recursive: will load recursively if set to True (by default)
+    """
 
     if isinstance(package, str):
-        current_package = package.split(".")
         package = importlib.import_module(package)
 
-    for loader, name, is_pkg in pkgutil.walk_packages(package.__path__):
-        full_name = package.__name__ + "." + name
-        this_module = importlib.import_module(full_name)
-        module_short_name = full_name.replace("apis", "")[1:]
+    for _, name, is_pkg in pkgutil.walk_packages(package.__path__):
 
-        if "router" in dir(this_module):
-            module_input, module_output, module_task = module_short_name.split(".")
-            module_task = singularize(module_task).upper()
-            active_task_list = list(
-                map(
-                    lambda each: singularize(each).upper(),
-                    config["active_tasks"][module_input][module_output],
-                )
-            )
+        module_path = f"{package.__name__}.{name}"
+        module = importlib.import_module(module_path)
 
-            if "None".upper() not in active_task_list and (
-                "*" in config["active_tasks"][module_input][module_output]
-                or module_task in active_task_list
-            ):
+        module_relative_path = module_path.replace("apis", "")[1:]
 
-                module_prefix = full_name.replace(".", "/").replace("apis", "")
-                ic(f"Loading module: {full_name}")
-                app.include_router(this_module.router, prefix=module_prefix)
+        if "router" in dir(module):
+            __add_router(module, module_path)
 
-        if recursive and is_pkg:
-            ic(module_short_name)
-            module_split = module_short_name.split(".")
+        if not recursive or not is_pkg:
+            continue
 
-            if len(module_split) == 1:
-                import_submodules(full_name)
-            elif (
-                len(module_split) == 2
-                and "None".upper
-                not in map(
-                    lambda each: each.upper(),
-                    config["active_tasks"][module_split[0]][module_split[1]],
-                )
-                or len(config["active_tasks"][module_split[0]][module_split[1]]) == 0
-            ):
-                ic(f"importing {full_name}")
-                import_submodules(full_name)
-            elif len(module_split) == 3 and (
-                module_split[2].rstrip("s")
-                in map(
-                    lambda each: each.rstrip("s"),
-                    config["active_tasks"][module_split[0]][module_split[1]],
-                )
-                or "*" in config["active_tasks"][module_split[0]][module_split[1]]
-            ):
-                ic(f"importing {full_name}")
-                import_submodules(full_name)
-            elif len(module_split) == 4:
-                ic(f"importing {full_name}")
-                import_submodules(full_name)
-            else:
-                ic(f"skipping {module_short_name}")
+        module_split = module_relative_path.split(".")
+        module_config = config["active_tasks"][module_split[0]][module_split[1]] if len(module_split) > 1 else []
 
+        if __module_is_an_input_type \
+        or __module_is_a_modality(module_split, module_config) \
+        or __module_is_a_task(module_split, module_config) \
+        or __module_is_a_model(module_split):
+            import_submodules(module_path)
+        else:
+            ic(f"skipping {module_relative_path}")
+
+
+config = __init_config()
+logger = __init_logging(config)
+
+app = FastAPI(default_response_class=ORJSONResponse)
+
+__set_app_middlewares(app, config)
+
+if config["prometheus"]["active"]:
+    instrumentator = __init_prometheus_instrumentator(config["prometheus"]["instrumentator"])
 
 import_submodules(apis)
