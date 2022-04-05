@@ -19,4 +19,4 @@ output = {
 
 router = APIRouter()
 
-TaskRouter(router=router, input=inputs, output=output, default_model="esrgan")
+TaskRouter(router=router, input=inputs, output=output, default_model="idealo-psnr-small")
