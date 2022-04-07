@@ -1,11 +1,25 @@
 #!/usr/bin/env python3
 import os
 import yaml
+import click
+from multiprocessing.pool import ThreadPool as Pool
+import multiprocessing
 
-
-rootDir = 'apis'
-for dirName, subdirList, fileList in os.walk(rootDir):
+@click.command()
+@click.option('-r', '--rootdir', type=str, default='apis', help="Build env recursively from the provided directory path")
+@click.option('-p', '--poolsize', type=int, default=0, help="Parallelness if set to 0 will use all threads")
+def main(rootdir, poolsize):
     
+    if poolsize == 0:
+        pool = Pool(multiprocessing.cpu_count())
+
+    for dirName, subdirList, fileList in os.walk(rootdir):
+        pool.apply_async(build_env, (dirName, subdirList, fileList,))
+
+    pool.close()
+    pool.join()
+
+def build_env(dirName, subdirList, fileList):
     if 'env.yaml' in fileList:
         print(f"Found env.yaml in {dirName}")
         with open(os.path.join(dirName, 'env.yaml'), 'r') as stream:
@@ -22,6 +36,10 @@ for dirName, subdirList, fileList in os.walk(rootDir):
             except:
                 print("Could not remove .env and Pipfile")
             
-            packages_to_install = ' '.join(env_yaml['packages']) + ' git+https://github.com/gladiaio/gladia-api-utils.git'
+            packages_to_install = ' '.join(env_yaml['packages']) + ' gladia-api-utils'
             os.system(f"cd {dirName} && echo Y | pipenv --python {env_yaml['python']['version']}")
             os.system(f"cd {dirName} && pipenv run pip install {packages_to_install}")
+
+
+if __name__ == '__main__':
+    main()
