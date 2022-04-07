@@ -5,6 +5,8 @@ import click
 from multiprocessing.pool import ThreadPool as Pool
 import multiprocessing
 
+os.environ["PIPENV_VENV_IN_PROJECT"] = os.getenv('PIPENV_VENV_IN_PROJECT', 'enabled')
+
 @click.command()
 @click.option('-r', '--rootdir', type=str, default='apis', help="Build env recursively from the provided directory path")
 @click.option('-p', '--poolsize', type=int, default=0, help="Parallelness if set to 0 will use all threads")
