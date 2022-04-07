@@ -12,6 +12,8 @@ def main(rootdir, poolsize):
     
     if poolsize == 0:
         pool = Pool(multiprocessing.cpu_count())
+    else:
+        pool = Pool(poolsize)
 
     for dirName, subdirList, fileList in os.walk(rootdir):
         pool.apply_async(build_env, (dirName, subdirList, fileList,))
