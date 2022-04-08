@@ -5,6 +5,8 @@ import click
 from multiprocessing.pool import ThreadPool as Pool
 import multiprocessing
 
+# Make the VENV is built and stored nearby the API folder
+# https://stackoverflow.com/questions/57919110/how-to-set-pipenv-venv-in-project-on-per-project-basis
 os.environ["PIPENV_VENV_IN_PROJECT"] = os.getenv('PIPENV_VENV_IN_PROJECT', 'enabled')
 
 @click.command()
