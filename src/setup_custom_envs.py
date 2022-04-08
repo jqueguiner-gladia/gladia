@@ -5,16 +5,13 @@ import click
 from multiprocessing.pool import ThreadPool as Pool
 import multiprocessing
 
-# Make the VENV is built and stored nearby the API folder
-# https://stackoverflow.com/questions/57919110/how-to-set-pipenv-venv-in-project-on-per-project-basis
-# the purpose is to make sure that the API_UTILS catches the existence of the venv when running the inference
 os.environ["PIPENV_VENV_IN_PROJECT"] = os.getenv('PIPENV_VENV_IN_PROJECT', 'enabled')
 
 @click.command()
 @click.option('-r', '--rootdir', type=str, default='apis', help="Build env recursively from the provided directory path")
 @click.option('-p', '--poolsize', type=int, default=0, help="Parallelness if set to 0 will use all threads")
 def main(rootdir, poolsize):
-    
+
     if poolsize == 0:
         pool = Pool(multiprocessing.cpu_count())
     else:
@@ -35,14 +32,14 @@ def build_env(dirName, subdirList, fileList):
                 print(f"Loaded env.yaml in {dirName}")
             except yaml.YAMLError as exc:
                 print(exc)
-            
+
             print(env_yaml)
 
             try:
                 os.system(f"cd {dirName} && rm -rf .env Pipfile")
             except:
                 print("Could not remove .env and Pipfile")
-            
+
             packages_to_install = ' '.join(env_yaml['packages']) + ' gladia-api-utils'
             os.system(f"cd {dirName} && echo Y | pipenv --python {env_yaml['python']['version']}")
             os.system(f"cd {dirName} && pipenv run pip install {packages_to_install}")
