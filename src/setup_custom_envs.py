@@ -7,6 +7,7 @@ import multiprocessing
 
 # Make the VENV is built and stored nearby the API folder
 # https://stackoverflow.com/questions/57919110/how-to-set-pipenv-venv-in-project-on-per-project-basis
+# the purpose is to make sure that the API_UTILS catches the existence of the venv when running the inference
 os.environ["PIPENV_VENV_IN_PROJECT"] = os.getenv('PIPENV_VENV_IN_PROJECT', 'enabled')
 
 @click.command()
