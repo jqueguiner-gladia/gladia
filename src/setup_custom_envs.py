@@ -13,8 +13,8 @@ os.environ["PIPENV_VENV_IN_PROJECT"] = os.getenv('PIPENV_VENV_IN_PROJECT', 'enab
 @click.command()
 @click.option('-r', '--rootdir', type=str, default='apis', help="Build env recursively from the provided directory path")
 @click.option('-p', '--poolsize', type=int, default=0, help="Parallelness if set to 0 will use all threads")
-@click.option('-s', '--simlink', type=bool, default=False, help="Will simlink gladia-api-utils from the local version of gladia-api-utils")
-@click.option('-f', '--force', type=bool, default=False, help="Force rebuilding venv")
+@click.option('-s', '--simlink', is_flag=True, type=bool, default=False, help="Will simlink gladia-api-utils from the local version of gladia-api-utils")
+@click.option('-f', '--force', is_flag=True, type=bool, default=False, help="Force rebuilding venv")
 def main(rootdir, poolsize, simlink, force):
     if poolsize == 0:
         pool = Pool(multiprocessing.cpu_count())
@@ -51,9 +51,11 @@ def build_env(dirName, subdirList, fileList, simlink, force):
             
             if build == True:
                 packages_to_install = ' '.join(env_yaml['packages'])
+                packages_to_install += ' gladia-api-utils'
 
-                if not simlink:
-                    packages_to_install += ' gladia-api-utils'
+                with open('default_custom_env_packages.txt') as f:
+                    packages_to_install += " "
+                    packages_to_install += " ".join(line.strip() for line in f)
             
                 os.system(f"cd {dirName} && echo Y | pipenv --python {env_yaml['python']['version']}")
                 os.system(f"cd {dirName} && pipenv run pip install {packages_to_install}")
