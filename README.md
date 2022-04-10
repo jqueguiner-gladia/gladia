@@ -16,7 +16,7 @@
 
 **Framework Source Code**: <a href="https://github.com/gladiaio/gladia/" target="_blank">https://github.com/gladiaio/gladia</a>
 
-**Discord**: <a href="https://discord.com/invite/S9zFnPNG" target="_blank">https://discord.com/invite/S9zFnPNG</a>
+**Discord**: <a href="https://discord.gg/HeuCTxnXrE" target="_blank">https://discord.com/invite/S9zFnPNG</a>
 
 ---
 <p align="left">
