@@ -25,6 +25,10 @@ COPY . /app
 WORKDIR /app
 
 RUN python3 setup_custom_envs.py
+
+# import omw
+RUN python3 -c 'import nltk ;nltk.download("omw-1.4")'
+
 EXPOSE 80
 
 CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
