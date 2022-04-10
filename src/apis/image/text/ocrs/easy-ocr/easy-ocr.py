@@ -1,3 +1,5 @@
+from gladia_api_utils.io import _open
+import numpy as np
 
 def predict(image: bytes, source_language: str) -> [str]:
     """
@@ -10,6 +12,8 @@ def predict(image: bytes, source_language: str) -> [str]:
 
     import easyocr
 
+    image = _open(image)
+    image = np.array(image)
     reader = easyocr.Reader([source_language], gpu=True)
     text = reader.readtext(image, detail=False)
 
