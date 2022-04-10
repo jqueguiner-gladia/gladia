@@ -92,11 +92,10 @@ def perform_test(details, url, header, path, skip_when_failed):
         
         progress = round((nb_test_ran / nb_total_tests)*100, 2)
         print(f"|  |__ {status} {model} ({progress}%)  <{response.status_code}>")
+        if skip_when_failed:
+            if status == status_failed:
+                sys.exit(status_failed)
     print("|")
-
-    if skip_when_failed:
-        if status == status_failed:
-            sys.exit(status_failed)
 
 
 @easyargs
@@ -128,7 +127,7 @@ def main(url, bearer_token='', specific_endpoints=None, skip_when_failed=True):
         print(f"|__ {path}")
         if specific_endpoints:
             if path in specific_endpoints:
-                perform_test(details, url, header, path)
+                perform_test(details, url, header, path, skip_when_failed)
                 nb_test_ran += 1
             else:
                 print(f"|  |__ {status_skipped}  <Skipped>")
