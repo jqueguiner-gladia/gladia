@@ -2,14 +2,10 @@ import os
 
 from PIL import Image
 from pathlib import Path
-from deoldify import device
-from deoldify import visualize
-from deoldify.device_id import DeviceId
+
 from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
 
-
-device.set(device=DeviceId.GPU0)
 
 urls = {
     "deoldify-stable": {
@@ -30,6 +26,12 @@ def predict(image: bytes) -> Image:
     :param image: image to colorize
     :return: colorized image
     """
+
+    from deoldify import device
+    from deoldify import visualize
+    from deoldify.device_id import DeviceId
+
+    device.set(device=DeviceId.GPU0)
 
     render_factor = 30
 
