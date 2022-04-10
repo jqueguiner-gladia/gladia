@@ -1,5 +1,3 @@
-from happytransformer import HappyNextSentence
-
 
 def predict(sentence_1: str, sentence_2: str) -> float:
     """
@@ -10,6 +8,8 @@ def predict(sentence_1: str, sentence_2: str) -> float:
     :return: confidence score, >= 0.5 if sentence_2 follows sentence_1, else < 0
     """
 
+    from happytransformer import HappyNextSentence
+    
     happy_ns = HappyNextSentence("BERT", "bert-base-uncased")
     
     result = happy_ns.predict_next_sentence(

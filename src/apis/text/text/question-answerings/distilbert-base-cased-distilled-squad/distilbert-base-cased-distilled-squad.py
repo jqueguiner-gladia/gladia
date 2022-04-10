@@ -1,8 +1,5 @@
 import json
 
-from happytransformer import HappyQuestionAnswering
-
-
 def predict(context: str, question: str) -> str:
     """
     Using the given `context`, answer the provided `question`.
@@ -11,6 +8,8 @@ def predict(context: str, question: str) -> str:
     :param question: question to answer
     :return: JSON formatted str containing both the answer and the confidence score.
     """
+
+    from happytransformer import HappyQuestionAnswering
 
     happy_qa = HappyQuestionAnswering("DISTILBERT", "distilbert-base-cased-distilled-squad")
     result = happy_qa.answer_question(context, question)

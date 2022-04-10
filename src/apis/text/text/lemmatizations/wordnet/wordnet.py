@@ -2,7 +2,6 @@ import nltk
 
 from nltk.stem import WordNetLemmatizer
 
-
 def predict(sentence: str) -> [str]:
     """
     Lemmatize a given sentence

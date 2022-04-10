@@ -1,5 +1,3 @@
-from happytransformer import HappyWordPrediction
-
 
 def predict(sentence: str) -> str:
     """
@@ -8,6 +6,8 @@ def predict(sentence: str) -> str:
     :param sentence: sentence to continue
     :return: word predicted
     """
+
+    from happytransformer import HappyNextSentence
 
     happy_wp = HappyWordPrediction("DISTILBERT", "distilbert-base-uncased")
 
