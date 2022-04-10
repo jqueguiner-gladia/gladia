@@ -32,7 +32,7 @@ def get_nb_models(url, path, header):
     models = response.json()
     return len(models)
 
-def perform_test(details, url, header, path):
+def perform_test(details, url, header, path, skip_when_failed):
     global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
     global status_passed, status_failed, status_skipped
@@ -67,7 +67,6 @@ def perform_test(details, url, header, path):
                 status = status_failed
                 test_final_status = ExitStatus.failure
                 
-
         elif input == 'text':
             params = [
                 ('model', model),
@@ -95,9 +94,13 @@ def perform_test(details, url, header, path):
         print(f"|  |__ {status} {model} ({progress}%)  <{response.status_code}>")
     print("|")
 
+    if skip_when_failed:
+        if status == status_failed:
+            sys.exit(status_failed)
+
 
 @easyargs
-def main(url, bearer_token='', specific_endpoints=None):
+def main(url, bearer_token='', specific_endpoints=None, skip_when_failed=True):
     if specific_endpoints:
         specific_endpoints = specific_endpoints.split(',')
     else:
@@ -132,7 +135,7 @@ def main(url, bearer_token='', specific_endpoints=None):
                 print(f"|")
                 nb_test_skipped += 1
         else:
-            perform_test(details, url, header, path)
+            perform_test(details, url, header, path, skip_when_failed)
             nb_test_ran += 1
     if test_final_status == ExitStatus.success:
         str_final_status = "Success"
