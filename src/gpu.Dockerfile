@@ -22,6 +22,8 @@ RUN rm /tmp/clean-layer.sh
 
 ENV PIPENV_VENV_IN_PROJECT="enabled"
 
+ENV TOKENIZERS_PARALLELISM="true"
+
 ENV TRANSFORMERS_CACHE="/tmp/gladia/models/transformers"
 ENV PYTORCH_TRANSFORMERS_CACHE="/tmp/gladia/models/pytorch_transformers"
 ENV PYTORCH_PRETRAINED_BERT_CACHE=="/tmp/gladia/models/pytorch_pretrained_bert"
