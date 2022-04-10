@@ -16,7 +16,7 @@
 
 **Framework Source Code**: <a href="https://github.com/gladiaio/gladia/" target="_blank">https://github.com/gladiaio/gladia</a>
 
-**Discord**: <a href="https://discord.com/invite/S9zFnPNG" target="_blank">https://discord.com/invite/S9zFnPNG</a>
+**Discord**: <a href="https://discord.gg/HeuCTxnXrE" target="_blank">https://discord.com/invite/S9zFnPNG</a>
 
 ---
 <p align="left">
@@ -53,7 +53,7 @@ Follow Gladia Twitter account to get the latest update
 
 [Follow Gladia Twitter account to get the latest update](https://twitter.com/gladia_io)
 
-[Join our Discord Community Server](https://discord.gg/2T36ybdDRS)
+[Join our Discord Community Server](https://discord.com/invite/HeuCTxnXrE)
 
 
 
