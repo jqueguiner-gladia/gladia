@@ -21,6 +21,11 @@ RUN pip3 install botocore transformers
 RUN rm /tmp/clean-layer.sh
 
 ENV PIPENV_VENV_IN_PROJECT="enabled"
+
+ENV TRANSFORMERS_CACHE="/tmp/gladia/models/transformers"
+ENV PYTORCH_TRANSFORMERS_CACHE="/tmp/gladia/models/pytorch_transformers"
+ENV PYTORCH_PRETRAINED_BERT_CACHE=="/tmp/gladia/models/pytorch_pretrained_bert"
+
 COPY . /app
 WORKDIR /app
 
