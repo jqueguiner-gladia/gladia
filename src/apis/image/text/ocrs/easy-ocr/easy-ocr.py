@@ -1,5 +1,3 @@
-import easyocr
-
 
 def predict(image: bytes, source_language: str) -> [str]:
     """
@@ -9,6 +7,8 @@ def predict(image: bytes, source_language: str) -> [str]:
     :param source_language: language of the text to be searched
     :return: characters found in the image
     """
+
+    import easyocr
 
     reader = easyocr.Reader([source_language], gpu=True)
     text = reader.readtext(image, detail=False)
