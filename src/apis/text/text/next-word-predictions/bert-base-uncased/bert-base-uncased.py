@@ -7,7 +7,7 @@ def predict(sentence: str) -> str:
     :return: word predicted
     """
 
-    from happytransformer import HappyNextSentence
+    from happytransformer import HappyWordPrediction
 
     happy_wp = HappyWordPrediction("BERT", "bert-base-uncased")
 
