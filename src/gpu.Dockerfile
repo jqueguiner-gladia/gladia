@@ -8,8 +8,6 @@ COPY requirements.txt /tmp/gladia-requirements.txt
 
 RUN for package in $(cat /tmp/gladia-requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done
 
-#RUN pip3 install mmcv-full -f https://download.openmmlab.com/mmcv/dist/1.3.5/torch1.7.0/cu110/mmcv_full-latest%2Btorch1.7.0%2Bcu110-cp37-cp37m-manylinux1_x86_64.whl
-
 RUN pip uninstall -y gladia-api-utils
 
 ARG GLADIA_API_UTILS_BRANCH=main
@@ -17,10 +15,12 @@ RUN pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_A
 
 RUN pip3 uninstall -y botocore transformers
 RUN pip3 install botocore transformers
-
+RUN pip3 uninstall -y pyarrow
+RUN pip3 install pyarrow>=5.0.0
 RUN rm /tmp/clean-layer.sh
 
 ENV PIPENV_VENV_IN_PROJECT="enabled"
+ENV TOKENIZERS_PARALLELISM="true"
 COPY . /app
 WORKDIR /app
 
