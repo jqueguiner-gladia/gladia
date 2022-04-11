@@ -70,5 +70,4 @@ def predict(image) -> Image:
 
     img = draw_segment(resized_im, seg_map)
 
-    print(img)
     return img
