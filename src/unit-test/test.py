@@ -32,6 +32,24 @@ def get_nb_models(url, path, header):
     models = response.json()
     return len(models)
 
+
+def request_endpoint(url, path, header, params=False, files=False, max_tries=3):
+    response = type('', (), {})()
+    response.status_code = 500
+    tries = 1 
+    while (tries <= max_tries and response.status_code != 200):
+        if params != False and files != False:
+            response = requests.post(f'{url}{path}',  headers=header, params=params, files=files)
+        else:
+            response = requests.post(f'{url}{path}',  headers=header, params=params)
+        print(f"|  |       ___ Try : {tries}/{max_tries}")
+        print(f"|  |      |    |_ Response : {response.status_code} ")
+        tries += 1
+    print(f"|  |      |")
+    
+    return response
+
+
 def perform_test(details, url, header, path, skip_when_failed):
     global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
@@ -55,9 +73,8 @@ def perform_test(details, url, header, path, skip_when_failed):
             files = {
                 'image': ('test.jpg', open('test.jpg', 'rb')),
             }
-
-            response = requests.post(f'{url}{path}',  headers=header, params=params, files=files)
             
+            response = request_endpoint(url, path, header, params, files, max_tries=3) 
             
             if response.status_code == 200:
                 nb_test_passed += 1
@@ -78,7 +95,7 @@ def perform_test(details, url, header, path, skip_when_failed):
                     params.append((parameter['schema']['title'], parameter['schema']['default']))
 
             params = tuple(params)
-            response = requests.post(f'{url}{path}',  headers=header, params=params)
+            response = requests.post(f'{url}{path}',  headers=header, params=params, max_tries=3)
 
             if response.status_code == 200:
                 status = status_passed
@@ -93,6 +110,7 @@ def perform_test(details, url, header, path, skip_when_failed):
         
         progress = round((nb_test_ran / nb_total_tests)*100, 2)
         print(f"|  |__ {status} {model} ({progress}%)  <{response.status_code}>")
+        print(f"|  |")
         if skip_when_failed:
             if status == status_failed:
                 sys.exit(status_failed)
