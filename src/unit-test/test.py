@@ -95,7 +95,7 @@ def perform_test(details, url, header, path, skip_when_failed):
                     params.append((parameter['schema']['title'], parameter['schema']['default']))
 
             params = tuple(params)
-            response = request_endpoint(f'{url}{path}',  headers=header, params=params, max_tries=3)
+            response = request_endpoint(url, path,  header, params, max_tries=3)
 
             if response.status_code == 200:
                 status = status_passed
