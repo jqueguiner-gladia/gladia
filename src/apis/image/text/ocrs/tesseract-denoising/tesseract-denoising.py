@@ -20,6 +20,7 @@ def predict(image: bytes, source_language: str) -> [str]:
     image = _open(image)
 
     np_image = np.array(image)
+
     gray_image = cv2.cvtColor(np_image, cv2.COLOR_BGR2GRAY)
 
     gray_thresh = cv2.medianBlur(gray_image, 3)
