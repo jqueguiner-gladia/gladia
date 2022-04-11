@@ -1,5 +1,7 @@
-from gladia_api_utils.io import _open
 import numpy as np
+
+from gladia_api_utils.io import _open
+
 
 def predict(image: bytes, source_language: str) -> [str]:
     """
