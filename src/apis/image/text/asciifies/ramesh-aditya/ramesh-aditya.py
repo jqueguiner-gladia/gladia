@@ -1,6 +1,4 @@
 from PIL import Image
-import numpy as np
-from gladia_api_utils.io import _open
 
 
 ASCII_CHARS = ['@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.']
