@@ -1,5 +1,3 @@
-from sentence_transformers import SentenceTransformer, util
-
 
 def predict(sentence_1: str, sentence_2: str) -> str:
     """
@@ -9,6 +7,8 @@ def predict(sentence_1: str, sentence_2: str) -> str:
     :param sentence_2: second sentence to compare
     :return: similarity score (between 0 and 1)
     """
+
+    from sentence_transformers import SentenceTransformer, util
 
     model = SentenceTransformer('all-MiniLM-L6-v2')
     

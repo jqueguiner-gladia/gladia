@@ -1,4 +1,6 @@
-import easyocr
+import numpy as np
+
+from gladia_api_utils.io import _open
 
 
 def predict(image: bytes, source_language: str) -> [str]:
@@ -10,6 +12,10 @@ def predict(image: bytes, source_language: str) -> [str]:
     :return: characters found in the image
     """
 
+    import easyocr
+
+    image = _open(image)
+    image = np.array(image)
     reader = easyocr.Reader([source_language], gpu=True)
     text = reader.readtext(image, detail=False)
 

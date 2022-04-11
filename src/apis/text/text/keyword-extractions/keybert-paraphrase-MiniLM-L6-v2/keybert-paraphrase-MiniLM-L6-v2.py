@@ -1,6 +1,3 @@
-from keybert import KeyBERT
-from sentence_transformers import SentenceTransformer
-
 
 def predict(text: str) -> [(str, float)]:
     """
@@ -9,6 +6,8 @@ def predict(text: str) -> [(str, float)]:
     :param text: sentence to extract the keywords from
     :return: keywords founded in the sentence
     """
+    from keybert import KeyBERT
+    from sentence_transformers import SentenceTransformer
 
     sentence_model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
     kw_model = KeyBERT(model=sentence_model)

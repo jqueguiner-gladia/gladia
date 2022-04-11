@@ -1,6 +1,5 @@
 import inflect
 
-
 def predict(word: str, count: int) -> str:
     """
     Apply the `inflect.engine().plural` function to accord the `word` in plural regarding its `count`.\n

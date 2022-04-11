@@ -2,7 +2,6 @@ import torch
 
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 
-
 def predict(text: str) -> [(str, str)]:
     """
     Apply NER on the given task and return each token within the sentence associated to its label.

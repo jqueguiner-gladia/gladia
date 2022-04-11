@@ -1,6 +1,5 @@
 from transformers import pipeline
 
-
 def predict(text: str) -> str:
     """
     Generate the continuation of the sentence

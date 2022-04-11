@@ -7,7 +7,6 @@ from gladia_api_utils.io import _open
 from gladia_api_utils.image_management import draw_segment
 from gladia_api_utils.model_management import download_models
 
-
 tf.disable_v2_behavior()
 
 urls = {
@@ -21,7 +20,6 @@ models_path = download_models(urls)
 
 # using mobile-net 30K checkpoint
 current_model_path = os.path.join(models_path["mobile-net"]["output_path"], "30000")
-
 
 def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
     """
@@ -59,7 +57,7 @@ def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
     return resized_image, seg_map
 
 
-def predict(image: bytes) -> Image:
+def predict(image) -> Image:
     """
     Call the model to return the image without its background
 

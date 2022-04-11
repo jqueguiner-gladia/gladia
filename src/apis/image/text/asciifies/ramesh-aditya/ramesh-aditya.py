@@ -1,5 +1,4 @@
 from PIL import Image
-from gladia_api_utils.io import _open
 
 
 ASCII_CHARS = ['@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.']
@@ -55,7 +54,7 @@ def predict(image: bytes) -> str:
     """
 
     new_width = 100
-    image = _open(image)
+    image = Image.open(image)
 
     image = resize_image(image, new_width=new_width)
     new_image = convert_image_to_ascii(image.convert('L'))

@@ -58,7 +58,7 @@ def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
     return resized_image, seg_map
 
 
-def predict(image: bytes) -> Image:
+def predict(image) -> Image:
     """
     Call the model to return the image without its background
 
