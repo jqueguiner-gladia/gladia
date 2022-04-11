@@ -1,5 +1,5 @@
 import easyargs
-
+from time import sleep
 import json
 import sys
 
@@ -44,6 +44,7 @@ def perform_test(details, url, header, path, skip_when_failed):
     models = response.json()
     
     for model in models:
+        sleep(1)
         input, output, task = details['post']['tags'][0].split('.')
         status = ""
 
