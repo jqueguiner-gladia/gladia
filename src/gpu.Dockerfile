@@ -27,10 +27,15 @@ ENV TRANSFORMERS_CACHE="/tmp/gladia/models/transformers"
 ENV PYTORCH_TRANSFORMERS_CACHE="/tmp/gladia/models/pytorch_transformers"
 ENV PYTORCH_PRETRAINED_BERT_CACHE=="/tmp/gladia/models/pytorch_pretrained_bert"
 
+
 COPY . /app
 WORKDIR /app
 
-RUN python3 setup_custom_envs.py
+# add build options to setup_custom_envs
+# can be -f to force rebuild of env if already exist
+# -p 1 is set by default for stability purposes
+ARG SETUP_CUSTOM_ENV_BUILD_MODE=" -p 1 "
+RUN python3 setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE
 
 # import omw
 RUN python3 -c 'import nltk ;nltk.download("omw-1.4")'
