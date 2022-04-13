@@ -62,7 +62,7 @@ Follow Gladia Twitter account to get the latest update
 ```sh
 docker run -d -p 8080:80 gladiaio/gladia:latest
 ```
-Access the service through [http://localhost:8080/docs](http://localhost:8080/docs) or [http://localhost:8080/redoc](http://localhost:8080/redoc) or whatever public/private IP of the server you are running on?
+Access the service through [http://localhost:8080/docs](http://localhost:8080/docs) or [http://localhost:8080/redoc](http://localhost:8080/redoc) or whatever public/private IP of the server you are running on
 
 /!\ The First API call of each endpoint might/will be slower as its preforming lazy model caching (after the first call should be ok).
 
@@ -73,11 +73,29 @@ cd gladia/src
 
 #building the Docker Image
 docker build -t gladia -f gpu.Dockerfile .
+```
 
-## DEV ENV
-docker run -d -p 8080:80 -v $PWD:/app gladiaio/gladia:latest
+## Running the dev environement
+This will create a 'model' volume that will store, once and for all, the AI models
+```sh
+docker-compose up -d
+```
 
-##PROD ENV
+You can stop the services without removing the 'model' volume
+```sh
+docker-compose down
+```
+
+You can log in one the instances and run the tests 
+```sh
+docker-compose exec gladia /bin/bash
+cd unit-test
+python test.py http://localhost:80
+```
+
+
+## Running the production environement
+```
 docker run -d -p 8080:80 gladiaio/gladia:latest
 ```
 
