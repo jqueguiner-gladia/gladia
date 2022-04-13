@@ -5,4 +5,5 @@ nltk==3.7
 rich==12.2.0
 scikit-learn==1.0.2
 sentence-transformers==2.2.0 
-sentencepiece==0.1.96 
+sentencepiece==0.1.96
+happytransformer==2.4.1

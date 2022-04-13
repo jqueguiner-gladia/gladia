@@ -52,7 +52,7 @@ WORKDIR /app
 #   -l, --local_venv_trash_cache  Trash the pipenv cache on cust venv
 #   --help                        Show this message and exit.
 
-ARG SETUP_CUSTOM_ENV_BUILD_MODE=" --poolsize 0 --base --local_venv_trash_cache --force --simlink --compact_mode --trash_cache "
+ARG SETUP_CUSTOM_ENV_BUILD_MODE=" --poolsize 0 --base --local_venv_trash_cache --force --simlink --compact_mode "
 ARG SKIP_CUSTOM_ENV_BUILD="false"
 
 RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd venv-builder && python3 setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi
@@ -60,7 +60,7 @@ RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd venv-builder && python3 s
 # import omw
 RUN python3 -c 'import nltk ;nltk.download("omw-1.4")'
 
-RUN rm -rf "/root/.cache/*"
+#RUN rm -rf "/root/.cache/*"
 
 EXPOSE 80
 
