@@ -4,6 +4,8 @@ import click
 from multiprocessing.pool import ThreadPool as Pool
 import multiprocessing
 import subprocess
+import hashlib
+import shutil
 
 # Make the VENV is built and stored nearby the API folder
 # https://stackoverflow.com/questions/57919110/how-to-set-pipenv-venv-in-project-on-per-project-basis
@@ -31,45 +33,73 @@ os.environ["PIPENV_VENV_DEFAULT_VIDEO_PACKAGES_TXT"] = os.getenv('PIPENV_VENV_DE
 @click.option('-d', '--teardown_common_env', is_flag=True, type=bool, default=False, help="Tear common venv")
 @click.option('-x', '--clean_all_venv', is_flag=True, type=bool, default=False, help="Clean all cust venv")
 def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, local_venv_trash_cache, clean_all_venv, teardown_common_env):
+
+    rootdir = os.path.abspath(rootdir)
+
+    global envs_base_dict
+    global default_python_version
+
+    default_python_version = str(os.environ["PIPENV_VENV_DEFAULT_PY_VERSION"])
+    envs_base_dict = dict()
+
+    envs = ['common', 'image', 'sound', 'text', 'video']
+    for env in envs:
+        envs_base_dict[env] = {
+            'path' : os.path.join(os.environ['PIPENV_VENV_TMP_BASE_PATH'], env),
+            'packages_file' : os.environ[f'PIPENV_VENV_DEFAULT_{env.upper()}_PACKAGES_TXT']
+        }
+
+    # build template enviroments
     if base:
-        print("---------------")
-        print("Building common base venv")
-        print("---------------")
-        env = "common"
-        os.makedirs(f"{os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env}", exist_ok=True)
-        os.system(f"cd {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env} && echo Y | pipenv --python {os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']}")
-        env_var_package_file = os.environ[f'PIPENV_VENV_DEFAULT_{env.upper()}_PACKAGES_TXT']
-        os.system(f"cd {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env} && pipenv run pip install -r {env_var_package_file}")
 
-
-        envs = ["image", "sound", "text", "video"]
+        envs = ["common", "image", "sound", "text", "video"]
         for env in envs:
             print("---------------")
             print(f"Overriding common base for base {env} venv")
             print("---------------")
-            os.system(f"rm -rf {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env}") 
-            os.system(f"cp -r {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/common {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env}")
-            f = open(f"{os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env}", "w")
-            f.write(os.environ['PIPENV_VENV_TMP_BASE_PATH'].rstrip('/'))
-            f.close()
-            env_var_package_file = os.environ[f'PIPENV_VENV_DEFAULT_{env.upper()}_PACKAGES_TXT']
-            os.system(f"cd {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env} && pipenv run pip install -r {env_var_package_file}")
 
+            print(f"Preparing {env} env")
+            mkdir(envs_base_dict[env]['path'])
+            
+            print(f"Cleaning {env} env")
+            clean_dir_without_parent(envs_base_dict[env]['path'])
+            
+            print(f"Booting {env} env")
+            boot_pipenv(envs_base_dict[env]['path'], default_python_version)
+            
+            # if not common then stack packages
+            if env != "common":
+                print("Installing common packages")
+                install_packages_in_pipenv_from_file(envs_base_dict[env]['path'], envs_base_dict['common']['packages_file'])
+            
+            print(f"Installing {env} packages")
+            # install packages on top of common
+            install_packages_in_pipenv_from_file(envs_base_dict[env]['path'], envs_base_dict[env]['packages_file'])
+
+    # define parallelization strategy
     if poolsize == 0:
         pool = Pool(multiprocessing.cpu_count())
     else:
         pool = Pool(poolsize)
     
+
     print("---------------")
     print(f"Scanning {rootdir}")
     print("---------------")
     
+    # Crawl all endpoints and modalities
+    # to build env if necessary
     for dirName, subdirList, fileList in os.walk(rootdir):
         if (".venv" not in dirName) and ("__pycache__" not in dirName):
             if clean_all_venv:
                 pool.apply_async(clean_env, (dirName, subdirList, fileList, ))
             else:
-                pool.apply_async(build_env, (dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache, ))
+                if poolsize == 1:
+                    # easier debugging
+                    # multi-threading tends to hide errors
+                    build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache)
+                else:   
+                    pool.apply_async(build_env, (dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache, ))
 
     pool.close()
     pool.join()
@@ -78,80 +108,192 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
         print("---------------")
         print("cleaning common venv")
         print("---------------")
-        os.system(f"rm -rf {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/common")
+        clean_dir(os.path.join(os.environ['PIPENV_VENV_TMP_BASE_PATH'], "common"))
 
     if trash_cache:
         print("---------------")
         print("cleaning general cache")
         print("---------------")
-        os.system("rm -rf /root/.cache/*")
+        clean_dir("/root/.cache/*")
 
-def clean_env(dirName, subdirList, fileList):
+def clean_dir(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+
+def clean_file(path):
+    if os.path.exists(path):
+        os.system(f"rm -rf {path}")
+
+
+def clean_dir_without_parent(path):
+    os.system(f"rm -rf {path}/*")
+
+def mkdir(path):
+    os.makedirs(path, exist_ok=True)
+    
+def boot_pipenv(path, python_version=None):
+    if python_version is None:
+        python_version = os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']
+    print(path)
+    os.system(f"cd {path} && echo Y | pipenv --python {python_version}")
+
+def boot_full_pipenv_for_modality(path, modality, packages_to_install, python_version=None):
+    boot_pipenv(path, python_version)
+    install_packages_in_pipenv_from_file(path, envs_base_dict["common"]['packages_file'])
+    install_packages_in_pipenv_from_file(path, envs_base_dict[modality]['packages_file'])
+    install_packages_in_pipenv_from_list(path, packages_to_install)
+
+def install_packages_in_pipenv_from_file(env_path, env_var_package_file):
+    print(env_var_package_file)
+    os.system(f"cd {env_path} && pipenv run pip install -r {env_var_package_file}")
+
+def install_packages_in_pipenv_from_string(env_path, package_list_as_string):
+
+    cmd = f"cd {env_path} && pipenv run pip install {package_list_as_string}"
+    print(cmd)
+    os.system(cmd)
+
+def install_packages_in_pipenv_from_list(env_path, package_list_as_list):
+    # FIXME: it's late I'm tired...
+    # fuckit.. weird shit happens as package_list_as_list should be a list
+    # but seems to act as a string
+    if type(package_list_as_list) is str:
+        package_list_as_list = [package_list_as_list]
+    package_list_as_string = " ".join(package_list_as_list)
+    # handle special cases
+    # for git+https://
+    # needs -e option in pip install
+    if "+" in package_list_as_string:
+        for package in package_list_as_list:
+            if '+' in package:
+                package_list_as_string = install_packages_in_pipenv_from_string(env_path, " -e " + package)
+            else:
+                package_list_as_string = install_packages_in_pipenv_from_string(env_path, package)
+    else:
+        install_packages_in_pipenv_from_string(env_path, package_list_as_string)
+
+def build_env_from_modality(path, modality, has_custom_packages, packages_to_install, python_version):
+    if has_custom_packages:
+        print("---------------")
+        print(f"Creating env based on {modality} venv")
+        print(f"with packages")
+        print("---------------")
+        boot_full_pipenv_for_modality(path, modality, packages_to_install, python_version)
+
+    else:
+        print("---------------")
+        print(f"Applying simlink to {modality} base venv")
+        print(f"without custom packages")
+        print("---------------")
+        simlink_env_for_modality(path, modality)
+
+def get_packages(env_yaml):
+    has_custom_packages = False
+    custom_packages = ''
+    try:
+        custom_packages = ' '.join(env_yaml['packages'])
+        if len(custom_packages) > 0:
+            has_custom_packages = True
+
+    except Exception as e:
+        print("---------------")
+        print("No custom packages found")
+        print("---------------")
+
+    return has_custom_packages, custom_packages
+    
+def get_env_conf(stream):
+    env_yaml = False
+    try:
+        env_yaml = yaml.safe_load(stream)
+        print("---------------")
+        print(f"Loaded env.yaml")
+        print("---------------")
+    except yaml.YAMLError as exc:
+        print(exc)
+        exit(0)
+    return env_yaml
+
+
+def simlink_if_source_exists(source_path, target_path):
+    if not os.path.islink(target_path):
+        os.system(f"[ -d {source_path} ] && ln -sf {source_path} {target_path}")
+
+def simlink_env_for_modality(path, modality):
+    links = [".venv", "Pipfile"]
+    for link in links:
+        simlink_if_source_exists(os.path.join(envs_base_dict[env_name]['path'], link), os.path.join(path, link))
+
+def simlink_lib_so_files(source_path, target_path):
+    source_path = os.path.join(source_path, "lib")
+    target_path = os.path.join(target_path, "lib")
+    for file in os.listdir(target_path):
+        if file.endswith(".so") and not os.path.islink(file):
+            if os.path.exists(os.path.join(source_path, file)):
+                if compare_files(os.path.join(source_path, file), os.path.join(target_path, file)):
+                    simlink_if_source_exists(os.path.join(source_path, file), os.path.join(target_path, file))
+
+def simlink_bin_files(source_path, target_path):
+    source_path = os.path.join(source_path, "bin")
+    target_path = os.path.join(target_path, "bin")
+    for file in os.listdir(target_path):
+        if not os.path.islink(file):
+            if os.path.exists(os.path.join(source_path, file)):
+                if compare_files(os.path.join(source_path, file), os.path.join(target_path, file)):
+                    simlink_if_source_exists(os.path.join(source_path, file), os.path.join(target_path, file))
+
+def simlink_site_packages(source_path, target_path, python_version):
+    target_packages_path = os.path.join(target_path, "lib", f"python{python_version}", "site-packages")
+    source_packages_path = os.path.join(source_path, "lib", f"python{python_version}", "site-packages")
+
+    for root, dirs, files in os.walk(target_path, topdown = False):
+        for name in files:
+            target_file_path = os.path.join(root, name)
+            
+            if not os.path.islink(target_file_path):
+                #FIXME: some shitty edge case when the file as a space in the name
+                if " " not in target_file_path:
+                    venv_file_relative_location= target_file_path.split(".venv")[1]                
+                    source_file_path = source_path + venv_file_relative_location
+
+                    if os.path.exists(source_file_path):        
+                        if compare_files(source_file_path, target_file_path):
+                            simlink_if_source_exists(source_file_path, target_file_path)
+
+def md5(filepath):
+    hash_md5 = hashlib.md5()
+    with open(filepath, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+
+def compare_files(source_path, target_path):
+    source_md5 = md5(source_path)
+    target_md5 = md5(target_path)
+    return source_md5 == target_md5
+
+def clean_env(path, subdirList, fileList):
     if 'env.yaml' in fileList:
         print("---------------")
-        print(f"Cleaning {dirName}")
+        print(f"Cleaning {path}")
         print("---------------")
         
-        os.system(f"cd {dirName} && rm -rf .venv Pipfile __pycache__")
-
-# def simlink_package(env_yaml, dirName, pipenv_base):
-#     if str(os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']) == str(env_yaml['python']['version']):
-#         print("---------------")
-#         print(f"Applying Simlink {pipenv_base} packages to {dirName}.venv/lib/python{os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']}/site-packages/")
-#         print("---------------")
+        dirs_to_clean = [".venv", "Pipfile", "Pipfile.lock", "__pycache__"]
+        for dir_to_clean in dirs_to_clean:
+            clean_dir(os.path.join(path, dir_to_clean))
         
-#         # diff -qr /tmp/gladia/cust_venv_base /tmp/gladia-empty/
-#         # output keep :
-#         # .venv/bin except:
-#         # .venv/bin/pip*
-#         # .venv/bin/wheel*
-#         # .venv/bin/activate*
-#         # .venv/bin/easy_install*
-#         # 
-#         # .venv/lib recursive except:
-#         # no-exceptions so far
 
-#         cmd_diff = [
-#             "diff", 
-#             "-qr",
-#             f"{os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{pipenv_base}/.venv/",
-#             f"{os.getcwd()}/{dirName}/.venv/",
-#             '| grep "Only in"',
-#             '| grep -v "share"',
-#             '| grep -v "licensing"',
-#             f'| grep -v "{os.getcwd()}"',
+def clean_useless_prod_packages(path):
+    dirs_to_clean = ["wheel*", "pip*", "pip3*"]
+    for dir_to_clean in dirs_to_clean:
+        os.system(f"cd {path} && rm -rf {dir_to_clean}")
 
-#             ]
-#         cmd_diff = ' '.join(cmd_diff)
-        
-#         print("============")
-#         print(cmd_diff)
-#         print("============")
-#         diffs = subprocess.run(cmd_diff, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8')
-
-#         diffs = diffs.replace("Only in ","").replac.split("\n")
-
-#         for diff_packages in diffs:
-#             if len(diff_packages.split(": ")) == 2:
-#                 try:
-#                     source_dir, filename = diff_packages.split(": ")
-
-#                     target_dir = source_dir.replace(f"{os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{pipenv_base}/.venv/", f"{os.getcwd()}/{dirName}/.venv/")             
-                    
-#                     print(f"ln -sf {source_dir}/{filename} {target_dir}/{filename}")
-                    
-#                     os.system(f"ln -sf {source_dir}/{filename} {target_dir}/{filename}")
-
-#                 except Exception as e: 
-#                     print("---------------")
-#                     print(f"Failed Simlinking {pipenv_base} env")
-#                     print("---------------")
-#                     print(str(e))
-#         print("---------------")
-#         print(f"Done Simlinking {pipenv_base} env")
-#         print("---------------")
 
 def simlink_packages(env_yaml, dirName, pipenv_base):
+
+    # make sure that the custom env python version matches the template
+    # to be able to simlink 
+
     if str(os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']) == str(env_yaml['python']['version']):
         print("---------------")
         print(f"Applying Simlink {pipenv_base} packages to {dirName}")
@@ -159,18 +301,25 @@ def simlink_packages(env_yaml, dirName, pipenv_base):
         
         source_directory = os.path.join(os.environ['PIPENV_VENV_TMP_BASE_PATH'], pipenv_base, ".venv")
         target_directory = os.path.join(dirName, ".venv")
-        directories = ["bin", "lib/python3.7/site-packages"]
+
+        # simlink lib flat .so
+        # /!\ not really sure about this strategy
+        # some sheebang are at the top of some and potentialy
+        # some lib file
+        directories = ["bin", f"lib/python{os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']}/site-packages"]
         
         for directory in directories:
             current_source_directory = os.path.join(source_directory, directory)
             current_target_directory = os.path.join(target_directory, directory)
+
             for item in os.listdir(current_source_directory):
-                os.system(f"rm -rf {current_target_directory}/{item}")
-                cmd = f"ln -sf {current_source_directory}/{item} {current_target_directory}/{item}"
-                #print(cmd)
-                os.system(cmd)
+                clean_dir(os.path.join(current_target_directory,item))
+                simlink_if_source_exists(os.path.joint(current_source_directory, item), os.path.join(current_target_directory, item))
 
         # simlink lib flat .so
+        # /!\ not really sure about this strategy
+        # some sheebang are at the top of some and potentialy
+        # some lib file
         target_base_dir = os.path.join(target_directory, "lib")
         source_base_dir = os.path.join(source_directory, "lib")
         for item in os.listdir(target_base_dir):
@@ -180,123 +329,149 @@ def simlink_packages(env_yaml, dirName, pipenv_base):
                 # check source existence => [ -d $path_to_source_file ] 
                 # and like it => && ln -sf $path_to_source_file $path_to_target_file
                 # -f => force override
-                os.system(f"[ -d {source_base_dir}/{item} ] && ln -sf {source_base_dir}/{item} {target_base_dir}/{item})")
+                simlink_if_source_exists(os.path.join(source_base_dir, item), os.path.join(target_base_dir,item))
 
-        
         print("---------------")
         print(f"Done Simlinking {pipenv_base} env")
         print("---------------")
 
+
 def build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache):
+    # if env.yaml exist => will trigger a custom env could be
+    # the default one from the modality
     if 'env.yaml' in fileList:
         print("---------------")
         print(f"Building {dirName}")
         print("---------------")
 
+        # check the custom env requirements
         with open(os.path.join(dirName, 'env.yaml'), 'r') as stream:
             print("---------------")
             print("Guessing the input modality to apply the right base env")
-            input_modality = dirName.split("/")[2]
+            
+            splitted_path = dirName.split("/")
+            input_modality = ""
+            for item in splitted_path:
+                if item in ["image", "audio", "video", "text"]:
+                    input_modality = item
+                    break
+            
             print(f"Found input modality to be : {input_modality}")
             print("---------------")
 
-            try:
-                env_yaml = yaml.safe_load(stream)
-                print("---------------")
-                print(f"Loaded env.yaml in {dirName}")
-                print("---------------")
-            except yaml.YAMLError as exc:
-                print(exc)
+            env_yaml = get_env_conf(stream)
+            python_version = str(env_yaml['python']['version'])
 
-            build = True
-            if os.path.exists(os.path.join(dirName, '.venv')):
-                if force == True:
+            # build is a flag
+            # that will lead to the build of a 
+
+            # has_custom_packages is a flag to know if
+            # you have additionnal package vs the default one from
+            # the modality / the env template            
+            has_custom_packages, extra_packages_to_install = get_packages(env_yaml)
+
+            custom_env_directory = os.path.join(dirName, '.venv')
+            modality_base_env_directory = os.path.join(os.environ['PIPENV_VENV_TMP_BASE_PATH'], input_modality)
+            
+            # if a custom env seems to be already there
+            # depending on the --force arg will trigger a rebuild
+            # if no custom env there or forced:
+            # if the env has no packages => use the default env of the modality
+            # this is checked using the has_custom_packages
+            # else build a custom env for the endpoint and try to simlink binaries and libs
+            # /!\ linking binaries is complicated as some Sheebangs are happened in general to them
+            # binding explicitely the bins to their original location
+            
+            if os.path.exists(custom_env_directory):
+                if force:
                     print("---------------")
                     print("Using Force mode and remove .venv and Pipfile")
                     print("---------------")
+
+                    # when forcing on existing we delete the venv by
+                    # removing the .venv and Pipfile
+                    # then if has no custom packages we use the 
+                    # default modality env
+                    # else we build a custom env stacking the 
+                    # common + modality + custom
+                    # this what build_env_from_modality is doing
                     try:
-                        os.system(f"cd {dirName} && rm -rf .venv Pipfile")
-                        os.system(f"cp -r {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{input_modality}/.venv {dirName}/.venv")
-                    except:
+                        clean_dir(os.path.join(dirName, '.venv'))
+                        clean_file(os.path.join(dirName, 'Pipfile'))
+
+                        build_env_from_modality(dirName, input_modality, has_custom_packages, extra_packages_to_install, python_version)
+
+                    except Exception as e: 
                         print("---------------")
                         print("Could not remove .venv and Pipfile")
+                        print(str(e))
                         print("---------------")
-                        build = False
-                else:
-                    build = False
+            
+            # if no .venv build it as you have a env.yaml
             else:
+
+                # if custom env needed (because the the env.yaml is there)
+                # if no packages => use the default env of the modality
+                # we can check the has_custom_packages flag for that purpose
+                
+                # else build a custom env for the endpoint and try to simlink binaries and libs
                 try:
                     print("---------------")
                     print(f"Applying {input_modality} base venv")
-                    os.system(f"cp -r {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{input_modality}/.venv {dirName}/.venv")
                     print("---------------")
+
+                    # if no custom packages => use the default env of the modality
+                    # else use build and stack env
+                    # this what build_env_from_modality is doing
+                    build_env_from_modality(dirName, input_modality, has_custom_packages, extra_packages_to_install, python_version)
                
                 except Exception as e: 
                     print("---------------")
                     print("Failed starting creation of custom env")
-                    print("---------------")
                     print(str(e))
-            try:
-                packages_to_install = ' '.join(env_yaml['packages'])
-            except:
-                packages_to_install = ''
-
+                    print("---------------")
+                    
+            
             if compact_mode:
                 print("---------------")
                 print(f"Running in compact mode")
                 print("---------------")
 
-                if str(os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']) == str(env_yaml['python']['version']):
-                    #print("---------------")
-                    #print("Applying Common packages simlinks")
-                    #print("---------------")
-                    #simlink_packages(env_yaml=env_yaml, dirName=dirName, pipenv_base="common")
+                if default_python_version == python_version:
+                    
                     print("---------------")
-                    print(f"Applying {input_modality} packages simlinks")
+                    print(f"Applying {input_modality} packages simlinks to custom env")
                     print("---------------")
-                    if packages_to_install.strip() == '':
-                        print("---------------")
-                        print(f"Empty custom packages applying full simlink to venv")
-                        print("---------------")
-                        os.system(f"rm -rf {dirName}/.venv")
-                        os.system(f"ln -sf {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{input_modality}/.venv {dirName}/.venv")
-                        build = False
-                    else:                    
-                        simlink_packages(env_yaml=env_yaml, dirName=dirName, pipenv_base=input_modality)
 
-
-                else:
-                    print("---------------")
-                    print(f"Python version of app do not matches with default version running in non compact mode")
-                    print("---------------")
-                    with open(os.environ["PIPENV_VENV_DEFAULT_PACKAGES_TXT"]) as f:
-                        packages_to_install += " ".join(line.strip() for line in f)
-                
+                    # crawl all files in lib excluding folders
+                    # and link them is source exists
+                    # starting from common then
+                    # continue to modality env
+                    # skip else
+                    source_path = os.path.join(envs_base_dict[input_modality]['path'], '.venv')
+                    target_path = os.path.join(dirName, '.venv')
+                    
+                    simlink_lib_so_files(source_path, target_path)
+                    simlink_bin_files(source_path, target_path)
+                    simlink_site_packages(source_path, target_path, python_version)
+            
             if simlink:
                 print("---------------")
                 print(f"Applying Simlink of API UTILS to {dirName}/.venv/lib/python{os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']}/site-packages/gladia_api_utils")
                 print("---------------")
                 
-                
-                os.system(f"rm -rf {dirName}/.venv/lib/python{os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']}/site-packages/gladia_api_utils")
-                os.system(f"ln -s /opt/conda/lib/python{os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']}/site-packages/gladia_api_utils {dirName}/.venv/lib/python{os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']}/site-packages/gladia_api_utils")
+                gladia_utils_source_path = os.path.join('/opt/conda/lib/python' + default_python_version, 'site-packages', 'gladia_api_utils')
+                gladia_utils_target_path = os.path.join(dirName, '.venv', 'lib', 'python' + python_version, 'site-packages', 'gladia_api_utils')
+                simlink_if_source_exists(gladia_utils_source_path, gladia_utils_target_path)
             else:
-                packages_to_install += ' gladia-api-utils'
-
-            if build:
-                print("---------------")
-                print(f"Overriding {input_modality} base env with custom packages")
-                print(f"for {dirName}")
-                print("---------------")
-
-                os.system(f"cd {dirName} && pipenv run pip install {packages_to_install}")
+                install_packages_in_pipenv_from_string(dirName, 'gladia_api_utils')
             
             if local_venv_trash_cache:
                 print("---------------")
                 print("cleaning local venv")
                 print("---------------")
                 
-                os.system(f"cd {dirName}/.venv/lib/python{os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']}/site-packages && rm -rf wheel* pip* pip3*")
+                #clean_useless_prod_packages(dirName)
 
 if __name__ == '__main__':
     main()
