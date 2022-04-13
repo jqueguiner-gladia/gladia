@@ -1,6 +1,6 @@
 ARG GLADIA_DOCKER_BASE=docker.io/gladiaio/gladia-base:latest
 
-FROM $GLADIA_DOCKER_BASE
+FROM $GLADIA_DOCKER_BASE as build
 
 ADD clean-layer.sh  /tmp/clean-layer.sh
 
@@ -25,7 +25,8 @@ ENV TOKENIZERS_PARALLELISM="true"
 
 ENV TRANSFORMERS_CACHE="/tmp/gladia/models/transformers"
 ENV PYTORCH_TRANSFORMERS_CACHE="/tmp/gladia/models/pytorch_transformers"
-ENV PYTORCH_PRETRAINED_BERT_CACHE=="/tmp/gladia/models/pytorch_pretrained_bert"
+ENV PYTORCH_PRETRAINED_BERT_CACHE="/tmp/gladia/models/pytorch_pretrained_bert"
+ENV NLTK_DATA="/tmp/gladia/nltk"
 
 
 COPY . /app
@@ -34,11 +35,41 @@ WORKDIR /app
 # add build options to setup_custom_envs
 # can be -f to force rebuild of env if already exist
 # -p 1 is set by default for stability purposes
-ARG SETUP_CUSTOM_ENV_BUILD_MODE=" -p 1 "
-RUN python3 setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE
+# python3 setup_custom_envs.py --help
+# Usage: setup_custom_envs.py [OPTIONS]
+# 
+# Options:
+#   -r, --rootdir TEXT            Build env recursively from the provided
+#                                  directory path
+#   -p, --poolsize INTEGER        Parallelness if set to 0 will use all threads
+#   -s, --simlink                 Will simlink gladia-api-utils from the local
+#                                 version of gladia-api-utils
+#   -c, --compact_mode            Enable compact mode simlinking the default
+#                                 packages
+#   -f, --force                   Force rebuilding venv
+#   -b, --base                    Build the base for custom env
+#   -t, --trash_cache             Trash the pipenv cache
+#   -l, --local_venv_trash_cache  Trash the pipenv cache on cust venv
+#   --help                        Show this message and exit.
+
+ARG SETUP_CUSTOM_ENV_BUILD_MODE=" --poolsize 0 --base --local_venv_trash_cache --force --simlink --compact_mode --trash_cache "
+ARG SKIP_CUSTOM_ENV_BUILD="false"
+
+RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd venv-builder && python3 setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi
 
 # import omw
 RUN python3 -c 'import nltk ;nltk.download("omw-1.4")'
+
+RUN rm -rf "/root/.cache/*"
+
+EXPOSE 80
+
+CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
+
+# squash docker image
+FROM scratch as prod
+
+COPY --from=build / /
 
 EXPOSE 80
 

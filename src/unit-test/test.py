@@ -118,7 +118,7 @@ def perform_test(details, url, header, path, skip_when_failed):
 
 
 @easyargs
-def main(url, bearer_token='', specific_endpoints=None, skip_when_failed=True, after_endpoint=""):
+def main(url="http://localhost:80", bearer_token='', specific_endpoints=None, skip_when_failed=True, after_endpoint=""):
     if specific_endpoints:
         specific_endpoints = specific_endpoints.split(',')
     else:
