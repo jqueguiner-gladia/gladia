@@ -222,7 +222,7 @@ def simlink_if_source_exists(source_path, target_path):
 def simlink_env_for_modality(path, modality):
     links = [".venv", "Pipfile"]
     for link in links:
-        simlink_if_source_exists(os.path.join(envs_base_dict[env_name]['path'], link), os.path.join(path, link))
+        simlink_if_source_exists(os.path.join(envs_base_dict[modality]['path'], link), os.path.join(path, link))
 
 def simlink_lib_so_files(source_path, target_path):
     source_path = os.path.join(source_path, "lib")
