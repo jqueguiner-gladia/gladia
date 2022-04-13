@@ -49,6 +49,9 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
             print("---------------")
             os.system(f"rm -rf {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env}") 
             os.system(f"cp -r {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/common {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env}")
+            f = open(f"{os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env}", "w")
+            f.write(os.environ['PIPENV_VENV_TMP_BASE_PATH'].rstrip('/'))
+            f.close()
             env_var_package_file = os.environ[f'PIPENV_VENV_DEFAULT_{env.upper()}_PACKAGES_TXT']
             os.system(f"cd {os.environ['PIPENV_VENV_TMP_BASE_PATH']}/{env} && pipenv run pip install -r {env_var_package_file}")
 
