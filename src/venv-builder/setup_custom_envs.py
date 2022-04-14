@@ -280,6 +280,8 @@ def clean_env(path, subdirList, fileList):
         
         dirs_to_clean = [".venv", "Pipfile", "Pipfile.lock", "__pycache__"]
         for dir_to_clean in dirs_to_clean:
+            print(f"Cleaning {os.path.join(path, dir_to_clean)}")
+
             clean_dir(os.path.join(path, dir_to_clean))
         
 
