@@ -97,7 +97,8 @@ def get_env_conf(stream):
 
 def simlink_if_source_exists(source_path, target_path):
     if not os.path.islink(target_path):
-        os.system(f"[ -d {source_path} ] && ln -sf {source_path} {target_path}")
+        if os.path.exists(source_path):
+            os.system(f"ln -sf {source_path} {target_path}")
 
 
 def simlink_env_for_modality(path, modality, envs_base_dict):
@@ -109,6 +110,9 @@ def simlink_env_for_modality(path, modality, envs_base_dict):
 def simlink_lib_so_files(source_path, target_path):
     source_path = os.path.join(source_path, "lib")
     target_path = os.path.join(target_path, "lib")
+    print(source_path)
+    print(target_path)
+    
     for file in os.listdir(target_path):
         if file.endswith(".so") and not os.path.islink(file):
             if os.path.exists(os.path.join(source_path, file)):
@@ -119,6 +123,7 @@ def simlink_lib_so_files(source_path, target_path):
 def simlink_bin_files(source_path, target_path):
     source_path = os.path.join(source_path, "bin")
     target_path = os.path.join(target_path, "bin")
+
     for file in os.listdir(target_path):
         if not os.path.islink(file):
             if os.path.exists(os.path.join(source_path, file)):
@@ -182,10 +187,6 @@ def simlink_packages(env_yaml, dirName, pipenv_base):
         for item in os.listdir(target_base_dir):
             #exclude folders
             if os.path.isfile(item):
-                # create if source exists only
-                # check source existence => [ -d $path_to_source_file ] 
-                # and like it => && ln -sf $path_to_source_file $path_to_target_file
-                # -f => force override
                 simlink_if_source_exists(os.path.join(source_base_dir, item), os.path.join(target_base_dir,item))
 
         print("---------------")
@@ -204,6 +205,7 @@ def md5(filepath):
 def compare_files(source_path, target_path):
     source_md5 = md5(source_path)
     target_md5 = md5(target_path)
+    
     return source_md5 == target_md5
 
 

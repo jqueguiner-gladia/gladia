@@ -12,8 +12,6 @@ from utils import \
     install_packages_in_pipenv_from_list, \
     install_packages_in_pipenv_from_string
 
-from utils import build_env_from_modality
-
 from utils import \
     get_packages, \
     get_env_conf
@@ -81,6 +79,8 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
         }
 
     # build template enviroments
+    # This can only work on a non-parallel build
+    # as there is an order of execution
     if base:
 
         envs = ["common", "image", "sound", "text", "video"]
@@ -90,18 +90,28 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
             print("---------------")
 
             print(f"Preparing {env} env")
-            mkdir(envs_base_dict[env]['path'])
+            #mkdir(envs_base_dict[env]['path'])
             
             print(f"Cleaning {env} env")
-            clean_dir_without_parent(envs_base_dict[env]['path'])
+            #clean_dir_without_parent(envs_base_dict[env]['path'])
             
             print(f"Booting {env} env")
-            boot_pipenv(envs_base_dict[env]['path'], default_python_version)
+            #boot_pipenv(envs_base_dict[env]['path'], default_python_version)
             
             # if not common then stack packages
             if env != "common":
                 print("Installing common packages")
-                install_packages_in_pipenv_from_file(envs_base_dict[env]['path'], envs_base_dict['common']['packages_file'])
+                #install_packages_in_pipenv_from_file(envs_base_dict[env]['path'], envs_base_dict['common']['packages_file'])
+                source_path = os.path.join(envs_base_dict['common']['path'], '.venv')
+                target_path = os.path.join(envs_base_dict[env]['path'], '.venv')
+
+                print("Simlinking common env")
+                #simlink_lib_so_files(source_path, target_path)
+                simlink_bin_files(source_path, target_path)
+                simlink_site_packages(source_path, target_path, default_python_version)
+                print("Done")
+                exit()
+
             
             print(f"Installing {env} packages")
             # install packages on top of common
@@ -235,7 +245,7 @@ def build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local
                     # if no custom packages => use the default env of the modality
                     # else use build and stack env
                     # this what build_env_from_modality is doing
-                    build_env_from_modality(dirName, input_modality, has_custom_packages, extra_packages_to_install, python_version)
+                    build_env_from_modality(dirName, input_modality, has_custom_packages, extra_packages_to_install, python_version, envs_base_dict)
                
                 except Exception as e: 
                     print("---------------")
@@ -260,9 +270,17 @@ def build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local
                     # starting from common then
                     # continue to modality env
                     # skip else
-                    source_path = os.path.join(envs_base_dict[input_modality]['path'], '.venv')
+
                     target_path = os.path.join(dirName, '.venv')
-                    
+                    source_path = os.path.join(envs_base_dict["common"]['path'], '.venv')
+                    # simlinking to common before modality
+                    simlink_lib_so_files(source_path, target_path)
+                    simlink_bin_files(source_path, target_path)
+                    simlink_site_packages(source_path, target_path, python_version)
+
+
+                    source_path = os.path.join(envs_base_dict[input_modality]['path'], '.venv')
+                    # simlinking to modality
                     simlink_lib_so_files(source_path, target_path)
                     simlink_bin_files(source_path, target_path)
                     simlink_site_packages(source_path, target_path, python_version)
