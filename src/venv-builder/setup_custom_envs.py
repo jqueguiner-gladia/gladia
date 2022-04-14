@@ -90,13 +90,13 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
             print("---------------")
 
             print(f"Preparing {env} env")
-            #mkdir(envs_base_dict[env]['path'])
+            mkdir(envs_base_dict[env]['path'])
             
             print(f"Cleaning {env} env")
-            #clean_dir_without_parent(envs_base_dict[env]['path'])
+            clean_dir_without_parent(envs_base_dict[env]['path'])
             
             print(f"Booting {env} env")
-            #boot_pipenv(envs_base_dict[env]['path'], default_python_version)
+            boot_pipenv(envs_base_dict[env]['path'], default_python_version)
             
             # if not common then stack packages
             if env != "common":
