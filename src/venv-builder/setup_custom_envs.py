@@ -106,12 +106,9 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
                 target_path = os.path.join(envs_base_dict[env]['path'], '.venv')
 
                 print("Simlinking common env")
-                #simlink_lib_so_files(source_path, target_path)
+                simlink_lib_so_files(source_path, target_path)
                 simlink_bin_files(source_path, target_path)
                 simlink_site_packages(source_path, target_path, default_python_version)
-                print("Done")
-                exit()
-
             
             print(f"Installing {env} packages")
             # install packages on top of common

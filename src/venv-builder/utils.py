@@ -110,8 +110,6 @@ def simlink_env_for_modality(path, modality, envs_base_dict):
 def simlink_lib_so_files(source_path, target_path):
     source_path = os.path.join(source_path, "lib")
     target_path = os.path.join(target_path, "lib")
-    print(source_path)
-    print(target_path)
     
     for file in os.listdir(target_path):
         if file.endswith(".so") and not os.path.islink(file):
@@ -133,9 +131,8 @@ def simlink_bin_files(source_path, target_path):
 
 def simlink_site_packages(source_path, target_path, python_version):
     target_packages_path = os.path.join(target_path, "lib", f"python{python_version}", "site-packages")
-    source_packages_path = os.path.join(source_path, "lib", f"python{python_version}", "site-packages")
 
-    for root, dirs, files in os.walk(target_path, topdown = False):
+    for root, dirs, files in os.walk(target_packages_path, topdown = False):
         for name in files:
             target_file_path = os.path.join(root, name)
             
