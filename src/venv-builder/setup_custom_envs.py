@@ -83,6 +83,12 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
     # as there is an order of execution
     if base:
 
+        # order of execution matters
+        # we want common first as it's the most generic
+        # then we need image, sound, and text that are all
+        # potentially used for video
+        
+        previous_envs = list()
         envs = ["common", "image", "sound", "text", "video"]
         for env in envs:
             print("---------------")
@@ -98,11 +104,18 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
             print(f"Booting {env} env")
             boot_pipenv(envs_base_dict[env]['path'], default_python_version)
             
-            # if not common then stack packages
-            if env != "common":
-                print("Installing common packages")
-                #install_packages_in_pipenv_from_file(envs_base_dict[env]['path'], envs_base_dict['common']['packages_file'])
-                source_path = os.path.join(envs_base_dict['common']['path'], '.venv')
+
+            print("Installing common packages")
+            install_packages_in_pipenv_from_file(envs_base_dict[env]['path'], envs_base_dict['common']['packages_file'])
+
+            print(f"Installing {env} packages")
+            # install packages on top of common
+            install_packages_in_pipenv_from_file(envs_base_dict[env]['path'], envs_base_dict[env]['packages_file'])
+
+            for previous_env in previous_envs:
+                print(f"Stacking {previous_env} packages on {env}")
+                
+                source_path = os.path.join(envs_base_dict[previous_env]['path'], '.venv')
                 target_path = os.path.join(envs_base_dict[env]['path'], '.venv')
 
                 print("Simlinking common env")
@@ -110,9 +123,8 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
                 simlink_bin_files(source_path, target_path)
                 simlink_site_packages(source_path, target_path, default_python_version)
             
-            print(f"Installing {env} packages")
-            # install packages on top of common
-            install_packages_in_pipenv_from_file(envs_base_dict[env]['path'], envs_base_dict[env]['packages_file'])
+            previous_envs.append(env)
+
 
     # define parallelization strategy
     if poolsize == 0:
@@ -268,13 +280,13 @@ def build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local
                     # continue to modality env
                     # skip else
 
-                    target_path = os.path.join(dirName, '.venv')
                     source_path = os.path.join(envs_base_dict["common"]['path'], '.venv')
+                    target_path = os.path.join(dirName, '.venv')
+                
                     # simlinking to common before modality
                     simlink_lib_so_files(source_path, target_path)
                     simlink_bin_files(source_path, target_path)
                     simlink_site_packages(source_path, target_path, python_version)
-
 
                     source_path = os.path.join(envs_base_dict[input_modality]['path'], '.venv')
                     # simlinking to modality
