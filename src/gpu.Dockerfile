@@ -1,16 +1,7 @@
+#https://www.docker.com/blog/advanced-dockerfiles-faster-builds-and-smaller-images-using-buildkit-and-multistage-builds/
 ARG GLADIA_DOCKER_BASE=docker.io/gladiaio/gladia-base:latest
 
 FROM $GLADIA_DOCKER_BASE as buildbase
-
-ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 0 --base"
-ARG SKIP_CUSTOM_ENV_BUILD="false"
-ARG SKIP_ROOT_CACHE_CLEANING="false"
-ARG SKIP_PIP_CACHE_CLEANING="false"
-ARG SKIP_YARN_CACHE_CLEANING="false"
-ARG SKIP_NPM_CACHE_CLEANING="false"
-ARG SKIP_TMPFILES_CACHE_CLEANING="false"
-ARG SKIP_NTLK_DL="false"
-ARG GLADIA_API_UTILS_BRANCH="main"
 
 ENV PIPENV_VENV_IN_PROJECT="enabled"
 ENV TOKENIZERS_PARALLELISM="true"
@@ -19,6 +10,10 @@ ENV PYTORCH_TRANSFORMERS_CACHE="/tmp/gladia/models/pytorch_transformers"
 ENV PYTORCH_PRETRAINED_BERT_CACHE="/tmp/gladia/models/pytorch_pretrained_bert"
 ENV NLTK_DATA="/tmp/gladia/nltk"
 
+ENV LC_ALL="C.UTF-8"
+ENV LANG="C.UTF-8"
+
+ARG GLADIA_API_UTILS_BRANCH="main"
 ADD clean-layer.sh  /tmp/clean-layer.sh
 
 COPY requirements.txt /tmp/gladia-requirements.txt
@@ -44,7 +39,33 @@ ENTRYPOINT /bin/bash
 
 
 FROM builddev as buildpreprod
+
+COPY --from=builddev / /
+
+ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 0 --base"
+ARG SKIP_CUSTOM_ENV_BUILD="false"
+ARG SKIP_ROOT_CACHE_CLEANING="false"
+ARG SKIP_PIP_CACHE_CLEANING="false"
+ARG SKIP_YARN_CACHE_CLEANING="false"
+ARG SKIP_NPM_CACHE_CLEANING="false"
+ARG SKIP_TMPFILES_CACHE_CLEANING="false"
+ARG SKIP_NTLK_DL="false"
+ARG GLADIA_API_UTILS_BRANCH="main"
+
+ENV PIPENV_VENV_IN_PROJECT="enabled"
+ENV TOKENIZERS_PARALLELISM="true"
+ENV TRANSFORMERS_CACHE="/tmp/gladia/models/transformers"
+ENV PYTORCH_TRANSFORMERS_CACHE="/tmp/gladia/models/pytorch_transformers"
+ENV PYTORCH_PRETRAINED_BERT_CACHE="/tmp/gladia/models/pytorch_pretrained_bert"
+ENV NLTK_DATA="/tmp/gladia/nltk"
+
+ENV LC_ALL="C.UTF-8"
+ENV LANG="C.UTF-8"
+
 COPY . /app
+
+WORKDIR /app
+EXPOSE 80
 
 # add build options to setup_custom_envs
 # can be -f to force rebuild of env if already exist
@@ -83,7 +104,23 @@ RUN if [ "$SKIP_TMPFILES_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/tmp*"; f
 
 CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
 
+
 # squash docker image
 FROM scratch as buildprod
 
 COPY --from=buildpreprod / /
+
+ENV PIPENV_VENV_IN_PROJECT="enabled"
+ENV TOKENIZERS_PARALLELISM="true"
+ENV TRANSFORMERS_CACHE="/tmp/gladia/models/transformers"
+ENV PYTORCH_TRANSFORMERS_CACHE="/tmp/gladia/models/pytorch_transformers"
+ENV PYTORCH_PRETRAINED_BERT_CACHE="/tmp/gladia/models/pytorch_pretrained_bert"
+ENV NLTK_DATA="/tmp/gladia/nltk"
+
+ENV LC_ALL="C.UTF-8"
+ENV LANG="C.UTF-8"
+
+WORKDIR /app
+EXPOSE 80
+
+CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
