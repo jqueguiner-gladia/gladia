@@ -60,8 +60,9 @@ os.environ["PIPENV_VENV_DEFAULT_VIDEO_PACKAGES_TXT"] = os.getenv('PIPENV_VENV_DE
 @click.option('-t', '--trash_cache', is_flag=True, type=bool, default=False, help="Trash the pipenv cache")
 @click.option('-l', '--local_venv_trash_cache', is_flag=True, type=bool, default=False, help="Trash the pipenv cache on cust venv")
 @click.option('-d', '--teardown_common_env', is_flag=True, type=bool, default=False, help="Tear common venv")
+@click.option('-B', '--build_all_env', is_flag=True, type=bool, default=False, help="Build all cust venv")
 @click.option('-x', '--clean_all_venv', is_flag=True, type=bool, default=False, help="Clean all cust venv")
-def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, local_venv_trash_cache, clean_all_venv, teardown_common_env):
+def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, local_venv_trash_cache, clean_all_venv, teardown_common_env, build_all_env):
 
     rootdir = os.path.abspath(rootdir)
 
@@ -143,7 +144,8 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
         if (".venv" not in dirName) and ("__pycache__" not in dirName):
             if clean_all_venv:
                 pool.apply_async(clean_env, (dirName, subdirList, fileList, ))
-            else:
+                
+            if build_all_env:
                 if poolsize == 1:
                     # easier debugging
                     # multi-threading tends to hide errors

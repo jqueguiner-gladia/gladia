@@ -5,14 +5,11 @@ import shutil
 
 
 def install_packages_in_pipenv_from_file(env_path, env_var_package_file):
-    print(env_var_package_file)
     os.system(f"cd {env_path} && pipenv run pip install -r {env_var_package_file}")
 
 
 def install_packages_in_pipenv_from_string(env_path, package_list_as_string):
-
     cmd = f"cd {env_path} && pipenv run pip install {package_list_as_string}"
-    print(cmd)
     os.system(cmd)
 
 
@@ -55,7 +52,6 @@ def build_env_from_modality(path, modality, has_custom_packages, packages_to_ins
 def boot_pipenv(path, python_version=None):
     if python_version is None:
         python_version = os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']
-    print(path)
     os.system(f"cd {path} && echo Y | pipenv --python {python_version}")
 
 
@@ -98,7 +94,11 @@ def get_env_conf(stream):
 def simlink_if_source_exists(source_path, target_path):
     if not os.path.islink(target_path):
         if os.path.exists(source_path):
-            os.system(f"ln -sf {source_path} {target_path}")
+            if os.path.abspath(source_path) != os.path.abspath(target_path):
+                try:
+                    os.system(f"ln -sf {source_path} {target_path}")
+                except Exception as e:
+                    pass
 
 
 def simlink_env_for_modality(path, modality, envs_base_dict):
@@ -231,7 +231,7 @@ def clean_useless_prod_packages(path):
 
 def clean_dir(path):
     if os.path.exists(path):
-        shutil.rmtree(path)
+        os.system(f"rm -rf {path}")
 
 
 def clean_file(path):
