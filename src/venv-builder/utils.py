@@ -53,6 +53,8 @@ def boot_pipenv(path, python_version=None):
     if python_version is None:
         python_version = os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']
     os.system(f"cd {path} && echo Y | pipenv --python {python_version}")
+    with open(os.path.join(path, ".env"), "a") as f:
+        f.write(f"LD_LIBRARY_PATH={os.getenv('LD_LIBRARY_PATH')}\n")
 
 
 def boot_full_pipenv_for_modality(path, modality, packages_to_install, envs_base_dict, python_version=None):
@@ -240,5 +242,6 @@ def clean_file(path):
 
 
 def clean_dir_without_parent(path):
-    os.system(f"rm -rf {path}/*")
+    os.system(f"rm -rf {path}")
+    os.system(f"mkdir -p {path}")
 
