@@ -16,9 +16,9 @@ ENV LANG="C.UTF-8"
 ARG GLADIA_API_UTILS_BRANCH="main"
 ADD clean-layer.sh  /tmp/clean-layer.sh
 
-COPY requirements.txt /tmp/gladia-requirements.txt
+COPY requirements.txt /tmp/requirements.txt
 
-RUN for package in $(cat /tmp/gladia-requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done
+RUN for package in $(cat /tmp/requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done
 RUN pip uninstall -y gladia-api-utils
 RUN pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH
 RUN pip3 uninstall -y botocore transformers
@@ -40,16 +40,14 @@ ENTRYPOINT /bin/bash
 
 FROM builddev as buildpreprod
 
-COPY --from=builddev / /
-
-ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 0 --base"
-ARG SKIP_CUSTOM_ENV_BUILD="false"
-ARG SKIP_ROOT_CACHE_CLEANING="false"
-ARG SKIP_PIP_CACHE_CLEANING="false"
-ARG SKIP_YARN_CACHE_CLEANING="false"
-ARG SKIP_NPM_CACHE_CLEANING="false"
-ARG SKIP_TMPFILES_CACHE_CLEANING="false"
-ARG SKIP_NTLK_DL="false"
+ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 0 --base --build_all_env"
+ARG SKIP_CUSTOM_ENV_BUILD="fase"
+ARG SKIP_ROOT_CACHE_CLEANING="fase"
+ARG SKIP_PIP_CACHE_CLEANING="fase"
+ARG SKIP_YARN_CACHE_CLEANING="fase"
+ARG SKIP_NPM_CACHE_CLEANING="fase"
+ARG SKIP_TMPFILES_CACHE_CLEANING="fase"
+ARG SKIP_NTLK_DL="fase"
 ARG GLADIA_API_UTILS_BRANCH="main"
 
 ENV PIPENV_VENV_IN_PROJECT="enabled"

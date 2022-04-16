@@ -222,7 +222,7 @@ def clean_env(path, subdirList, fileList):
         for dir_to_clean in dirs_to_clean:
             print(f"Cleaning {os.path.join(path, dir_to_clean)}")
 
-            clean_dir(os.path.join(path, dir_to_clean))
+            clean_dir(os.path.join(path, dir_to_clean).rstrip("/"))
         
 
 def clean_useless_prod_packages(path):
@@ -232,8 +232,7 @@ def clean_useless_prod_packages(path):
 
 
 def clean_dir(path):
-    if os.path.exists(path):
-        os.system(f"rm -rf {path}")
+    os.system(f"rm -rf {path}")
 
 
 def clean_file(path):
