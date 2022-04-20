@@ -28,7 +28,7 @@ FROM $GLADIA_DOCKER_BASE as buildbase
 #  -x, --clean_all_venv          Clean all cust venv
 #  --help                        Show this message and exit.
 
-ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 0 --base --build_all_env" \
+ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env" \
     SKIP_CUSTOM_ENV_BUILD="false" \
     SKIP_ROOT_CACHE_CLEANING="false" \
     SKIP_PIP_CACHE_CLEANING="false" \
@@ -50,14 +50,14 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
 COPY . /app
 
 RUN for package in $(cat /app/requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done && \
-    pip uninstall -y gladia-api-utils \
-    pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
+    pip3 uninstall -y gladia-api-utils \
     pip3 uninstall -y botocore transformers && \
     pip3 install botocore transformers && \
     pip3 uninstall -y pyarrow && \
     pip3 install pyarrow>=5.0.0 && \
     sh /app/clean-layer.sh && \
-    rm /app/clean-layer.sh
+    rm /app/clean-layer.sh && \
+    pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
 
 RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python3 setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi 
 RUN if [ "$SKIP_NTLK_DL" = "false" ]; then python3 -c 'import nltk ;nltk.download("omw-1.4")'; fi 
