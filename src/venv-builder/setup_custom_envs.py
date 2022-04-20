@@ -51,7 +51,7 @@ os.environ["PIPENV_VENV_DEFAULT_VIDEO_PACKAGES_TXT"] = os.getenv('PIPENV_VENV_DE
 
 
 @click.command()
-@click.option('-r', '--rootdir', type=str, default='../apis', help="Build env recursively from the provided directory path")
+@click.option('-r', '--rootdir', type=str, default='/app/apis/', help="Build env recursively from the provided directory path")
 @click.option('-p', '--poolsize', type=int, default=0, help="Parallelness if set to 0 will use all threads")
 @click.option('-s', '--simlink', is_flag=True, type=bool, default=False, help="Will simlink gladia-api-utils from the local version of gladia-api-utils")
 @click.option('-c', '--compact_mode', is_flag=True, type=bool, default=False, help="Enable compact mode simlinking the default packages")
@@ -145,13 +145,13 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
             if clean_all_venv:
                 pool.apply_async(clean_env, (dirName, subdirList, fileList, ))
                 
-            if build_all_env:
-                if poolsize == 1:
-                    # easier debugging
-                    # multi-threading tends to hide errors
-                    build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache)
-                else:   
-                    pool.apply_async(build_env, (dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache, ))
+        if build_all_env:
+            if poolsize == 1:
+                # easier debugging
+                # multi-threading tends to hide errors
+                build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache)
+            else:   
+                pool.apply_async(build_env, (dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache, ))
 
     pool.close()
     pool.join()
