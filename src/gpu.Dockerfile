@@ -1,7 +1,7 @@
 #https://www.docker.com/blog/advanced-dockerfiles-faster-builds-and-smaller-images-using-buildkit-and-multistage-builds/
 ARG GLADIA_DOCKER_BASE=docker.io/gladiaio/gladia-base:latest
 
-FROM $GLADIA_DOCKER_BASE as buildbase
+FROM $GLADIA_DOCKER_BASE
 
 
 # add build options to setup_custom_envs
