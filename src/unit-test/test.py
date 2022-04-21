@@ -105,6 +105,7 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
                 status = status_failed
                 nb_test_failed += 1
                 test_final_status = ExitStatus.failure
+                sleep(2)
                 
         nb_test_ran += 1
         
