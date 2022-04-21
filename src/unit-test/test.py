@@ -152,6 +152,7 @@ def main(url, bearer_token, specific_endpoints, continue_when_failed, after_endp
     test_final_status = ExitStatus.success
     for path, details  in endpoints['paths'].items():
         print(f"|__ {path}")
+        print(f"|  |")
         if specific_endpoints:
             if path in specific_endpoints:
                 perform_test(details, url, header, path, skip_when_failed, max_retry)

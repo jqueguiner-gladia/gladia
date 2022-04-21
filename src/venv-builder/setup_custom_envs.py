@@ -141,21 +141,32 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
     # Crawl all endpoints and modalities
     # to build env if necessary
     for dirName, subdirList, fileList in os.walk(rootdir):
+            
+        # avoid traversing the cache and the exisiting venvs
         if (".venv" not in dirName) and ("__pycache__" not in dirName):
             if clean_all_venv:
-                pool.apply_async(clean_env, (dirName, subdirList, fileList, ))
-                
-        if build_all_env:
-            if poolsize == 1:
-                # easier debugging
-                # multi-threading tends to hide errors
-                build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache)
-            else:   
-                pool.apply_async(build_env, (dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache, ))
+                if poolsize == 1:
+                    # easier debugging
+                    # multi-threading tends to hide errors
+                    clean_env(dirName, subdirList, fileList)
+
+                else:
+                    pool.apply_async(clean_env, (dirName, subdirList, fileList, ))
+        
+            # Building env will autoomagically remove
+            # existing venvs if force is set
+            if build_all_env:
+                if poolsize == 1:
+                    # easier debugging
+                    # multi-threading tends to hide errors
+                    build_env(dirName, fileList, simlink, force, compact_mode, local_venv_trash_cache)
+                else:   
+                    pool.apply_async(build_env, (dirName, fileList, simlink, force, compact_mode, local_venv_trash_cache, ))
 
     pool.close()
     pool.join()
 
+    
     if teardown_common_env:
         print("---------------")
         print("cleaning common venv")
@@ -169,7 +180,7 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
         clean_dir("/root/.cache/*")
 
 
-def build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local_venv_trash_cache):
+def build_env(dirName, fileList, simlink, force, compact_mode, local_venv_trash_cache):
     # if env.yaml exist => will trigger a custom env could be
     # the default one from the modality
     if 'env.yaml' in fileList:
@@ -230,6 +241,7 @@ def build_env(dirName, subdirList, fileList, simlink, force, compact_mode, local
                     # this what build_env_from_modality is doing
                     try:
                         clean_dir(os.path.join(dirName, '.venv'))
+                        clean_dir(os.path.join(dirName, '__pycache__'))
                         clean_file(os.path.join(dirName, 'Pipfile'))
 
                         build_env_from_modality(dirName, input_modality, has_custom_packages, extra_packages_to_install, python_version, envs_base_dict)
