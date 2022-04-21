@@ -47,6 +47,10 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     LC_ALL="C.UTF-8" \
     LANG="C.UTF-8"
 
+# to be remove later
+# hack because JL fucked up the base image
+RUN rm -rf /app
+
 COPY . /app
 
 RUN for package in $(cat /app/requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done && \
