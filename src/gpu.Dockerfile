@@ -85,5 +85,5 @@ RUN cd /tmp && \
 
 WORKDIR /app
 EXPOSE 80
-
+RUN pip uninstall -y pyarrow
 CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
