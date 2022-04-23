@@ -67,7 +67,6 @@ RUN cd /tmp && \
     pip3 uninstall -y gladia-api-utils \
     pip3 uninstall -y botocore transformers && \
     pip3 install botocore transformers && \
-    pip3 uninstall -y pyarrow && \
     sh /app/clean-layer.sh && \
     rm /app/clean-layer.sh && \
     pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
@@ -78,6 +77,8 @@ RUN cd /tmp && \
     if [ "$SKIP_YARN_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/yarn*"; fi && \
     if [ "$SKIP_NPM_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/npm*"; fi && \
     if [ "$SKIP_TMPFILES_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/tmp*"; fi && \ 
+    pip3 uninstall -y pyarrow && \
+    conda install -y -c conda-forge pyarrow && \
     apt-get clean && \
     apt-get autoremove --purge && \
     conda clean --all 
