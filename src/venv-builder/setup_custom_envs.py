@@ -183,6 +183,9 @@ def main(rootdir, poolsize, simlink, force, base, compact_mode, trash_cache, loc
 def build_env(dirName, fileList, simlink, force, compact_mode, local_venv_trash_cache):
     # if env.yaml exist => will trigger a custom env could be
     # the default one from the modality
+    # to increase readibality i prefer coding this like
+    # if 'env.yaml' not in fileList:
+    #     break
     if 'env.yaml' in fileList:
         print("---------------")
         print(f"Building {dirName}")
