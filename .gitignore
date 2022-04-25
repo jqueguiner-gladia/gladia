@@ -166,3 +166,4 @@ log_file
 
 # IDEs
 .idea
+.DS_Store
