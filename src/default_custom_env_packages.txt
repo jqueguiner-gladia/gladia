@@ -1,7 +1,0 @@
-gdown==4.4.0
-python-magic==0.4.25
-icecream==2.1.2
-xtract==0.1a3
-googledrivedownloader==0.4
-mkl
-mkl-service
