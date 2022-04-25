@@ -67,6 +67,7 @@ def predict(image) -> Image:
     """
 
     image = _open(image)
+    
     resized_im, seg_map = run(image, True)
 
     img = draw_segment(resized_im, seg_map)

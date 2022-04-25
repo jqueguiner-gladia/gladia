@@ -1,10 +1,10 @@
-import easyargs
 from time import sleep
 import json
 import sys
 
 import requests
 from exitstatus import ExitStatus
+import click
 
 global nb_total_tests
 global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
@@ -33,16 +33,16 @@ def get_nb_models(url, path, header):
     return len(models)
 
 
-def request_endpoint(url, path, header, params=False, files=False, max_tries=3):
+def request_endpoint(url, path, header, params=False, files=False, max_retry=3):
     response = type('', (), {})()
     response.status_code = 500
     tries = 1 
-    while (tries <= max_tries and response.status_code != 200):
+    while (tries <= max_retry and response.status_code != 200):
         if params != False and files != False:
             response = requests.post(f'{url}{path}',  headers=header, params=params, files=files)
         else:
             response = requests.post(f'{url}{path}',  headers=header, params=params)
-        print(f"|  |       ___ Try : {tries}/{max_tries}")
+        print(f"|  |       ___ Try : {tries}/{max_retry}")
         print(f"|  |      |    |_ Response : {response.status_code} ")
         tries += 1
     print(f"|  |      |")
@@ -50,7 +50,7 @@ def request_endpoint(url, path, header, params=False, files=False, max_tries=3):
     return response
 
 
-def perform_test(details, url, header, path, skip_when_failed):
+def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
     global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
     global status_passed, status_failed, status_skipped
@@ -74,7 +74,7 @@ def perform_test(details, url, header, path, skip_when_failed):
                 'image': ('test.jpg', open('test.jpg', 'rb')),
             }
             
-            response = request_endpoint(url, path, header, params, files, max_tries=3) 
+            response = request_endpoint(url=url, path=path, header=header, params=params, files=files, max_retry=max_retry) 
             
             if response.status_code == 200:
                 nb_test_passed += 1
@@ -95,7 +95,7 @@ def perform_test(details, url, header, path, skip_when_failed):
                     params.append((parameter['schema']['title'], parameter['schema']['default']))
 
             params = tuple(params)
-            response = request_endpoint(url, path,  header, params, max_tries=3)
+            response = request_endpoint(url=url, path=path, header=header, params=params, max_retry=max_retry)
 
             if response.status_code == 200:
                 status = status_passed
@@ -105,6 +105,7 @@ def perform_test(details, url, header, path, skip_when_failed):
                 status = status_failed
                 nb_test_failed += 1
                 test_final_status = ExitStatus.failure
+                sleep(2)
                 
         nb_test_ran += 1
         
@@ -117,8 +118,15 @@ def perform_test(details, url, header, path, skip_when_failed):
     print("|")
 
 
-@easyargs
-def main(url, bearer_token='', specific_endpoints=None, skip_when_failed=True, after_endpoint=""):
+@click.command()
+@click.option('-u', '--url', type=str, default="http://localhost:80", help="URL to test")
+@click.option('-b', '--bearer_token', type=str, default='', help="Bearer token for the secured url (if applicable)")
+@click.option('-s', '--specific_endpoints', type=str, default='', help="CSV separated list of specific endpoints/routes to test format is /input/output/singular_format_task/")
+@click.option('-c', '--continue_when_failed', type=bool, is_flag=True, default=False, help="Continue all other tests even when 1 test failed")
+@click.option('-a', '--after_endpoint', type=str, default='', help="All tests prior to the specified endpoint will be ignored. Specified endpoint is /input/output/singular_format_task/")
+@click.option('-r', '--max_retry', type=int, default=3, help="Number of retry for testing endpoints")
+def main(url, bearer_token, specific_endpoints, continue_when_failed, after_endpoint, max_retry):
+    skip_when_failed = not continue_when_failed
     if specific_endpoints:
         specific_endpoints = specific_endpoints.split(',')
     else:
@@ -145,9 +153,10 @@ def main(url, bearer_token='', specific_endpoints=None, skip_when_failed=True, a
     test_final_status = ExitStatus.success
     for path, details  in endpoints['paths'].items():
         print(f"|__ {path}")
+        print(f"|  |")
         if specific_endpoints:
             if path in specific_endpoints:
-                perform_test(details, url, header, path, skip_when_failed)
+                perform_test(details, url, header, path, skip_when_failed, max_retry)
                 nb_test_ran += 1
 
             elif after_endpoint != "":
@@ -155,7 +164,7 @@ def main(url, bearer_token='', specific_endpoints=None, skip_when_failed=True, a
                     after_endpoint_continue = True
                     
                 if after_endpoint_continue:
-                    perform_test(details, url, header, path, skip_when_failed)
+                    perform_test(details, url, header, path, skip_when_failed, max_retry)
                     nb_test_ran += 1
                 else:
                     print(f"|  |__ {status_skipped}  <Skipped>")
@@ -172,14 +181,14 @@ def main(url, bearer_token='', specific_endpoints=None, skip_when_failed=True, a
                  after_endpoint_continue = True
                     
             if after_endpoint_continue:
-                perform_test(details, url, header, path, skip_when_failed)
+                perform_test(details, url, header, path, skip_when_failed, max_retry)
                 nb_test_ran += 1
             else:
                 print(f"|  |__ {status_skipped}  <Skipped>")
                 print(f"|")
                 nb_test_skipped += 1
         else:
-            perform_test(details, url, header, path, skip_when_failed)
+            perform_test(details, url, header, path, skip_when_failed, max_retry)
             nb_test_ran += 1
 
     if test_final_status == ExitStatus.success:
