@@ -1,6 +1,7 @@
 from time import sleep
 import json
 import sys
+import os
 
 import requests
 from exitstatus import ExitStatus
@@ -55,6 +56,7 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
     global test_final_status
     global status_passed, status_failed, status_skipped
     global nb_total_tests
+    global IS_CI
 
     tag = details['get']['tags'][0]
     
@@ -62,7 +64,9 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
     models = response.json()
     
     for model in models:
-        sleep(1)
+        if IS_CI:
+            sleep(1)
+
         input, output, task = details['post']['tags'][0].split('.')
         status = ""
 
@@ -105,7 +109,8 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
                 status = status_failed
                 nb_test_failed += 1
                 test_final_status = ExitStatus.failure
-                sleep(2)
+                if IS_CI:
+                    sleep(2)
                 
         nb_test_ran += 1
         
@@ -204,4 +209,6 @@ def main(url, bearer_token, specific_endpoints, continue_when_failed, after_endp
     sys.exit(test_final_status)
 
 if __name__ == '__main__':
+    global IS_CI
+    IS_CI = os.getenv("IS_CI", 'False').lower() in ('true', '1', 't', 'y', 'yes')
     main()
