@@ -1,5 +1,3 @@
-# The goal of this is to allow devs to add new models in local & SaaS ?
-
 import os
 from pathlib import Path
 from pprint import pprint

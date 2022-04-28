@@ -114,10 +114,7 @@ def __add_router(module: 'module', module_path: str) -> None:
 def __module_is_an_input_type(split_module_path):
     return len(split_module_path) == 1
 
-# I would suggest the following taxonomiy
-# input/output/task/model
-# forget about input/modality/task/model
-# ok for you ?
+
 def __module_is_a_modality(split_module_path, module_config):
     return (
             len(split_module_path) == 2

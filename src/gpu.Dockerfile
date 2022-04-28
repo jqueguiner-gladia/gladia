@@ -38,9 +38,6 @@ ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --co
     SKIP_NTLK_DL="false" \
     GLADIA_API_UTILS_BRANCH="main"
 
-## TOKENIZERS_PARALLELISM is not used anywhere. can be removed no ?
-## why defining the place of the cache for transformers pytorch pytorch pretrained ?
-## it should be done by default in the place : # talking points
 ENV PIPENV_VENV_IN_PROJECT="enabled" \
     TOKENIZERS_PARALLELISM="true" \
     TRANSFORMERS_CACHE="/tmp/gladia/models/transformers" \
@@ -56,11 +53,8 @@ RUN rm -rf /app
 
 COPY . /app
 
-## why uninstalling and re installing here
-## all this should be put in requirements.txt ?
-## why putting it here ?
 RUN for package in $(cat /app/requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done && \
-    pip3 uninstall -y gladia-api-utils \ 
+    pip3 uninstall -y gladia-api-utils \
     pip3 uninstall -y botocore transformers && \
     pip3 install botocore transformers && \
     pip3 uninstall -y pyarrow && \
@@ -70,7 +64,6 @@ RUN for package in $(cat /app/requirements.txt); do echo "================="; ec
     pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH
 
 RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python3 setup_custom_envs.py -x -r /app/apis/ && python3 setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi 
-## NLTK lib is in default_text_packages... why adding it here ?
 RUN if [ "$SKIP_NTLK_DL" = "false" ]; then python3 -c 'import nltk ;nltk.download("omw-1.4")'; fi 
 RUN if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] && rm -rf "/root/.cache/*"; fi
 RUN if [ "$SKIP_PIP_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/pip*"; fi
