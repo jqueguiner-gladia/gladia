@@ -46,7 +46,9 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     NLTK_DATA="/tmp/gladia/nltk" \
     LC_ALL="C.UTF-8" \
     LANG="C.UTF-8" \
-    MINICONDA_INSTALL_PATH="/usr/local/miniconda"
+    MINICONDA_INSTALL_PATH="/usr/local/miniconda" \
+    distro="ubuntu2004" \
+    arch="x86_64"
 
 # to be remove later
 # hack because JL fucked up the base image
@@ -57,7 +59,13 @@ COPY . /app
 WORKDIR /tmp
 
 # Install git-lfs
-RUN wget "https://github.com/git-lfs/git-lfs/releases/download/v3.0.1/git-lfs-linux-386-v3.0.1.tar.gz" && tar -xvf git-lfs-linux-386-v3.0.1.tar.gz && ./install.sh
+RUN apt-key del 7fa2af80
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/$distro/$arch/cuda-keyring_1.0-1_all.deb
+
+RUN dpkg -i cuda-keyring_1.0-1_all.deb
+
+RUN sed -i 's/deb https:\/\/developer.download.nvidia.com\/compute\/cuda\/repos\/ubuntu2004\/x86_64.*//g' /etc/apt/sources.list
+
 
 # Update apt repositories
 RUN apt-get update -y
