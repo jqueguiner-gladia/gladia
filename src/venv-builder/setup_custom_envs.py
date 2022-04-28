@@ -1,15 +1,10 @@
 import os
-import yaml
 import click
 from multiprocessing.pool import ThreadPool as Pool
 import multiprocessing
-import subprocess
-import hashlib
-import shutil
 
 from utils import \
     install_packages_in_pipenv_from_file, \
-    install_packages_in_pipenv_from_list, \
     install_packages_in_pipenv_from_string
 
 from utils import \
