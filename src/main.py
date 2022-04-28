@@ -7,7 +7,7 @@ import importlib
 
 from icecream import ic
 from fastapi import FastAPI
-from pattern.text.en import singularize
+# from pattern.text.en import singularize
 from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.timing import add_timing_middleware
@@ -86,6 +86,13 @@ def __set_app_middlewares(api_app: FastAPI, api_config: dict) -> None:
         allow_methods=api_config["CORS"]["allow_methods"],
         allow_headers=api_config["CORS"]["allow_headers"],
     )
+
+
+def singularize(string: str) -> str:
+    if string[-1] == 's':
+        return string[: -1]
+
+    return string
 
 
 def __add_router(module: 'module', module_path: str) -> None:
