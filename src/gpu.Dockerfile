@@ -28,15 +28,15 @@ FROM $GLADIA_DOCKER_BASE
 #  -x, --clean_all_venv          Clean all cust venv
 #  --help                        Show this message and exit.
 
-ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env" \
-    SKIP_CUSTOM_ENV_BUILD="false" \
-    SKIP_ROOT_CACHE_CLEANING="false" \
-    SKIP_PIP_CACHE_CLEANING="false" \
-    SKIP_YARN_CACHE_CLEANING="false" \
-    SKIP_NPM_CACHE_CLEANING="false" \
-    SKIP_TMPFILES_CACHE_CLEANING="false" \
-    SKIP_NTLK_DL="false" \
-    GLADIA_API_UTILS_BRANCH="main"
+ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env"
+ARG SKIP_CUSTOM_ENV_BUILD="false"
+ARG SKIP_ROOT_CACHE_CLEANING="false"
+ARG SKIP_PIP_CACHE_CLEANING="false"
+ARG SKIP_YARN_CACHE_CLEANING="false"
+ARG SKIP_NPM_CACHE_CLEANING="false"
+ARG SKIP_TMPFILES_CACHE_CLEANING="false"
+ARG SKIP_NTLK_DL="false"
+ARG GLADIA_API_UTILS_BRANCH="main"
 
 ENV PIPENV_VENV_IN_PROJECT="enabled" \
     TOKENIZERS_PARALLELISM="true" \
