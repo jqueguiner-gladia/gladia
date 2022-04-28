@@ -56,7 +56,7 @@ def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
 
     return resized_image, seg_map
 
-# we should create a 'predict' interface for all models no ?
+
 def predict(image) -> Image:
     """
     Call the model to return the image without its background
@@ -64,7 +64,7 @@ def predict(image) -> Image:
     :param image: Image to remove the background from
     :return: image without its background
     """
-    ## how do you load the venv on the first call. who call pipenv activate for this model ?
+
     image = _open(image)
     resized_im, seg_map = run(image, True)
 
