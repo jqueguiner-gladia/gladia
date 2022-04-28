@@ -16,3 +16,4 @@ pillow==9.0.1
 gladia_api_utils
 transformers==4.12.0
 google-cloud-bigquery-storage==2.13.1
+nltk==3.6.*
