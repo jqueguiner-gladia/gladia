@@ -21,10 +21,9 @@ cd /usr/local/src/
 # Delete source files used for building binaries
 rm -rf /usr/local/src/*
 # Delete conda downloaded tarballs
-conda clean -y --tarballs
+"$MINICONDA_INSTALL_PATH"/bin/conda clean -y --tarballs
 
-conda clean -afy
-find /opt/conda/ -follow -type f -name '*.a' -delete
-find /opt/conda/ -follow -type f -name '*.pyc' -delete
-find /opt/conda/ -follow -type f -name '*.js.map' -delete
-find /opt/conda/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete
+"$MINICONDA_INSTALL_PATH"/bin/conda clean -afy
+find "$MINICONDA_INSTALL_PATH" -follow -type f -name '*.a' -delete
+find "$MINICONDA_INSTALL_PATH" -follow -type f -name '*.pyc' -delete
+find "$MINICONDA_INSTALL_PATH" -follow -type f -name '*.js.map' -delete
