@@ -17,3 +17,4 @@ tensorflow==2.8.*
 torch==1.9.*
 torchvision==0.10.*
 torchaudio>=0.10.*
+orjson==3.6.*
