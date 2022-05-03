@@ -78,6 +78,9 @@ RUN dpkg -i cuda-keyring_1.0-1_all.deb
 
 RUN sed -i 's/deb https:\/\/developer.download.nvidia.com\/compute\/cuda\/repos\/ubuntu2004\/x86_64.*//g' /etc/apt/sources.list
 
+# Add python repository and install python3.7
+RUN add-apt-repository -y ppa:deadsnakes/ppa && apt install -y python3.7 && apt install python3.7-distutils
+
 
 # Update apt repositories
 RUN apt-get update -y
