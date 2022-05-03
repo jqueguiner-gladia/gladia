@@ -115,29 +115,31 @@ def simlink_env_for_modality(path, modality, envs_base_dict):
 def simlink_lib_so_files(source_path, target_path):
     source_path = os.path.join(source_path, "lib")
     target_path = os.path.join(target_path, "lib")
-
+    
     if os.path.samefile(source_path, target_path):
         return
 
-    for file in os.listdir(target_path):
-        if file.endswith(".so") and not os.path.islink(file):
-            if os.path.exists(os.path.join(source_path, file)) and \
-                    compare_files(os.path.join(source_path, file), os.path.join(target_path, file)):
-                simlink_if_source_exists(os.path.join(source_path, file), os.path.join(target_path, file))
+    if os.path.isdir(target_path):
+        for file in os.listdir(target_path):
+            if file.endswith(".so") and not os.path.islink(file):
+                if os.path.exists(os.path.join(source_path, file)) and \
+                        compare_files(os.path.join(source_path, file), os.path.join(target_path, file)):
+                    simlink_if_source_exists(os.path.join(source_path, file), os.path.join(target_path, file))
 
 
 def simlink_bin_files(source_path, target_path):
     source_path = os.path.join(source_path, "bin")
     target_path = os.path.join(target_path, "bin")
-
+    
     if os.path.samefile(source_path, target_path):
         return
 
-    for file in os.listdir(target_path):
-        if not os.path.islink(file):
-            if os.path.exists(os.path.join(source_path, file)):
-                if compare_files(os.path.join(source_path, file), os.path.join(target_path, file)):
-                    simlink_if_source_exists(os.path.join(source_path, file), os.path.join(target_path, file))
+    if os.path.isdir(target_path):
+        for file in os.listdir(target_path):
+            if not os.path.islink(file):
+                if os.path.exists(os.path.join(source_path, file)):
+                    if compare_files(os.path.join(source_path, file), os.path.join(target_path, file)):
+                        simlink_if_source_exists(os.path.join(source_path, file), os.path.join(target_path, file))
 
 
 def simlink_site_packages(source_path, target_path, python_version):
