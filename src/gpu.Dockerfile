@@ -58,7 +58,7 @@ RUN apt-get install -y apt-transport-https & apt-get clean & apt-get update --al
 RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-py38_4.11.0-Linux-x86_64.sh" && chmod +x Miniconda3-py38_4.11.0-Linux-x86_64.sh ; ./Miniconda3-py38_4.11.0-Linux-x86_64.sh -b -p $MINICONDA_INSTALL_PATH
 
 # Install Cmake
-RUN apt install -y libssl-dev && apt-get install -y python3-dev && apt install -y libpython3.7-dev
+RUN apt install -y libssl-dev && apt-get install -y python3-dev
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.20.0/cmake-3.20.0.tar.gz && tar -zxvf cmake-3.20.0.tar.gz && cd cmake-3.20.0 && ./bootstrap && make && make install
 
 COPY . /app
