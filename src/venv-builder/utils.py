@@ -94,6 +94,9 @@ def get_env_conf(stream):
 
 
 def simlink_if_source_exists(source_path, target_path):
+    if os.path.samefile(source_path, target_path):
+        return
+
     if not os.path.islink(target_path):
         if os.path.exists(source_path):
             if os.path.abspath(source_path) != os.path.abspath(target_path):
@@ -113,6 +116,9 @@ def simlink_lib_so_files(source_path, target_path):
     source_path = os.path.join(source_path, "lib")
     target_path = os.path.join(target_path, "lib")
     
+    if os.path.samefile(source_path, target_path):
+        return
+
     if os.path.isdir(target_path):
         for file in os.listdir(target_path):
             if file.endswith(".so") and not os.path.islink(file):
@@ -124,6 +130,9 @@ def simlink_lib_so_files(source_path, target_path):
 def simlink_bin_files(source_path, target_path):
     source_path = os.path.join(source_path, "bin")
     target_path = os.path.join(target_path, "bin")
+    
+    if os.path.samefile(source_path, target_path):
+        return
 
     if os.path.isdir(target_path):
         for file in os.listdir(target_path):
@@ -136,24 +145,22 @@ def simlink_bin_files(source_path, target_path):
 def simlink_site_packages(source_path, target_path, python_version):
     target_packages_path = os.path.join(target_path, "lib", f"python{python_version}", "site-packages")
 
-    for root, dirs, files in os.walk(target_packages_path, topdown = False):
+    for root, dirs, files in os.walk(target_packages_path, topdown=False):
         for name in files:
             target_file_path = os.path.join(root, name)
-            
+
             if not os.path.islink(target_file_path):
-                #FIXME: some shitty edge case when the file as a space in the name
+                # FIXME: some shitty edge case when the file as a space in the name
                 if " " not in target_file_path:
-                    venv_file_relative_location= target_file_path.split(".venv")[1]                
+                    venv_file_relative_location = target_file_path.split(".venv")[1]
                     source_file_path = source_path + venv_file_relative_location
 
-                    if os.path.exists(source_file_path):        
+                    if os.path.exists(source_file_path):
                         if compare_files(source_file_path, target_file_path):
                             simlink_if_source_exists(source_file_path, target_file_path)
 
 
 def simlink_packages(env_yaml, dirName, pipenv_base):
-
-
     # make sure that the custom env python version matches the template
     # to be able to simlink 
 
@@ -161,7 +168,7 @@ def simlink_packages(env_yaml, dirName, pipenv_base):
         print("---------------")
         print(f"Applying Simlink {pipenv_base} packages to {dirName}")
         print("---------------")
-        
+
         source_directory = os.path.join(os.environ['PIPENV_VENV_TMP_BASE_PATH'], pipenv_base, ".venv")
         target_directory = os.path.join(dirName, ".venv")
 
@@ -170,14 +177,15 @@ def simlink_packages(env_yaml, dirName, pipenv_base):
         # some sheebang are at the top of some and potentialy
         # some lib file
         directories = ["bin", f"lib/python{os.environ['PIPENV_VENV_DEFAULT_PY_VERSION']}/site-packages"]
-        
+
         for directory in directories:
             current_source_directory = os.path.join(source_directory, directory)
             current_target_directory = os.path.join(target_directory, directory)
 
             for item in os.listdir(current_source_directory):
-                clean_dir(os.path.join(current_target_directory,item))
-                simlink_if_source_exists(os.path.joint(current_source_directory, item), os.path.join(current_target_directory, item))
+                clean_dir(os.path.join(current_target_directory, item))
+                simlink_if_source_exists(os.path.joint(current_source_directory, item),
+                                         os.path.join(current_target_directory, item))
 
         # simlink lib flat .so
         # /!\ not really sure about this strategy
@@ -186,9 +194,9 @@ def simlink_packages(env_yaml, dirName, pipenv_base):
         target_base_dir = os.path.join(target_directory, "lib")
         source_base_dir = os.path.join(source_directory, "lib")
         for item in os.listdir(target_base_dir):
-            #exclude folders
+            # exclude folders
             if os.path.isfile(item):
-                simlink_if_source_exists(os.path.join(source_base_dir, item), os.path.join(target_base_dir,item))
+                simlink_if_source_exists(os.path.join(source_base_dir, item), os.path.join(target_base_dir, item))
 
         print("---------------")
         print(f"Done Simlinking {pipenv_base} env")
@@ -206,7 +214,7 @@ def md5(filepath):
 def compare_files(source_path, target_path):
     source_md5 = md5(source_path)
     target_md5 = md5(target_path)
-    
+
     return source_md5 == target_md5
 
 
@@ -219,13 +227,13 @@ def clean_env(path, subdirList, fileList):
         print("---------------")
         print(f"Cleaning {path}")
         print("---------------")
-        
+
         dirs_to_clean = [".venv", "Pipfile", "Pipfile.lock", "__pycache__"]
         for dir_to_clean in dirs_to_clean:
             print(f"Cleaning {os.path.join(path, dir_to_clean)}")
 
             clean_dir(os.path.join(path, dir_to_clean).rstrip("/"))
-        
+
 
 def clean_useless_prod_packages(path):
     dirs_to_clean = ["wheel*", "pip*", "pip3*"]
@@ -245,4 +253,3 @@ def clean_file(path):
 def clean_dir_without_parent(path):
     os.system(f"rm -rf {path}")
     os.system(f"mkdir -p {path}")
-
