@@ -57,10 +57,6 @@ RUN apt-get install apt-transport-https & apt-get clean & apt-get update --allow
 # Install miniconda for python3.8 linux x86 64b
 RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-py38_4.11.0-Linux-x86_64.sh" && chmod +x Miniconda3-py38_4.11.0-Linux-x86_64.sh ; ./Miniconda3-py38_4.11.0-Linux-x86_64.sh -b -p $MINICONDA_INSTALL_PATH
 
-# to be remove later
-# hack because JL fucked up the base image
-RUN rm -rf /app
-
 COPY . /app
 
 WORKDIR /tmp
@@ -78,18 +74,24 @@ RUN dpkg -i cuda-keyring_1.0-1_all.deb
 
 RUN sed -i 's/deb https:\/\/developer.download.nvidia.com\/compute\/cuda\/repos\/ubuntu2004\/x86_64.*//g' /etc/apt/sources.list
 
-
-# Update apt repositories
-RUN apt-get update -y
-
 # Install dep pacakges
-RUN apt-get install -y \
-    python3-setuptools \
-    git-lfs \
-    libmagic1 \
-    libmysqlclient-dev \
-    libgl1
+RUN apt-get update && \
+    apt-get install -y \
+        python3-setuptools \
+        git-lfs \
+        libmagic1 \
+        libmysqlclient-dev \
+        libgl1 \
+        python3-distutils \
+        software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get install -y \
+        python3.7 \
+        python3.7-distutils \
+        cmake
+    
 
+WORKDIR /app
 # install python package
 RUN for package in $(cat /app/requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done && \
     pip3 uninstall -y gladia-api-utils && \
@@ -99,7 +101,7 @@ RUN for package in $(cat /app/requirements.txt); do echo "================="; ec
     rm /app/clean-layer.sh
 
 
-RUN pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
+RUN pip3 install pipenv nltk git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
     if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python3 setup_custom_envs.py -x -r /app/apis/ && python3 setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi && \
     if [ "$SKIP_NTLK_DL" = "false" ]; then python3 -c 'import nltk ;nltk.download("omw-1.4")'; fi && \
     if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] && rm -rf "/root/.cache/*"; fi && \
@@ -108,15 +110,19 @@ RUN pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_A
     if [ "$SKIP_NPM_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/npm*"; fi && \
     if [ "$SKIP_TMPFILES_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/tmp*"; fi && \
     pip3 uninstall -y pyarrow && \
-    $MINICONDA_INSTALL_PATH/bin/conda install -y -c conda-forge pyarrow && \
+#    $MINICONDA_INSTALL_PATH/bin/conda install -y -c conda-forge pyarrow && \
     apt-get clean && \
-    apt-get autoremove --purge && \
-    $MINICONDA_INSTALL_PATH/bin/conda clean --all
+    apt-get autoremove --purge 
+#    $MINICONDA_INSTALL_PATH/bin/conda clean --all
 
-WORKDIR /app
 
 EXPOSE 80
 
-RUN pip uninstall -y pyarrow
+RUN pip3 uninstall -y pyarrow
 
 CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
+#/usr/local/lib/python3.8/dist-packages/gladia_api_utils/model_management.py
+# check line 52, in download_model if model already exists, then skip download
+
+# install cmake https://vitux.com/how-to-install-cmake-on-ubuntu/
+# for dlib
