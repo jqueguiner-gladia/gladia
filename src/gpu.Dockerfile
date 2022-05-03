@@ -57,6 +57,9 @@ RUN apt-get install apt-transport-https & apt-get clean & apt-get update --allow
 # Install miniconda for python3.8 linux x86 64b
 RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-py38_4.11.0-Linux-x86_64.sh" && chmod +x Miniconda3-py38_4.11.0-Linux-x86_64.sh ; ./Miniconda3-py38_4.11.0-Linux-x86_64.sh -b -p $MINICONDA_INSTALL_PATH
 
+# Install Cmake
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.20.0/cmake-3.20.0.tar.gz && tar -zxvf cmake-3.20.0.tar.gz && cd cmake-3.20.0 && ./bootstrap && make && make install && apt-get install python3-dev && apt install libpython3.7-dev
+
 COPY . /app
 
 WORKDIR /tmp
