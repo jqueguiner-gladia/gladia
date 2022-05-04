@@ -110,7 +110,6 @@ RUN for package in $(cat /app/requirements.txt); do echo "================="; ec
 
 RUN pip3 install pipenv nltk git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
     if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python3 setup_custom_envs.py -x -r /app/apis/ && python3 setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi && \
-    if [ "$SKIP_NTLK_DL" = "false" ]; then python3 -c 'import nltk ;nltk.download("omw-1.4")'; fi && \
     if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] && rm -rf "/root/.cache/*"; fi && \
     if [ "$SKIP_PIP_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/pip*"; fi && \
     if [ "$SKIP_YARN_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/yarn*"; fi && \
