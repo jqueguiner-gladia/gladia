@@ -47,7 +47,7 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     NLTK_DATA="/tmp/gladia/nltk" \
     LC_ALL="C.UTF-8" \
     LANG="C.UTF-8" \
-    MINICONDA_INSTALL_PATH="/usr/local/miniconda" \
+    MINICONDA_INSTALL_PATH="/opt/conda" \
     distro="ubuntu2004" \
     arch="x86_64"
 
@@ -55,11 +55,11 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
 RUN apt-get install -y apt-transport-https & apt-get clean & apt-get update --allow-insecure-repositories -y
 
 # Install miniconda for python3.8 linux x86 64b
-RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-py38_4.11.0-Linux-x86_64.sh" && chmod +x Miniconda3-py38_4.11.0-Linux-x86_64.sh ; ./Miniconda3-py38_4.11.0-Linux-x86_64.sh -b -p $MINICONDA_INSTALL_PATH
+RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-py38_4.11.0-Linux-x86_64.sh" && chmod +x Miniconda3-py38_4.11.0-Linux-x86_64.sh ; ./Miniconda3-py38_4.11.0-Linux-x86_64.sh -b -p $MINICONDA_INSTALL_PATH && echo ". $MINICONDA_INSTALL_PATH/etc/profile.d/conda.sh" >> ~/.bashrc && echo "conda activate" >> ~/.bashrc
+SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]
 
 # Install Cmake
-RUN apt install -y libssl-dev && apt-get install -y python3-dev
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.20.0/cmake-3.20.0.tar.gz && tar -zxvf cmake-3.20.0.tar.gz && cd cmake-3.20.0 && ./bootstrap && make && make install
+RUN apt install -y libssl-dev && wget https://github.com/Kitware/CMake/releases/download/v3.20.0/cmake-3.20.0.tar.gz && tar -zxvf cmake-3.20.0.tar.gz > /dev/null && cd cmake-3.20.0 && ./bootstrap > /dev/null && make && make install && apt-get install -y python3-dev
 
 COPY . /app
 
@@ -79,7 +79,7 @@ RUN dpkg -i cuda-keyring_1.0-1_all.deb
 RUN sed -i 's/deb https:\/\/developer.download.nvidia.com\/compute\/cuda\/repos\/ubuntu2004\/x86_64.*//g' /etc/apt/sources.list
 
 # Add python repository and install python3.7
-RUN add-apt-repository -y ppa:deadsnakes/ppa && apt install -y python3.7 && apt install -y python3.7-distutils
+RUN add-apt-repository -y ppa:deadsnakes/ppa && apt install -y python3.7 && apt install -y python3.7-distutils && apt install -y python3.7-dev
 
 # Install dep pacakges
 RUN apt-get update && \
@@ -120,7 +120,7 @@ RUN pip3 install pipenv nltk git+https://github.com/gladiaio/gladia-api-utils.gi
 #    $MINICONDA_INSTALL_PATH/bin/conda install -y -c conda-forge pyarrow && \
     apt-get clean && \
     apt-get autoremove --purge 
-#    $MINICONDA_INSTALL_PATH/bin/conda clean --all
+#    $MINICONDA_INSTALL_PATH/bin/conda clean --all -y
 
 
 EXPOSE 80
