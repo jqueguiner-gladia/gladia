@@ -97,7 +97,7 @@ def simlink_if_source_exists(source_path, target_path):
     if not os.path.exists(source_path):
         return
 
-    if os.path.samefile(source_path, target_path):
+    if os.path.exists(target_path) and os.path.samefile(source_path, target_path):
         return
 
     if not os.path.islink(target_path):
