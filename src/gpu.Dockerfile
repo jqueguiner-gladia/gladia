@@ -96,6 +96,14 @@ RUN apt-get update && \
         python3.7 \
         python3.7-distutils \
         cmake
+
+# install terressact
+RUN apt-get install -y \
+        libleptonica-dev \
+        tesseract-ocr  \
+        libtesseract-dev \
+        python3-pil \
+        tesseract-ocr-all
     
 
 WORKDIR /app
