@@ -94,16 +94,18 @@ def get_env_conf(stream):
 
 
 def simlink_if_source_exists(source_path, target_path):
+    if not os.path.exists(source_path):
+        return
+
     if os.path.samefile(source_path, target_path):
         return
 
     if not os.path.islink(target_path):
-        if os.path.exists(source_path):
-            if os.path.abspath(source_path) != os.path.abspath(target_path):
-                try:
-                    os.system(f"ln -sf {source_path} {target_path}")
-                except Exception as e:
-                    pass
+        if os.path.abspath(source_path) != os.path.abspath(target_path):
+            try:
+                os.system(f"ln -sf {source_path} {target_path}")
+            except Exception as e:
+                pass
 
 
 def simlink_env_for_modality(path, modality, envs_base_dict):
@@ -115,7 +117,7 @@ def simlink_env_for_modality(path, modality, envs_base_dict):
 def simlink_lib_so_files(source_path, target_path):
     source_path = os.path.join(source_path, "lib")
     target_path = os.path.join(target_path, "lib")
-    
+
     if os.path.samefile(source_path, target_path):
         return
 
