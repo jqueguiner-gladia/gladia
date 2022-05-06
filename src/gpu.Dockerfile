@@ -129,12 +129,15 @@ RUN pip3 install pipenv nltk git+https://github.com/gladiaio/gladia-api-utils.gi
     apt-get autoremove --purge 
 #    $MINICONDA_INSTALL_PATH/bin/conda clean --all -y
 
+ENV PATH=$PATH:$MINICONDA_INSTALL_PATH/bin
 
 EXPOSE 80
 
 RUN pip3 uninstall -y pyarrow
 
-CMD ["sh", "-c", "echo $PWD && sh run_server_prod.sh"]
+ENTRYPOINT ["/bin/bash"]
+CMD ["run_server_prod.sh"]
+
 #/usr/local/lib/python3.8/dist-packages/gladia_api_utils/model_management.py
 # check line 52, in download_model if model already exists, then skip download
 
