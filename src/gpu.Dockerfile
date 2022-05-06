@@ -57,6 +57,7 @@ RUN apt-get install -y apt-transport-https & apt-get clean & apt-get update --al
 # Install miniconda for python3.8 linux x86 64b
 RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-py38_4.11.0-Linux-x86_64.sh" && chmod +x Miniconda3-py38_4.11.0-Linux-x86_64.sh ; ./Miniconda3-py38_4.11.0-Linux-x86_64.sh -b -p $MINICONDA_INSTALL_PATH && echo ". $MINICONDA_INSTALL_PATH/etc/profile.d/conda.sh" >> ~/.bashrc && echo "conda activate" >> ~/.bashrc
 SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]
+RUN ln -sf $MINICONDA_INSTALL_PATH/bin/python /usr/bin/python3
 
 # Install Cmake
 RUN apt install -y libssl-dev && wget https://github.com/Kitware/CMake/releases/download/v3.20.0/cmake-3.20.0.tar.gz && tar -zxvf cmake-3.20.0.tar.gz > /dev/null && cd cmake-3.20.0 && ./bootstrap > /dev/null && make && make install && apt-get install -y python3-dev
