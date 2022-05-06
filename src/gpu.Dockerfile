@@ -81,6 +81,8 @@ RUN sed -i 's/deb https:\/\/developer.download.nvidia.com\/compute\/cuda\/repos\
 # Add python repository and install python3.7
 RUN add-apt-repository -y ppa:deadsnakes/ppa && apt install -y python3.7 && apt install -y python3.7-distutils && apt install -y python3.7-dev
 RUN ln -sf $MINICONDA_INSTALL_PATH/bin/python /usr/bin/python3
+# https://stackoverflow.com/questions/42386097/python-add-apt-repository-importerror-no-module-named-apt-pkg 
+RUN sed -i "1s/.*/\#!\/usr\/bin\/python3.7/" /usr/bin/add-apt-repository
 
 # Install dep pacakges
 RUN apt-get update && \
