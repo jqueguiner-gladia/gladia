@@ -20,5 +20,5 @@ echo
 if [[ $# -eq 0 ]]; then
   exec "/bin/bash"
 else
-  exec "/opt/conda/bin/conda run -n basev /bin/bash -c $@"
+  exec "/opt/conda/bin/conda run -n base /bin/bash -c $@"
 fi
