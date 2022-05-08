@@ -154,7 +154,7 @@ EXPOSE 80
 #RUN pip3 uninstall -y pyarrow
 
 #ENTRYPOINT ["/bin/bash"]
-CMD ["run_server_prod.sh"]
+CMD ["/app/run_server_prod.sh"]
 
 #/usr/local/lib/python3.8/dist-packages/gladia_api_utils/model_management.py
 # check line 52, in download_model if model already exists, then skip download
