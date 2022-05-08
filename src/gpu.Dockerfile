@@ -153,7 +153,7 @@ EXPOSE 80
 
 #RUN pip3 uninstall -y pyarrow
 
-#ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash"]
 CMD ["/app/run_server_prod.sh"]
 
 #/usr/local/lib/python3.8/dist-packages/gladia_api_utils/model_management.py
