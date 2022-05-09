@@ -1,8 +1,7 @@
 #https://www.docker.com/blog/advanced-dockerfiles-faster-builds-and-smaller-images-using-buildkit-and-multistage-builds/
 ARG GLADIA_DOCKER_BASE=nvcr.io/nvidia/tritonserver:22.03-py3
 
-FROM $GLADIA_DOCKER_BASE
-
+FROM $GLADIA_DOCKER_BASE as builder
 
 # add build options to setup_custom_envs
 # can be -f to force rebuild of env if already exist
@@ -10,7 +9,7 @@ FROM $GLADIA_DOCKER_BASE
 # python3 setup_custom_envs.py --help
 #
 #Usage: setup_custom_envs.py [OPTIONS]
-#
+
 #Options:
 #  -r, --rootdir TEXT            Build env recursively from the provided
 #                                directory path
@@ -124,13 +123,17 @@ RUN for package in $(cat /app/requirements.txt); do echo "================="; ec
     pip3 uninstall -y gladia-api-utils && \
     pip3 uninstall -y botocore transformers && \
     pip3 install botocore transformers && \
+    pip3 install pipenv && \
+    pip3 install nltk && \
+    pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
     sh /app/clean-layer.sh && \
     rm /app/clean-layer.sh
 
-# Apply previously defined arguments
-RUN pip3 install pipenv nltk git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
-    if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python setup_custom_envs.py -x -r /app/apis/ && python setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi && \
-    if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] && rm -rf "/root/.cache/*"; fi && \
+# Build custom envs
+RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python setup_custom_envs.py -x -r /app/apis/ && python setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi
+
+# Clean caches
+RUN if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] && rm -rf "/root/.cache/*"; fi && \
     if [ "$SKIP_PIP_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/pip*"; fi && \
     if [ "$SKIP_YARN_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/yarn*"; fi && \
     if [ "$SKIP_NPM_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/npm*"; fi && \
@@ -144,6 +147,10 @@ RUN mv /usr/bin/python3 /usr/bin/python38 && \
     ln -sf /usr/bin/python /usr/bin/python3
 
 RUN mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
+
+FROM builder AS executor
+
+COPY --from=builder / /
 
 EXPOSE 80
 
