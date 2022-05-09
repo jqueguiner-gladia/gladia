@@ -3,7 +3,6 @@ ARG GLADIA_DOCKER_BASE=nvcr.io/nvidia/tritonserver:22.03-py3
 
 FROM $GLADIA_DOCKER_BASE
 
-
 # add build options to setup_custom_envs
 # can be -f to force rebuild of env if already exist
 # -p 1 is set by default for stability purposes
@@ -28,7 +27,7 @@ FROM $GLADIA_DOCKER_BASE
 #  -x, --clean_all_venv          Clean all cust venv
 #  --help                        Show this message and exit.
 
-ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env" \
+ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env"
 ARG SKIP_CUSTOM_ENV_BUILD="false"
 ARG SKIP_ROOT_CACHE_CLEANING="false"
 ARG SKIP_PIP_CACHE_CLEANING="false"
@@ -37,7 +36,6 @@ ARG SKIP_NPM_CACHE_CLEANING="false"
 ARG SKIP_TMPFILES_CACHE_CLEANING="false"
 ARG SKIP_NTLK_DL="false"
 ARG GLADIA_API_UTILS_BRANCH="main"
-
 
 ENV PIPENV_VENV_IN_PROJECT="enabled" \
     TOKENIZERS_PARALLELISM="true" \
@@ -137,27 +135,17 @@ RUN pip3 install pipenv nltk git+https://github.com/gladiaio/gladia-api-utils.gi
     if [ "$SKIP_YARN_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/yarn*"; fi && \
     if [ "$SKIP_NPM_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/npm*"; fi && \
     if [ "$SKIP_TMPFILES_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/tmp*"; fi && \
-#    pip3 uninstall -y pyarrow && \
-#    $MINICONDA_INSTALL_PATH/bin/conda install -y -c conda-forge pyarrow && \
     apt-get clean && \
     apt-get autoremove --purge 
-#    $MINICONDA_INSTALL_PATH/bin/conda clean --all -y
 
 ENV PATH=$MINICONDA_INSTALL_PATH/bin:$PATH
 
 RUN mv /usr/bin/python3 /usr/bin/python38 && \
     ln -sf /usr/bin/python /usr/bin/python3 
-RUN    mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
+RUN mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
 
 EXPOSE 80
-
-#RUN pip3 uninstall -y pyarrow
 
 ENTRYPOINT ["/bin/bash"]
 CMD ["/app/run_server_prod.sh"]
 
-#/usr/local/lib/python3.8/dist-packages/gladia_api_utils/model_management.py
-# check line 52, in download_model if model already exists, then skip download
-
-# install cmake https://vitux.com/how-to-install-cmake-on-ubuntu/
-# for dlib
