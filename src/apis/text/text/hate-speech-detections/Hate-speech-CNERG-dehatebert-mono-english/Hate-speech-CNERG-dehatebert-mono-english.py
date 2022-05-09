@@ -1,6 +1,9 @@
-import torch
+import os
+import numpy as np
+import tritonclient.http as tritonhttpclient
 
-from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import BertTokenizer
+
 
 def predict(text: str) -> str:
     """
@@ -10,20 +13,26 @@ def predict(text: str) -> str:
     :return: normal, hate-speech or offensive regarding the level of hate in the text
     """
 
-    labels = ["hate-speech", "normal", "offensive"]
-    model_name = 'Hate-speech-CNERG/bert-base-uncased-hatexplain'
+    LABELS = ["hate-speech", "normal", "offensive"]
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    MODEL_NAME = "bert-base-uncased-hatexplain"
+    TOKENIZER_NAME = 'Hate-speech-CNERG/bert-base-uncased-hatexplain'
 
-    model = BertForSequenceClassification.from_pretrained(model_name)
-    model.to(device)
+    TRITON_SEVER_URL = os.getenv("TRITON_SEVER_URL")
+    TRITON_SEVER_URL = TRITON_SEVER_URL if TRITON_SEVER_URL else 'localhost:8000'
 
-    tokenizer = BertTokenizer.from_pretrained(model_name)
+    triton_client = tritonhttpclient.InferenceServerClient(url=TRITON_SEVER_URL, verbose=False)
 
-    input = tokenizer(text, return_tensors="pt")
+    tokenizer = BertTokenizer.from_pretrained(TOKENIZER_NAME)
 
-    input = input.to(device)
+    input_ids = tokenizer(text, return_tensors="pt", max_length=256, padding="max_length").input_ids
 
-    outputs = model(**input)
+    input0 = tritonhttpclient.InferInput('input__0', (1, 256), 'INT32')
+    input0.set_data_from_numpy(input_ids.detach().numpy().astype(np.int32), binary_data=False)
 
-    return labels[torch.argmax(outputs.logits, dim=1)]
+    output0 = tritonhttpclient.InferRequestedOutput('output__0',  binary_data=False)
+
+    response = triton_client.infer(MODEL_NAME, model_version='1', inputs=[input0], outputs=[output0])
+    output = response.as_numpy("output__0")[0]
+
+    return LABELS[np.argmax(output)]
