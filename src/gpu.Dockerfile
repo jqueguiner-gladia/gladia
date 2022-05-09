@@ -1,8 +1,7 @@
 #https://www.docker.com/blog/advanced-dockerfiles-faster-builds-and-smaller-images-using-buildkit-and-multistage-builds/
 ARG GLADIA_DOCKER_BASE=nvcr.io/nvidia/tritonserver:22.03-py3
 
-FROM $GLADIA_DOCKER_BASE
-
+FROM $GLADIA_DOCKER_BASE as builder
 
 # add build options to setup_custom_envs
 # can be -f to force rebuild of env if already exist
@@ -10,7 +9,7 @@ FROM $GLADIA_DOCKER_BASE
 # python3 setup_custom_envs.py --help
 #
 #Usage: setup_custom_envs.py [OPTIONS]
-#
+
 #Options:
 #  -r, --rootdir TEXT            Build env recursively from the provided
 #                                directory path
@@ -28,7 +27,7 @@ FROM $GLADIA_DOCKER_BASE
 #  -x, --clean_all_venv          Clean all cust venv
 #  --help                        Show this message and exit.
 
-ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env" \
+ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env"
 ARG SKIP_CUSTOM_ENV_BUILD="false"
 ARG SKIP_ROOT_CACHE_CLEANING="false"
 ARG SKIP_PIP_CACHE_CLEANING="false"
@@ -51,7 +50,7 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     distro="ubuntu2004" \
     arch="x86_64"
 
-## Update apt repositories
+# Update apt repositories
 RUN apt-get install -y apt-transport-https && \
     apt-get clean && \
     apt-get update --allow-insecure-repositories -y
@@ -95,10 +94,6 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
         python3.7-distutils \
         python3.7-dev
 
-#RUN ln -sf $MINICONDA_INSTALL_PATH/bin/python /usr/bin/python3
-# https://stackoverflow.com/questions/42386097/python-add-apt-repository-importerror-no-module-named-apt-pkg 
-#RUN sed -i "1s/.*/\#!\/usr\/bin\/python3.7/" /usr/bin/add-apt-repository
-
 # Install dep pacakges
 RUN apt-get update && \
     apt-get install -y \
@@ -111,53 +106,54 @@ RUN apt-get update && \
     apt-get install -y \
         cmake
 
-# install terressact
+# Install terressact and its dependencies
 RUN apt-get install -y \
         libleptonica-dev \
         tesseract-ocr  \
         libtesseract-dev \
         python3-pil \
         tesseract-ocr-all
-    
+
 SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]
+
 WORKDIR /app
-# install python package
+
+# Install python packages
 RUN for package in $(cat /app/requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done && \
     pip3 uninstall -y gladia-api-utils && \
     pip3 uninstall -y botocore transformers && \
     pip3 install botocore transformers && \
+    pip3 install pipenv && \
+    pip3 install nltk && \
+    pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
     sh /app/clean-layer.sh && \
     rm /app/clean-layer.sh
 
+# Build custom envs
+RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python setup_custom_envs.py -x -r /app/apis/ && python setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi
 
-RUN pip3 install pipenv nltk git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
-    if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python setup_custom_envs.py -x -r /app/apis/ && python setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi && \
-    if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] && rm -rf "/root/.cache/*"; fi && \
+# Clean caches
+RUN if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] && rm -rf "/root/.cache/*"; fi && \
     if [ "$SKIP_PIP_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/pip*"; fi && \
     if [ "$SKIP_YARN_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/yarn*"; fi && \
     if [ "$SKIP_NPM_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/npm*"; fi && \
     if [ "$SKIP_TMPFILES_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/tmp*"; fi && \
-#    pip3 uninstall -y pyarrow && \
-#    $MINICONDA_INSTALL_PATH/bin/conda install -y -c conda-forge pyarrow && \
     apt-get clean && \
-    apt-get autoremove --purge 
-#    $MINICONDA_INSTALL_PATH/bin/conda clean --all -y
+    apt-get autoremove --purge
 
 ENV PATH=$MINICONDA_INSTALL_PATH/bin:$PATH
 
 RUN mv /usr/bin/python3 /usr/bin/python38 && \
-    ln -sf /usr/bin/python /usr/bin/python3 
-RUN    mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
+    ln -sf /usr/bin/python /usr/bin/python3
+
+RUN mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
+
+FROM builder AS executor
+
+COPY --from=builder / /
 
 EXPOSE 80
 
-#RUN pip3 uninstall -y pyarrow
-
 ENTRYPOINT ["/bin/bash"]
+
 CMD ["/app/run_server_prod.sh"]
-
-#/usr/local/lib/python3.8/dist-packages/gladia_api_utils/model_management.py
-# check line 52, in download_model if model already exists, then skip download
-
-# install cmake https://vitux.com/how-to-install-cmake-on-ubuntu/
-# for dlib
