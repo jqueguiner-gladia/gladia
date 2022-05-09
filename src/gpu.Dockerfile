@@ -28,7 +28,7 @@ FROM $GLADIA_DOCKER_BASE
 #  -x, --clean_all_venv          Clean all cust venv
 #  --help                        Show this message and exit.
 
-ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env" \
+ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env"
 ARG SKIP_CUSTOM_ENV_BUILD="false"
 ARG SKIP_ROOT_CACHE_CLEANING="false"
 ARG SKIP_PIP_CACHE_CLEANING="false"
