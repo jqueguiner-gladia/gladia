@@ -20,3 +20,5 @@ torchvision==0.10.1
 orjson==3.6.*
 pyaml
 sentencepiece==0.1.96 
+tritonclient==2.21.0
+tritonclient[http]
