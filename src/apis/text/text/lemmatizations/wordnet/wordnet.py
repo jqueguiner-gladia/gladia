@@ -2,6 +2,10 @@ import nltk
 
 from nltk.stem import WordNetLemmatizer
 
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
 def predict(sentence: str) -> [str]:
     """
     Lemmatize a given sentence
