@@ -9,7 +9,7 @@ services:
       - $PWD/models-download:/tmp/gladia
       - $PWD:/app
     environment:
-      - TRITON_SERVER_URL="${TRITON_SERVER_HOST}:${TRITON_SERVER_PORT}"
+      - TRITON_SERVER_URL=triton:${TRITON_SERVER_PORT}
 
   triton:
     image: "nvcr.io/nvidia/tritonserver:22.04-py3"
