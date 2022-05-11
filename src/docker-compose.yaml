@@ -6,7 +6,7 @@ services:
     ports:
       - 8080:80
     volumes:
-      - $PWD/models-download:/tmp/gladia
+      - triton-models:/tmp/gladia/triton
       - $PWD:/app
     environment:
       - TRITON_SERVER_URL=triton:${TRITON_SERVER_PORT}
@@ -20,7 +20,7 @@ services:
       - 8001:8001
       - 8002:8002
     volumes:
-      - $PWD/models-triton:/models
+      - triton-models:/models
     command: tritonserver --model-repository=/models --exit-on-error=false --model-control-mode=poll
     deploy:
       resources:
@@ -32,3 +32,4 @@ services:
 
 volumes:
   models:
+  triton-models:
