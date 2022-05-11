@@ -31,5 +31,4 @@ services:
               capabilities: [gpu]
 
 volumes:
-  models:
   triton-models:
