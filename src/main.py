@@ -7,7 +7,6 @@ import importlib
 
 from icecream import ic
 from fastapi import FastAPI
-# from pattern.text.en import singularize
 from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.timing import add_timing_middleware
