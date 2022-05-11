@@ -2,7 +2,10 @@ import os
 import numpy as np
 import tritonclient.http as tritonclient
 
+from time import sleep
+from warnings import warn
 from transformers import AutoTokenizer
+from gladia_api_utils.download_active_models import download_triton_model
 
 
 def softmax(x):
@@ -21,6 +24,17 @@ def predict(input_string: str) -> [dict]:
     MODEL_NAME = "ner_bert-large-cased-finetuned-conll03-english_base_traced"
     TOKENIZER_NAME = 'dbmdz/bert-large-cased-finetuned-conll03-english'
     TRITON_SEVER_URL = os.getenv("TRITON_SERVER_URL", default='localhost:8000')
+
+    triton_model_name = open(".git_path").read().split("/")[-1]
+    if not os.path.exists(os.path.join(os.getenv('TRITON_MODELS_PATH'), triton_model_name)):
+        warn('Downloading model from hugging-face, to prevent lazy downloading please specify TRITON_LAZY_DOWNLOAD=False')
+    
+        download_triton_model(
+            triton_models_dir=os.getenv('TRITON_MODELS_PATH'),
+            git_path=".git_path"
+        )
+
+        sleep(15)
 
     client = tritonclient.InferenceServerClient(url=TRITON_SEVER_URL, verbose=False)
 
