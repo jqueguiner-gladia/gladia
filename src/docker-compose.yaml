@@ -1,11 +1,34 @@
 version: "3"
-services: 
-  gladia: 
+
+services:
+  gladia:
     image: "gladiaio/gladia:latest"
-    ports: 
+    ports:
       - 8080:80
     volumes:
-      - models:/tmp/gladia
+      - triton-models:/tmp/gladia/triton
       - $PWD:/app
-volumes: 
-  models:
+    environment:
+      - TRITON_SERVER_URL=triton:${TRITON_SERVER_PORT}
+      - TRITON_LAZY_DOWNLOAD=True
+      - TRITON_MODELS_PATH=/tmp/gladia/triton
+
+  triton:
+    image: "nvcr.io/nvidia/tritonserver:22.04-py3"
+    ports:
+      - ${TRITON_SERVER_PORT}:8000
+      - 8001:8001
+      - 8002:8002
+    volumes:
+      - triton-models:/models
+    command: tritonserver --model-repository=/models --exit-on-error=false --model-control-mode=poll
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  triton-models:
