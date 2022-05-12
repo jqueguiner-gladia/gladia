@@ -1,4 +1,5 @@
 import os
+import requests
 import numpy as np
 import tritonclient.http as tritonclient
 
@@ -36,6 +37,8 @@ def predict(input_string: str) -> [dict]:
 
         sleep(15)
 
+    requests.post(url=f"http://{TRITON_SEVER_URL}/v2/repository/models/{MODEL_NAME}/load")
+
     client = tritonclient.InferenceServerClient(url=TRITON_SEVER_URL, verbose=False)
 
     tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_NAME)
@@ -68,5 +71,15 @@ def predict(input_string: str) -> [dict]:
         }
 
         predictions.append(pred)
+
+    response = requests.post(
+        url=f"http://{TRITON_SEVER_URL}/v2/repository/models/{MODEL_NAME}/unload",
+        data={
+            "unload_dependents": True,
+        }
+    )
+
+    if response.status_code != 200:
+        warn(f"{MODEL_NAME} has not been properly unloaded.")
 
     return predictions
