@@ -7,7 +7,6 @@ services:
       - 8080:80
     volumes:
       - triton-models:/tmp/gladia/triton
-      - $PWD:/app
     environment:
       - TRITON_SERVER_URL=triton:${TRITON_SERVER_PORT}
       - TRITON_LAZY_DOWNLOAD=True
