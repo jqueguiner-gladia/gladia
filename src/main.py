@@ -181,7 +181,8 @@ def import_submodules(package: 'module', recursive: bool = True) -> None:
 
 # Create directories to store triton's models
 os.environ["TRITON_MODELS_PATH"] = os.getenv("TRITON_MODELS_PATH", default="/tmp/gladia/triton")
-os.makedirs(os.environ["TRITON_MODELS_PATH"])
+if not os.path.exists(os.environ["TRITON_MODELS_PATH"]):
+    os.makedirs(os.environ["TRITON_MODELS_PATH"])
 
 # Download triton's models if TRITON_LAZY_DOWNLOAD is set to false
 if os.getenv("TRITON_LAZY_DOWNLOAD", 'True').lower() in ('false', '0', 'no'):
