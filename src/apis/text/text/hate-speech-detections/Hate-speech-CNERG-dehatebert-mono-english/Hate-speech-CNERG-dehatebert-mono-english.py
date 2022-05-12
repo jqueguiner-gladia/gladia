@@ -21,7 +21,8 @@ def predict(text: str) -> str:
     TOKENIZER_NAME = 'Hate-speech-CNERG/bert-base-uncased-hatexplain'
     TRITON_SEVER_URL = os.getenv("TRITON_SERVER_URL", default='localhost:8000')
 
-    triton_model_name = open(".git_path").read().split("/")[-1]
+
+    triton_model_name = open(os.path.join(os.path.split(__file__)[0], ".git_path")).read().split("/")[-1]
     if not os.path.exists(os.path.join(os.getenv('TRITON_MODELS_PATH'), triton_model_name)):
         warn('Downloading model from hugging-face, to prevent lazy downloading please specify TRITON_LAZY_DOWNLOAD=False')
     
