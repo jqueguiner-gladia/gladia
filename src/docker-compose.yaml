@@ -20,7 +20,7 @@ services:
       - 8002:8002
     volumes:
       - triton-models:/models
-    command: tritonserver --model-repository=/models --exit-on-error=false --model-control-mode=poll
+    command: tritonserver --model-repository=/models --exit-on-error=false --model-control-mode=explicit
     deploy:
       resources:
         reservations:
