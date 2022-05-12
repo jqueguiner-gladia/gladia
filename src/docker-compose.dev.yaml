@@ -4,7 +4,7 @@ services:
   gladia:
     image: ${GLADIA_SERVICE_IMAGE}
     ports:
-      - 8080:80
+      - ${GLADIA_SERVICE_PORT}:80
     volumes:
       - triton-models:/tmp/gladia/triton
       - $PWD:/app
