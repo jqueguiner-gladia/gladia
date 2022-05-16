@@ -7,12 +7,10 @@ import importlib
 
 from icecream import ic
 from fastapi import FastAPI
-# from pattern.text.en import singularize
 from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.timing import add_timing_middleware
 from prometheus_fastapi_instrumentator import Instrumentator
-from gladia_api_utils.download_active_models import download_active_triton_models
 
 
 def __init_config() -> dict:
@@ -179,18 +177,7 @@ def import_submodules(package: 'module', recursive: bool = True) -> None:
             ic(f"skipping {module_relative_path}")
 
 
-# Create directories to store triton's models
 os.environ["TRITON_MODELS_PATH"] = os.getenv("TRITON_MODELS_PATH", default="/tmp/gladia/triton")
-if not os.path.exists(os.environ["TRITON_MODELS_PATH"]):
-    os.makedirs(os.environ["TRITON_MODELS_PATH"])
-
-# Download triton's models if TRITON_LAZY_DOWNLOAD is set to false
-if os.getenv("TRITON_LAZY_DOWNLOAD", 'True').lower() in ('false', '0', 'no'):
-    download_active_triton_models(
-        triton_models_dir=os.environ["TRITON_MODELS_PATH"],
-        config_file_path="./config.json"
-    )
-
 
 config = __init_config()
 logger = __init_logging(config)
