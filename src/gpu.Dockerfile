@@ -48,7 +48,8 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     LANG="C.UTF-8" \
     MINICONDA_INSTALL_PATH="/opt/conda" \
     distro="ubuntu2004" \
-    arch="x86_64"
+    arch="x86_64" \
+    TRITON_MODELS_PATH="/tmp/gladia/triton"
 
 # Update apt repositories
 RUN apt-get install -y apt-transport-https && \
@@ -125,7 +126,7 @@ RUN for package in $(cat /app/requirements.txt); do echo "================="; ec
     pip3 install botocore transformers && \
     pip3 install pipenv && \
     pip3 install nltk && \
-    pip3 install git+https://github.com/gladiaio/gladia-api-utils.git\@$GLADIA_API_UTILS_BRANCH && \
+    pip3 install api_utils/ && \
     sh /app/clean-layer.sh && \
     rm /app/clean-layer.sh
 
