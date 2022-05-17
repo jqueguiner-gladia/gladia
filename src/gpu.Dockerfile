@@ -48,7 +48,10 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     MINICONDA_INSTALL_PATH="/opt/conda" \
     distro="ubuntu2004" \
     arch="x86_64" \
-    TRITON_MODELS_PATH="/tmp/gladia/triton"
+    TRITON_MODELS_PATH="/tmp/gladia/triton" \
+    TRITON_SERVER_PORT_HTTP=8000 \
+    TRITON_SERVER_PORT_GRPC=8001 \
+    TRITON_SERVER_PORT_HEALTH=8002
 
 # Update apt repositories
 RUN apt-get install -y apt-transport-https && \
