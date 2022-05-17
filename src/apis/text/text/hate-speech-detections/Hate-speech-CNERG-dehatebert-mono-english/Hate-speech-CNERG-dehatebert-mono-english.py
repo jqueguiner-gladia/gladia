@@ -23,48 +23,17 @@ def predict(text: str) -> str:
     TOKENIZER_NAME = 'Hate-speech-CNERG/bert-base-uncased-hatexplain'
     TRITON_SEVER_URL = os.getenv("TRITON_SERVER_URL", default='localhost:8000')
 
-    # triton_model_name = open(os.path.join(os.path.split(__file__)[0], ".git_path")).read().split("/")[-1]
-    # if not os.path.exists(os.path.join(os.getenv('TRITON_MODELS_PATH'), triton_model_name)):
-    #     warn('Downloading model from hugging-face, to prevent lazy downloading please specify TRITON_LAZY_DOWNLOAD=False')
-    
-    #     download_triton_model(
-    #         triton_models_dir=os.getenv('TRITON_MODELS_PATH'),
-    #         git_path=".git_path"
-    #     )
-
-    #     sleep(15)
-
-
     client = TritonClient(
         TRITON_SEVER_URL,
         MODEL_NAME,
         current_path=os.path.split(__file__)[0]
     )
 
-    # requests.post(url=f"http://{TRITON_SEVER_URL}/v2/repository/models/{MODEL_NAME}/load")
     tokenizer = BertTokenizer.from_pretrained(TOKENIZER_NAME)
 
     input_ids = tokenizer(text, return_tensors="pt", max_length=256, padding="max_length").input_ids
 
-    # input0 = tritonclient.InferInput('input__0', (1, 256), 'INT32')
-    # input0.set_data_from_numpy(input_ids.detach().numpy().astype(np.int32))
-
     client.register_new_input(shape=(1, 256), datatype='INT32')
     output = client(input_ids.detach().numpy().astype(np.int32))[0]
-
-    # output0 = tritonclient.InferRequestedOutput('output__0')
-
-    # response = client.infer(MODEL_NAME, model_version='1', inputs=[input0], outputs=[output0])
-    # output = response.as_numpy("output__0")[0]
-
-    response = requests.post(
-        url=f"http://{TRITON_SEVER_URL}/v2/repository/models/{MODEL_NAME}/unload",
-        data={
-            "unload_dependents": True,
-        }
-    )
-
-    if response.status_code != 200:
-        warn(f"{MODEL_NAME} has not been properly unloaded.")
 
     return LABELS[np.argmax(output)]
