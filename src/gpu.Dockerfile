@@ -37,7 +37,6 @@ ARG SKIP_TMPFILES_CACHE_CLEANING="false"
 ARG SKIP_NTLK_DL="false"
 ARG GLADIA_API_UTILS_BRANCH="main"
 
-
 ENV PIPENV_VENV_IN_PROJECT="enabled" \
     TOKENIZERS_PARALLELISM="true" \
     TRANSFORMERS_CACHE="/tmp/gladia/models/transformers" \
