@@ -1,7 +1,7 @@
 #https://www.docker.com/blog/advanced-dockerfiles-faster-builds-and-smaller-images-using-buildkit-and-multistage-builds/
 ARG GLADIA_DOCKER_BASE=nvcr.io/nvidia/tritonserver:22.03-py3
 
-FROM $GLADIA_DOCKER_BASE as builder
+FROM $GLADIA_DOCKER_BASE
 
 # add build options to setup_custom_envs
 # can be -f to force rebuild of env if already exist
@@ -51,7 +51,7 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     TRITON_MODELS_PATH="/tmp/gladia/triton" \
     TRITON_SERVER_PORT_HTTP=8000 \
     TRITON_SERVER_PORT_GRPC=8001 \
-    TRITON_SERVER_PORT_HEALTH=8002
+    TRITON_SERVER_PORT_METRICS=8002
 
 # Update apt repositories
 RUN apt-get install -y apt-transport-https && \
@@ -142,7 +142,7 @@ RUN if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] &&
     if [ "$SKIP_NPM_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/npm*"; fi && \
     if [ "$SKIP_TMPFILES_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/tmp*"; fi && \
     apt-get clean && \
-    apt-get autoremove --purge 
+    apt-get autoremove --purge
 
 ENV PATH=$MINICONDA_INSTALL_PATH/bin:$PATH
 
@@ -150,10 +150,6 @@ RUN mv /usr/bin/python3 /usr/bin/python38 && \
     ln -sf /usr/bin/python /usr/bin/python3
 
 RUN mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
-
-FROM builder AS executor
-
-COPY --from=builder / /
 
 EXPOSE 80
 
