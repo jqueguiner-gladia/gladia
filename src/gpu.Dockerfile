@@ -123,7 +123,7 @@ WORKDIR /app
 
 # Install python packages
 RUN for package in $(cat /app/requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done && \
-    pip3 uninstall -y gladia-api-utils && \
+    pip3 install -e ./api_utils/ && \
     pip3 uninstall -y botocore transformers && \
     pip3 install botocore transformers && \
     pip3 install pipenv && \
@@ -142,7 +142,7 @@ RUN if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] &&
     if [ "$SKIP_NPM_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/npm*"; fi && \
     if [ "$SKIP_TMPFILES_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/tmp*"; fi && \
     apt-get clean && \
-    apt-get autoremove --purge
+    apt-get autoremove --purge 
 
 ENV PATH=$MINICONDA_INSTALL_PATH/bin:$PATH
 
