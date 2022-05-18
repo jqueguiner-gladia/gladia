@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name="gladia-api-utils",
-    version="0.1.11",
+    version="0.1.12",
     description="Utils for Gladia APIs Framework",
     long_description=readme(),
     long_description_content_type="text/markdown",
@@ -22,7 +22,10 @@ setup(
     author_email="jlqueguiner@gladia.io",
     keywords="ai api fastapi artificial_intelligence gladia",
     license="MIT",
-    packages=["gladia_api_utils"],
+    packages=[
+        "gladia_api_utils",
+        "gladia_api_utils.triton_helper",
+    ],
     install_requires=[
         "PyYAML",
         "requests",
@@ -44,7 +47,9 @@ setup(
         "opencv-python",
         "python-forge",
         "inflect",
-        "python-multipart"
+        "python-multipart",
+        "tritonclient",
+        "tritonclient[http]",
     ],
     include_package_data=True,
     zip_safe=False,

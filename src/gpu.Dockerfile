@@ -9,7 +9,7 @@ FROM $GLADIA_DOCKER_BASE
 # python3 setup_custom_envs.py --help
 #
 #Usage: setup_custom_envs.py [OPTIONS]
-#
+
 #Options:
 #  -r, --rootdir TEXT            Build env recursively from the provided
 #                                directory path
@@ -47,9 +47,13 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     LANG="C.UTF-8" \
     MINICONDA_INSTALL_PATH="/opt/conda" \
     distro="ubuntu2004" \
-    arch="x86_64"
+    arch="x86_64" \
+    TRITON_MODELS_PATH="/tmp/gladia/triton" \
+    TRITON_SERVER_PORT_HTTP=8000 \
+    TRITON_SERVER_PORT_GRPC=8001 \
+    TRITON_SERVER_PORT_METRICS=8002
 
-## Update apt repositories
+# Update apt repositories
 RUN apt-get install -y apt-transport-https && \
     apt-get clean && \
     apt-get update --allow-insecure-repositories -y
@@ -93,10 +97,6 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
         python3.7-distutils \
         python3.7-dev
 
-#RUN ln -sf $MINICONDA_INSTALL_PATH/bin/python /usr/bin/python3
-# https://stackoverflow.com/questions/42386097/python-add-apt-repository-importerror-no-module-named-apt-pkg 
-#RUN sed -i "1s/.*/\#!\/usr\/bin\/python3.7/" /usr/bin/add-apt-repository
-
 # Install dep pacakges
 RUN apt-get update && \
     apt-get install -y \
@@ -109,42 +109,50 @@ RUN apt-get update && \
     apt-get install -y \
         cmake
 
-# install terressact
+# Install terressact and its dependencies
 RUN apt-get install -y \
         libleptonica-dev \
         tesseract-ocr  \
         libtesseract-dev \
         python3-pil \
         tesseract-ocr-all
-    
+
 SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]
+
 WORKDIR /app
-# install python package
+
+# Install python packages
 RUN for package in $(cat /app/requirements.txt); do echo "================="; echo "installing ${package}"; echo "================="; pip3 install $package; done && \
     pip3 install -e ./api_utils/ && \
     pip3 uninstall -y botocore transformers && \
     pip3 install botocore transformers && \
+    pip3 install pipenv && \
+    pip3 install nltk && \
+    pip3 install api_utils/ && \
     sh /app/clean-layer.sh && \
     rm /app/clean-layer.sh
 
+# Build custom envs
+RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python setup_custom_envs.py -x -r /app/apis/ && python setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi
 
-RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then cd /app/venv-builder && python setup_custom_envs.py -x -r /app/apis/ && python setup_custom_envs.py $SETUP_CUSTOM_ENV_BUILD_MODE; fi && \
-    if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] && rm -rf "/root/.cache/*"; fi && \
+# Clean caches
+RUN if [ "$SKIP_ROOT_CACHE_CLEANING" = "false" ]; then [ -d "/root/.cache/" ] && rm -rf "/root/.cache/*"; fi && \
     if [ "$SKIP_PIP_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/pip*"; fi && \
     if [ "$SKIP_YARN_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/yarn*"; fi && \
     if [ "$SKIP_NPM_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/npm*"; fi && \
     if [ "$SKIP_TMPFILES_CACHE_CLEANING" = "false" ]; then rm -rf "/tmp/tmp*"; fi && \
     apt-get clean && \
-    apt-get autoremove --purge 
+    apt-get autoremove --purge
 
 ENV PATH=$MINICONDA_INSTALL_PATH/bin:$PATH
 
 RUN mv /usr/bin/python3 /usr/bin/python38 && \
-    ln -sf /usr/bin/python /usr/bin/python3 
+    ln -sf /usr/bin/python /usr/bin/python3
+
 RUN mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
 
 EXPOSE 80
 
 ENTRYPOINT ["/bin/bash"]
-CMD ["/app/run_server_prod.sh"]
 
+CMD ["/app/run_server_prod.sh"]

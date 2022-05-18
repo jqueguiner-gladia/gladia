@@ -1,6 +1,14 @@
-import torch
+import os
+import requests
+import numpy as np
+# import tritonclient.http as tritonclient
 
-from transformers import BertTokenizer, BertForSequenceClassification
+# from time import sleep
+from warnings import warn
+from transformers import BertTokenizer
+from gladia_api_utils.triton_helper import TritonClient
+# from gladia_api_utils.triton_helper import download_triton_model
+
 
 def predict(text: str) -> str:
     """
@@ -10,20 +18,22 @@ def predict(text: str) -> str:
     :return: normal, hate-speech or offensive regarding the level of hate in the text
     """
 
-    labels = ["hate-speech", "normal", "offensive"]
-    model_name = 'Hate-speech-CNERG/bert-base-uncased-hatexplain'
+    LABELS = ["hate-speech", "normal", "offensive"]
+    MODEL_NAME = "hate-speech-detection_bert-base-uncased-hatexplain_base_traced"
+    TOKENIZER_NAME = 'Hate-speech-CNERG/bert-base-uncased-hatexplain'
+    TRITON_SEVER_URL = os.getenv("TRITON_SERVER_URL", default='localhost:8000')
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    client = TritonClient(
+        TRITON_SEVER_URL,
+        MODEL_NAME,
+        current_path=os.path.split(__file__)[0]
+    )
 
-    model = BertForSequenceClassification.from_pretrained(model_name)
-    model.to(device)
+    tokenizer = BertTokenizer.from_pretrained(TOKENIZER_NAME)
 
-    tokenizer = BertTokenizer.from_pretrained(model_name)
+    input_ids = tokenizer(text, return_tensors="pt", max_length=256, padding="max_length").input_ids
 
-    input = tokenizer(text, return_tensors="pt")
+    client.register_new_input(shape=(1, 256), datatype='INT32')
+    output = client(input_ids.detach().numpy().astype(np.int32))[0]
 
-    input = input.to(device)
-
-    outputs = model(**input)
-
-    return labels[torch.argmax(outputs.logits, dim=1)]
+    return LABELS[np.argmax(output)]

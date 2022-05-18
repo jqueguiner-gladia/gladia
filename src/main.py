@@ -7,7 +7,6 @@ import importlib
 
 from icecream import ic
 from fastapi import FastAPI
-# from pattern.text.en import singularize
 from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.timing import add_timing_middleware
@@ -177,6 +176,8 @@ def import_submodules(package: 'module', recursive: bool = True) -> None:
         else:
             ic(f"skipping {module_relative_path}")
 
+
+os.environ["TRITON_MODELS_PATH"] = os.getenv("TRITON_MODELS_PATH", default="/tmp/gladia/triton")
 
 config = __init_config()
 logger = __init_logging(config)
