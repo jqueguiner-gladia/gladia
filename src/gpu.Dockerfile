@@ -51,7 +51,8 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     TRITON_MODELS_PATH="/tmp/gladia/triton" \
     TRITON_SERVER_PORT_HTTP=8000 \
     TRITON_SERVER_PORT_GRPC=8001 \
-    TRITON_SERVER_PORT_METRICS=8002
+    TRITON_SERVER_PORT_METRICS=8002 \
+    PATH_TO_GLADIA_SRC=/app
 
 # Update apt repositories
 RUN apt-get install -y apt-transport-https && \
