@@ -113,7 +113,6 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
                 
         nb_test_ran += 1
         
-        print(nb_test_ran, nb_total_tests)
         progress = round((nb_test_ran / nb_total_tests)*100, 2)
         print(f"|  |__ {status} {model} ({progress}%)  <{response.status_code}>")
         print(f"|  |")
