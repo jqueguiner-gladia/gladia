@@ -1,6 +1,6 @@
 python warm_up.py
 
-API_SERVER_PORT_HTTP="${API_SERVER_PORT_HTTP:-80}"
+API_SERVER_PORT_HTTP="${API_SERVER_PORT_HTTP:-8080}"
 
 tritonserver \
   --http-port ${TRITON_SERVER_PORT_HTTP} \
