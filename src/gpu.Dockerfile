@@ -1,5 +1,6 @@
 #https://www.docker.com/blog/advanced-dockerfiles-faster-builds-and-smaller-images-using-buildkit-and-multistage-builds/
 ARG GLADIA_DOCKER_BASE=nvcr.io/nvidia/tritonserver:22.03-py3
+ARG API_SERVER_PORT_HTTP=8080
 
 FROM $GLADIA_DOCKER_BASE
 
@@ -152,7 +153,7 @@ RUN mv /usr/bin/python3 /usr/bin/python38 && \
 
 RUN mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
 
-EXPOSE 80
+EXPOSE $API_SERVER_PORT_HTTP
 
 ENTRYPOINT ["/bin/bash"]
 
