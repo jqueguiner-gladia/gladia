@@ -1,6 +1,6 @@
 #https://www.docker.com/blog/advanced-dockerfiles-faster-builds-and-smaller-images-using-buildkit-and-multistage-builds/
 ARG GLADIA_DOCKER_BASE=nvcr.io/nvidia/tritonserver:22.03-py3
-ARG API_SERVER_PORT_HTTP=8080
+
 ARG DOCKER_USER=ubuntu
 ARG DOCKER_GROUP=ubuntu
 
@@ -42,6 +42,7 @@ ARG GLADIA_API_UTILS_BRANCH="main"
 
 ENV PIPENV_VENV_IN_PROJECT="enabled" \
     TOKENIZERS_PARALLELISM="true" \
+    PATH_TO_GLADIA_SRC="/app" \
     TRANSFORMERS_CACHE="/tmp/gladia/models/transformers" \
     PYTORCH_TRANSFORMERS_CACHE="/tmp/gladia/models/pytorch_transformers" \
     PYTORCH_PRETRAINED_BERT_CACHE="/tmp/gladia/models/pytorch_pretrained_bert" \
@@ -55,7 +56,8 @@ ENV PIPENV_VENV_IN_PROJECT="enabled" \
     TRITON_SERVER_PORT_HTTP=8000 \
     TRITON_SERVER_PORT_GRPC=8001 \
     TRITON_SERVER_PORT_METRICS=8002 \
-    PATH_TO_GLADIA_SRC=/app
+    API_SERVER_PORT_HTTP=8080 \
+    API_SERVER_WORKERS=1
 
 # Update apt repositories
 RUN apt-get install -y apt-transport-https && \
