@@ -65,8 +65,8 @@ RUN mkdir -p $TRITON_MODELS_PATH && \
     mkdir -p $PYTORCH_TRANSFORMERS_CACHE && \
     mkdir -p $PYTORCH_PRETRAINED_BERT_CACHE && \
     mkdir -p $NLTK_DATA && \
-    mkdir -p $TRITON_MODELS_PATH 
-
+    mkdir -p $TRITON_MODELS_PATH \
+    mkdir -p $PATH_TO_GLADIA_SRC
 
 # Update apt repositories
 RUN apt-get install -y apt-transport-https && \
@@ -166,8 +166,8 @@ RUN mv /usr/bin/python3 /usr/bin/python38 && \
 
 RUN mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
 
-ARG DOCKER_USER=ubuntu
-ARG DOCKER_GROUP=ubuntu
+ARG DOCKER_USER=root
+ARG DOCKER_GROUP=root
 
 # API_SERVER_PORT_HTTP is set as a build arg
 # in order to manage the EXPOSE port param
