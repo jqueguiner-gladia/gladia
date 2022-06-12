@@ -1,12 +1,6 @@
 #https://www.docker.com/blog/advanced-dockerfiles-faster-builds-and-smaller-images-using-buildkit-and-multistage-builds/
 ARG GLADIA_DOCKER_BASE=nvcr.io/nvidia/tritonserver:22.03-py3
 
-# API_SERVER_PORT_HTTP is set as a build arg
-# in order to manage the EXPOSE port param
-ARG API_SERVER_PORT_HTTP=8080
-ARG DOCKER_USER=ubuntu
-ARG DOCKER_GROUP=ubuntu
-
 FROM $GLADIA_DOCKER_BASE
 
 # add build options to setup_custom_envs
@@ -171,6 +165,13 @@ RUN mv /usr/bin/python3 /usr/bin/python38 && \
     ln -sf /usr/bin/python /usr/bin/python3
 
 RUN mv /app/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh
+
+ARG DOCKER_USER=ubuntu
+ARG DOCKER_GROUP=ubuntu
+
+# API_SERVER_PORT_HTTP is set as a build arg
+# in order to manage the EXPOSE port param
+ARG API_SERVER_PORT_HTTP=8080
 
 RUN chown -R $DOCKER_USER:$DOCKER_GROUP $PATH_TO_GLADIA_SRC && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $GLADIA_TMP_PATH
