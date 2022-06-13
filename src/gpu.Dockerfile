@@ -88,7 +88,7 @@ RUN apt install -y libssl-dev && \
     make && \
     make install
 
-COPY . /app
+COPY . $PATH_TO_GLADIA_SRC
 
 WORKDIR /tmp
 
