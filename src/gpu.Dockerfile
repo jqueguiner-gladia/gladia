@@ -68,6 +68,8 @@ RUN mkdir -p $TRITON_MODELS_PATH && \
     mkdir -p $PATH_TO_GLADIA_SRC
 
 # Update apt repositories
+RUN apt-key del 7fa2af80
+
 RUN apt-get install -y apt-transport-https && \
     apt-get clean && \
     apt-get update --allow-insecure-repositories -y
