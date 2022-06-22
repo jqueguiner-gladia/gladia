@@ -56,10 +56,7 @@ Follow Gladia Twitter account to get the latest update
 [Join our Discord Community Server](https://discord.com/invite/HeuCTxnXrE)
 
 # What's Gladia
-We are the web developer 1 stop shop for AI. 
-From voice synthesizing, to sentiment analysis and offensive content detection, all of your needs solved in one place. 
-With our unique AI API library, you can integrate all AI APIs with any tool. 
-No more headaches choosing the right model and integrating it with your project!
+AI is not an easy topic, we have solved that for you! The web developer 1 stop shop for AI APIs. Translation, Speech and Amazon Polly Text to Speech (TTS), Sentiment Analysis, Voice synthesis (speech-to-text), Offensive Content Detection, Background removal, Face Detection, Object Detection, and more to come. One library to rule them all!
 
 # Quickstart
 ## Magic Start
