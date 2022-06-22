@@ -55,7 +55,11 @@ Follow Gladia Twitter account to get the latest update
 
 [Join our Discord Community Server](https://discord.com/invite/HeuCTxnXrE)
 
-
+# What's Gladia
+We are the web developer 1 stop shop for AI. 
+From voice synthesizing, to sentiment analysis and offensive content detection, all of your needs solved in one place. 
+With our unique AI API library, you can integrate all AI APIs with any tool. 
+No more headaches choosing the right model and integrating it with your project!
 
 # Quickstart
 ## Magic Start
