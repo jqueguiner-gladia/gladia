@@ -1,0 +1,15 @@
+name: common-base
+
+dependencies:
+  - python=3.8.12
+  - conda-forge::cudatoolkit
+  - conda-forge::cudnn
+  - conda-forge::pip
+  - conda-forge::setuptools
+  - conda-forge::wheel
+  - conda-forge::mkl
+  - conda-forge::mkl-service
+  - pip:
+    - -e /app/api_utils/
+    - tritonclient[http]
+    - tritonclient==2.21.0

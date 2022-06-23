@@ -1,0 +1,4 @@
+name: common-sklearn
+
+dependencies: 
+  - conda-forge::scikit-learn

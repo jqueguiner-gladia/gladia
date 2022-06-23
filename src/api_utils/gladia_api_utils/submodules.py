@@ -1,15 +1,15 @@
 import os
 import re
 import sys
+import json
 import forge
-import asyncio
 import pathlib
 import inflect
 import tempfile
 import warnings
 import starlette
 import importlib
-import json
+import subprocess
 
 from shlex import quote
 from pathlib import Path
@@ -114,6 +114,27 @@ def versions_list(root_path=None) -> list:
 
     return versions, package_path
 
+
+def exec_in_custom_env(path_to_env_file: str, cmd: str):
+    path = path_to_env_file.split("/")
+
+    task = path[-3]
+    model = path[-2]
+
+    env_name = f"{task}-{model}"
+
+    cmd = f"micromamba activate {env_name} && {cmd}"
+
+    try:
+        full_cmd = f"""eval "$(micromamba shell hook --shell=bash)" && {cmd}"""
+
+        process = subprocess.Popen(full_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
+        output, error = process.communicate()
+
+        print("[error]:", error)
+
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError(f"Couldn't activate custom env {env_name}: {error}")
 
 class TaskRouter:
     def __init__(self, router: APIRouter, input, output, default_model: str):
@@ -227,9 +248,11 @@ class TaskRouter:
 
             # if a virtualenv
             if os.path.isfile(os.path.join(module_path, 'env.yaml')):
-                if not os.path.isdir(os.path.join(module_path, '.venv')):
-                    # FIXME: this is not working
-                    os.system(f"python3 {os.getenv('PATH_TO_GLADIA_SRC')}/venv-builder/setup_custom_envs.py -l -p 1 -r " + module_path)
+
+                PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
+
+                print("IT IS A VIRTUALENV --- ")
+                print(os.path.join(f'{PATH_TO_GLADIA_SRC}/{module_path}', 'env.yaml'))
 
                 routeur = singularize(self.root_package_path)
 
@@ -253,47 +276,47 @@ class TaskRouter:
 
                 output_tmp_result = tempfile.NamedTemporaryFile().name
                 sync = False
-                kwargs_str = json.dumps(kwargs).replace('"', '\\"')
 
                 model = quote(model)
                 output_tmp_result = quote(output_tmp_result)
 
-                # check https://www.dev2qa.com/how-to-import-a-python-module-from-a-python-file-full-path/
-                # for a better solution
+                cmd = f"""
+python - <<-EOF
 
-                cmd = f"""LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/opt/conda/lib; cd {os.getenv("PATH_TO_GLADIA_SRC")}/{module_path} && \
-pipenv run python3 -c "
 import os
-os.environ['LD_LIBRARY_PATH'] = '/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/opt/conda/lib'
-from PIL import Image
 import importlib.util
-spec = importlib.util.spec_from_file_location('/app/{module_path}', '/app/{module_path}/{model}.py')
-this_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(this_module)
-output = this_module.predict(**{kwargs_str})
 
-#FIXME
-## convert output to bytes
-## move this to string comparison
+from PIL import Image
+
+os.environ['LD_LIBRARY_PATH'] = '/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/opt/conda/lib'
+
+spec = importlib.util.spec_from_file_location('{PATH_TO_GLADIA_SRC}/{module_path}', '{PATH_TO_GLADIA_SRC}/{module_path}/{model}.py')
+this_module = importlib.util.module_from_spec(spec)
+
+spec.loader.exec_module(this_module)
+
+output = this_module.predict(**{kwargs})
+
 if isinstance(output, Image.Image):
     output.save('{output_tmp_result}', format='PNG')
 else:
     with open('{output_tmp_result}', 'w') as f:
         f.write(str(output))
-" """
-                
-                proc = await asyncio.create_subprocess_shell(
-                    cmd,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                    start_new_session=True)
+EOF
+"""
 
-                stdout, stderr = await proc.communicate()
+                try:
+                    exec_in_custom_env(
+                        path_to_env_file=os.path.join(f'{PATH_TO_GLADIA_SRC}/{module_path}', 'env.yaml'),
+                        cmd=cmd
+                    )
 
-                print()
-                print(stderr)
-                print()
-                
+                except Exception as e:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail=f"The following error occurred: {str(e)}"
+                    )
+
                 if is_binary_file(output_tmp_result):
                     file = open(output_tmp_result, "rb")
                     result = file.read()
@@ -301,8 +324,7 @@ else:
                 else:
                     file = open(output_tmp_result, "r")
                     result = file.read()
-                    file.close()    
-                
+                    file.close()
 
                 os.system(f"rm {output_tmp_result}")
 
@@ -310,10 +332,12 @@ else:
                     os.system(f"rm {input_file}")
 
             else:
+
                 this_module = importlib.machinery.SourceFileLoader(
                     model, f"{self.root_package_path}/{model}/{model}.py"
                 ).load_module()
 
+                # C'est ici qu'il lance le process sans venv
                 result = getattr(this_module, f"predict")(*args, **kwargs)
             try:
                 return cast_response(result, self.output)
