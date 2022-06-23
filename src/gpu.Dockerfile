@@ -131,8 +131,7 @@ RUN apt-get install -y \
 WORKDIR /app
 
 RUN micromamba create -f env.yaml
-# RUN micromamba run -n server /bin/bash -c "cd venv-builder/ && python3 create_default_envs.py"
-RUN micromamba run -n server /bin/bash -c "cd venv-builder/ && python3 create_custom_envs.py"
+RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then micromamba run -n server /bin/bash -c "cd venv-builder/ && python3 create_custom_envs.py"; fi
 SHELL ["/usr/local/bin/micromamba", "run", "-n", "server", "/bin/bash", "-c"]
 
 ENV LD_PRELOAD="/opt/tritonserver/backends/pytorch/libmkl_rt.so"
