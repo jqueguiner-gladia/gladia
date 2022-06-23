@@ -3,30 +3,6 @@ ARG GLADIA_DOCKER_BASE=nvcr.io/nvidia/tritonserver:22.03-py3
 
 FROM $GLADIA_DOCKER_BASE
 
-# add build options to setup_custom_envs
-# can be -f to force rebuild of env if already exist
-# -p 1 is set by default for stability purposes
-# python3 setup_custom_envs.py --help
-#
-#Usage: setup_custom_envs.py [OPTIONS]
-
-#Options:
-#  -r, --rootdir TEXT            Build env recursively from the provided
-#                                directory path
-#  -p, --poolsize INTEGER        Parallelness if set to 0 will use all threads
-#  -s, --simlink                 Will simlink gladia-api-utils from the local
-#                                version of gladia-api-utils
-#  -c, --compact_mode            Enable compact mode simlinking the default
-#                                packages
-#  -f, --force                   Force rebuilding venv
-#  -b, --base                    Build the base for custom env
-#  -t, --trash_cache             Trash the pipenv cache
-#  -l, --local_venv_trash_cache  Trash the pipenv cache on cust venv
-#  -d, --teardown_common_env     Tear common venv
-#  -B, --build_all_env           Build all cust venv
-#  -x, --clean_all_venv          Clean all cust venv
-#  --help                        Show this message and exit.
-
 ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env"
 ARG SKIP_CUSTOM_ENV_BUILD="false"
 ARG SKIP_ROOT_CACHE_CLEANING="false"
@@ -85,7 +61,7 @@ RUN apt-get install -y apt-transport-https && \
 # Install Cmake
 RUN apt install -y libssl-dev && \
     apt install -y libpng-dev libjpeg-dev
-    
+
 COPY . $PATH_TO_GLADIA_SRC
 
 WORKDIR /tmp
