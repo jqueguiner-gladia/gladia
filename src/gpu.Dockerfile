@@ -55,9 +55,7 @@ RUN apt-get install -y apt-transport-https && \
     apt-get clean && \
     apt-get update --allow-insecure-repositories -y
 
-# Install Cmake
-RUN apt install -y libssl-dev && \
-    apt install -y libpng-dev libjpeg-dev
+RUN apt install -y libssl-dev libpng-dev libjpeg-dev
 
 COPY . $PATH_TO_GLADIA_SRC
 
