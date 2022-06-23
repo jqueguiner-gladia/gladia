@@ -3,7 +3,6 @@ ARG GLADIA_DOCKER_BASE=nvcr.io/nvidia/tritonserver:22.03-py3
 
 FROM $GLADIA_DOCKER_BASE
 
-ARG SETUP_CUSTOM_ENV_BUILD_MODE="--local_venv_trash_cache --force --simlink --compact_mode --poolsize 1 --base --build_all_env"
 ARG SKIP_CUSTOM_ENV_BUILD="false"
 ARG SKIP_ROOT_CACHE_CLEANING="false"
 ARG SKIP_PIP_CACHE_CLEANING="false"
