@@ -53,9 +53,10 @@ RUN sed -i 's/deb https:\/\/developer.download.nvidia.com\/compute\/cuda\/repos\
 
 RUN apt-get install -y apt-transport-https && \
     apt-get clean && \
-    apt-get update --allow-insecure-repositories -y
-
-RUN apt install -y libssl-dev libpng-dev libjpeg-dev
+    apt-get update --allow-insecure-repositories -y && \
+    apt install -y libssl-dev \
+    libpng-dev \
+    libjpeg-dev
 
 COPY . $PATH_TO_GLADIA_SRC
 
