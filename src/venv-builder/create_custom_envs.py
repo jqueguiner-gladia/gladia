@@ -13,7 +13,7 @@ def retrieve_package_from_env_file(env_file: dict) -> Tuple[List[str], List[str]
     packages_to_install_from_pip = []
     packages_to_install_from_channel = []
 
-    for idx, package in enumerate(env_file["dependencies"]):
+    for package in env_file["dependencies"]:
         if type(package) == dict and "pip" in package.keys():
             for pip_package in package["pip"]:
                 packages_to_install_from_pip.append(pip_package)
