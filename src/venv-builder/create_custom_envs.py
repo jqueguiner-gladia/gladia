@@ -13,6 +13,9 @@ def retrieve_package_from_env_file(env_file: dict) -> Tuple[List[str], List[str]
     packages_to_install_from_pip = []
     packages_to_install_from_channel = []
 
+    if env_file is None or "dependencies" not in env_file.keys():
+        return packages_to_install_from_pip, packages_to_install_from_channel
+
     for package in env_file["dependencies"]:
         if type(package) == dict and "pip" in package.keys():
             for pip_package in package["pip"]:
@@ -34,7 +37,10 @@ def create_temp_env_file(
     content = """
 name: """ + env_name + """
 
-dependencies:""" + ''.join([f"\n  - {package}" for package in packages_to_install_from_channel])+ """
+dependencies:""" + ''.join([f"\n  - {package}" for package in packages_to_install_from_channel])
+
+    if packages_to_install_from_pip is not None and len(packages_to_install_from_pip) > 0:
+        content += """
   - pip:""" + ''.join([f"\n    - {package}" for package in packages_to_install_from_pip])
 
     with open(tmp.name, "w") as f:
@@ -49,6 +55,9 @@ def create_custom_env(env_name: str, path_to_env_file: str) -> None:
     print(f"Creating env : {env_name}")
 
     custom_env = yaml.safe_load(open(path_to_env_file, "r"))
+
+    if custom_env is None:
+        raise RuntimeError("Provided config env is empty, you must either specify `inherit` or `dependencies`.")
 
     packages_to_install_from_pip, packages_to_install_from_channel = retrieve_package_from_env_file(custom_env)
 
