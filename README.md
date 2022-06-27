@@ -89,12 +89,27 @@ docker build -t gladia -f gpu.Dockerfile .
 ## Running the dev environement
 This will create a 'model' volume that will store, once and for all, the AI models
 ```sh
-docker-compose -f docker-compose.yaml up -d
+docker-compose down && \
+docker-compose pull && \
+docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
 ```
 
 You can stop the services without removing the 'model' volume
 ```sh
-docker-compose -f docker-compose.yaml down
+docker-compose down
+```
+
+## Running the production environement
+This will create a 'model' volume that will store, once and for all, the AI models
+```sh
+docker-compose down && \
+docker-compose pull && \
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
+```
+
+You can stop the services without removing the 'model' volume
+```sh
+docker-compose down
 ```
 
 You can log in one the instances and run the tests 
@@ -102,12 +117,6 @@ You can log in one the instances and run the tests
 docker-compose exec gladia /bin/bash
 cd unit-test
 python test.py -c
-```
-
-
-## Running the production environement
-```
-docker run -d -p 8080:8080 gladiaio/gladia:latest
 ```
 
 # CI
