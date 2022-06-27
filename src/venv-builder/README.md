@@ -26,7 +26,7 @@ Note : a custom environment must have either a conda-forge dependency, a pip dep
 
 ## Usage
 
-Before building any custom environment be sure to be in the `venv-builder` folder.
+Before building any custom environment, be sure to be in the `venv-builder` folder.
 
 usages:
 * To build every custom envs : `python create_custom_envs.py`
