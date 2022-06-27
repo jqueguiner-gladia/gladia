@@ -1,0 +1,6 @@
+version: "3"
+
+services:
+  gladia:
+    ports:
+      - 80:8080
