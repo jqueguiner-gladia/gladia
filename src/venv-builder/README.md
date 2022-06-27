@@ -28,7 +28,7 @@ Note : a custom environment must have either a conda-forge dependency, a pip dep
 
 Before building any custom environment, be sure to be in the `venv-builder` folder.
 
-usages:
+Usages:
 * To build every custom envs : `python create_custom_envs.py`
 * To build every a specific custom envs : `python create_custom_envs.py --name PATH_TO_A_TASK` \
 (You can specify mutliple paths using multiple times the `--name` flag and can specify a path to a specific model or `env.yaml` instead of task)
