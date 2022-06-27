@@ -6,7 +6,7 @@ Each task/model can have an `env.yaml` file describing the custom environment to
 
 Notes :
 - If both the task and the model has an `env.yaml` file, the model custom environment will prime fot his specific model.\
-- If a model does not have an `env.yaml` file but the task do, the model will be launched using the `env.yaml` file.
+- If a model does not have an `env.yaml` file but the task do, the model will be launched using the task's `env.yaml` file.
 
 An `env.yaml` file is described as follow:
 ```yaml
