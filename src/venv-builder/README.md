@@ -20,7 +20,7 @@ dependencies:
 ```
 
 A custom environment can inherit from templates (see [this folder](src/venv-builder/envs)).\
-Templates contains multiple package related to either a modality (i.e image) or a package (i.e pytorch). Templates are useful to build custom environment without having to list each packages each time.
+Templates contain multiple package related to either a modality (i.e image) or a package (i.e pytorch). Templates are useful to build custom environment without having to list each package every time.
 
 Note : a custom environment must have either a conda-forge dependency, a pip dependency or a inherit value.
 
