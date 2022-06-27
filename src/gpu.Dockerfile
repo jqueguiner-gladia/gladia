@@ -51,6 +51,7 @@ RUN dpkg -i cuda-keyring_1.0-1_all.deb
 RUN sed -i 's/deb https:\/\/developer.download.nvidia.com\/compute\/cuda\/repos\/ubuntu2004\/x86_64.*//g' /etc/apt/sources.list
 
 RUN apt-get install -y apt-transport-https && \
+    apt-get autoclean && \
     apt-get clean && \
     apt-get update --allow-insecure-repositories -y && \
     apt install -y libssl-dev \
@@ -105,6 +106,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
 
 # Install dep pacakges
 RUN apt-get update && \
+    apt-get autoclean && \
     apt-get install -y \
         python3-setuptools \
         git-lfs \
@@ -159,9 +161,8 @@ RUN chown -R $DOCKER_USER:$DOCKER_GROUP $PATH_TO_GLADIA_SRC && \
 
 EXPOSE $API_SERVER_PORT_HTTP
 
-
-RUN apt-get install locate
-RUN updatedb
+RUN rm $MAMBA_ROOT_PREFIX/envs/server/lib/libcurl.so.4 && \
+    ln -s /usr/lib/x86_64-linux-gnu/libcurl.so.4.6.0 $MAMBA_ROOT_PREFIX/envs/server/lib/libcurl.so.4
 
 ENTRYPOINT ["micromamba", "run", "-n", "server"]
 
