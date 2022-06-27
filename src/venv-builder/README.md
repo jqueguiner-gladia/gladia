@@ -2,7 +2,7 @@
 
 ## How do custom environments are built
 
-Each task/model can have an `env.yaml` file that describe a custom environment to use.
+Each task/model can have an `env.yaml` file describing the custom environment to use.
 
 Notes :
 - If both the task and the model has an `env.yaml` file, the model custom environment will prime fot his specific model.\
