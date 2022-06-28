@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  gladia:
+    ports:
+      - 8080:80
+    volumes:
+      - $PWD:/app
