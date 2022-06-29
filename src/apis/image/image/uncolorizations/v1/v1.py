@@ -10,10 +10,7 @@ def predict(image: bytes) -> np.ndarray:
     :return: gray scale image
     """
 
-    img = cv2.imdecode(
-        np.fromstring(image, np.uint8),
-        cv2.IMREAD_COLOR
-    )
+    img = cv2.imdecode(np.fromstring(image, np.uint8), cv2.IMREAD_COLOR)
 
     gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 

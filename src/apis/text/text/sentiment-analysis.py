@@ -13,10 +13,11 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "results",
-        "type": "list",
-        "example": "results"
-    }
+output = {"name": "results", "type": "list", "example": "results"}
 
-TaskRouter(router=router, input=inputs, output=output, default_model="distilbert-base-uncased-finetuned-sst-2-english")
+TaskRouter(
+    router=router,
+    input=inputs,
+    output=output,
+    default_model="distilbert-base-uncased-finetuned-sst-2-english",
+)

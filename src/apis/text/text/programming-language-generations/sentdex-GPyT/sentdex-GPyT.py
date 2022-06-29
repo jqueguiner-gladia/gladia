@@ -1,9 +1,19 @@
 import torch
 
-from transformers import AutoTokenizer, AutoModelWithLMHead, PreTrainedTokenizer, PreTrainedModel
+from transformers import (
+    AutoTokenizer,
+    AutoModelWithLMHead,
+    PreTrainedTokenizer,
+    PreTrainedModel,
+)
 
 
-def generate(code: str, tokenizer: PreTrainedTokenizer, model: PreTrainedModel, max_length: int = 100) -> str:
+def generate(
+    code: str,
+    tokenizer: PreTrainedTokenizer,
+    model: PreTrainedModel,
+    max_length: int = 100,
+) -> str:
     """
     Takes input code, replaces newline chars with <N>,
     tokenizes, feeds through model, decodes, then reformat the newlines back in.
@@ -22,7 +32,7 @@ def generate(code: str, tokenizer: PreTrainedTokenizer, model: PreTrainedModel, 
 
     converted = code.replace("\n", new_line_token)
 
-    tokenized = tokenizer.encode(converted, return_tensors='pt').to(device)
+    tokenized = tokenizer.encode(converted, return_tensors="pt").to(device)
     resp = model.generate(tokenized, max_length=max_length).to(device)
 
     decoded = tokenizer.decode(resp[0])

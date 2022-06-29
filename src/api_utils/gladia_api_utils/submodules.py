@@ -29,10 +29,10 @@ PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
 
 
 def is_binary_file(file_path: str) -> bool:
-    textchars = bytearray({7,8,9,10,12,13,27} | set(range(0x20, 0x100)) - {0x7f})
+    textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
     is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
 
-    return is_binary_string(open(file_path, 'rb').read(1024))
+    return is_binary_string(open(file_path, "rb").read(1024))
 
 
 def is_valid_path(string: str):
@@ -81,7 +81,7 @@ def get_module_infos(root_path=None) -> list:
 
     pwd = str(pathlib.Path(caller_file).absolute()).split("/")
 
-    plugin = pwd[len(pwd) - 3: len(pwd)]
+    plugin = pwd[len(pwd) - 3 : len(pwd)]
     tags = ".".join(plugin)[:-3]
     task = plugin[-1][:-3]
 
@@ -122,7 +122,13 @@ def exec_in_custom_env(env_name: str, cmd: str):
     try:
         full_cmd = f"""eval "$(micromamba shell hook --shell=bash)" && {cmd}"""
 
-        process = subprocess.Popen(full_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash')
+        process = subprocess.Popen(
+            full_cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+            executable="/bin/bash",
+        )
         output, error = process.communicate()
 
         print("[error]:", error)
@@ -133,15 +139,15 @@ def exec_in_custom_env(env_name: str, cmd: str):
 
 def get_module_env_name(module_path: str) -> str:
 
-    if os.path.isfile(os.path.join(module_path, 'env.yaml')):
-        path = os.path.join(module_path, 'env.yaml').split("/")
+    if os.path.isfile(os.path.join(module_path, "env.yaml")):
+        path = os.path.join(module_path, "env.yaml").split("/")
 
         task = path[-3]
         model = path[-2]
 
         return f"{task}-{model}"
 
-    elif os.path.isfile(os.path.join(module_path, "../", 'env.yaml')):
+    elif os.path.isfile(os.path.join(module_path, "../", "env.yaml")):
         return os.path.split(os.path.split(os.path.split(module_path)[0])[0])[1]
 
     else:
@@ -157,8 +163,10 @@ class TaskRouter:
         namespace = sys._getframe(1).f_globals
 
         # concate the package name (i.e apis.text.text) with the model filename (i.e word-alignment.py) to obtain the relative path
-        rel_path = os.path.join(namespace["__package__"].replace(".", "/"), namespace["__file__"].split("/")[-1])
-
+        rel_path = os.path.join(
+            namespace["__package__"].replace(".", "/"),
+            namespace["__file__"].split("/")[-1],
+        )
 
         self.task, self.plugin, self.tags = get_module_infos(root_path=rel_path)
         self.versions, self.root_package_path = versions_list(rel_path)
@@ -225,9 +233,7 @@ class TaskRouter:
             responses = {
                 200: {
                     "content": {
-                        response_class.media_type: {
-                            "schema": response_class.schema
-                        }
+                        response_class.media_type: {"schema": response_class.schema}
                     }
                 }
             }
@@ -237,7 +243,7 @@ class TaskRouter:
             summary=f"Apply model for the {self.task} task for a given models",
             tags=[self.tags],
             response_class=response_class,
-            responses=responses
+            responses=responses,
         )
         @forge.sign(*input_list)
         async def apply(*args, **kwargs):
@@ -255,7 +261,7 @@ class TaskRouter:
             if not os.path.exists(module_path):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Model {model} does not exist"
+                    detail=f"Model {model} does not exist",
                 )
 
             env_name = get_module_env_name(module_path)
@@ -263,7 +269,7 @@ class TaskRouter:
             if env_name is not None:
                 routeur = singularize(self.root_package_path)
 
-                this_routeur = importlib.import_module(routeur.replace('/', '.'))
+                this_routeur = importlib.import_module(routeur.replace("/", "."))
 
                 inputs = this_routeur.inputs
 
@@ -311,15 +317,12 @@ EOF
 """
 
                 try:
-                    exec_in_custom_env(
-                        env_name=env_name,
-                        cmd=cmd
-                    )
+                    exec_in_custom_env(env_name=env_name, cmd=cmd)
 
                 except Exception as e:
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        detail=f"The following error occurred: {str(e)}"
+                        detail=f"The following error occurred: {str(e)}",
                     )
 
                 if is_binary_file(output_tmp_result):
@@ -350,17 +353,23 @@ EOF
                 print(e)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"The following error occurred: {str(e)}"
+                    detail=f"The following error occurred: {str(e)}",
                 )
             finally:
                 if isinstance(result, str):
                     try:
-                        if result != "/" and is_valid_path(result) and os.path.exists(result):
+                        if (
+                            result != "/"
+                            and is_valid_path(result)
+                            and os.path.exists(result)
+                        ):
                             os.system(f"rm {result}")
                     except:
                         pass
 
-    def __check_if_model_exist(self, root_package_path: str, default_model: str) -> bool:
+    def __check_if_model_exist(
+        self, root_package_path: str, default_model: str
+    ) -> bool:
         """
         Verify that the default model for the task is implemented.
 
@@ -370,18 +379,26 @@ EOF
         """
 
         model_dir = os.path.join(root_package_path, default_model)
-        model_file = os.path.join(root_package_path, default_model, f"{default_model}.py")
+        model_file = os.path.join(
+            root_package_path, default_model, f"{default_model}.py"
+        )
 
         if not os.path.exists(root_package_path):
-            warnings.warn(f"task dir ({root_package_path}) does not exist, skipping {self.task}")
+            warnings.warn(
+                f"task dir ({root_package_path}) does not exist, skipping {self.task}"
+            )
             return False
 
         elif not os.path.exists(model_dir):
-            warnings.warn(f"model_dir ({model_dir}) does not exist, skipping {self.task}")
+            warnings.warn(
+                f"model_dir ({model_dir}) does not exist, skipping {self.task}"
+            )
             return False
 
         elif not os.path.exists(model_file):
-            warnings.warn(f"model_file ({model_file}) does not exist, skipping {self.task}")
+            warnings.warn(
+                f"model_file ({model_file}) does not exist, skipping {self.task}"
+            )
             return False
 
         return True

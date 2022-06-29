@@ -21,6 +21,7 @@ models_path = download_models(urls)
 # using mobile-net 30K checkpoint
 current_model_path = os.path.join(models_path["mobile-net"]["output_path"], "30000")
 
+
 def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
     """
     Call the model to return the image without its background
@@ -31,7 +32,7 @@ def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
     """
 
     config = tf.ConfigProto()
-    config.gpu_options.allow_growth=True
+    config.gpu_options.allow_growth = True
 
     sess = tf.Session(config=config)
 

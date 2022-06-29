@@ -13,10 +13,6 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "results",
-        "type": "list",
-        "example": "result"
-    }
+output = {"name": "results", "type": "list", "example": "result"}
 
 TaskRouter(router=router, input=inputs, output=output, default_model="questgen")

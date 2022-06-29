@@ -13,11 +13,7 @@ inputs = [
     }
 ]
 
-output = {
-        "name": "analyzed_text",
-        "type": "list",
-        "example": "analyzed_text"
-    }
+output = {"name": "analyzed_text", "type": "list", "example": "analyzed_text"}
 
 
-#TaskRouter(router=router, input=inputs, output=output, default_model="jointBERT-bert-atis")
+# TaskRouter(router=router, input=inputs, output=output, default_model="jointBERT-bert-atis")

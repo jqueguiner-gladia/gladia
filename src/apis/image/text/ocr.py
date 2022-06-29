@@ -15,14 +15,10 @@ inputs = [
         "name": "source_language",
         "default": "en",
         "tooltip": "Please use the ISO 2 letters representation for source language",
-    }
+    },
 ]
 
-output = {
-        "name": "extracted_text",
-        "type": "list",
-        "example": "extracted_text"
-    }
+output = {"name": "extracted_text", "type": "list", "example": "extracted_text"}
 
 router = APIRouter()
 

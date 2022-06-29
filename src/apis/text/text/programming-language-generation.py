@@ -13,10 +13,6 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "generated_code",
-        "type": "str",
-        "example": "generated_code"
-    }
+output = {"name": "generated_code", "type": "str", "example": "generated_code"}
 
 TaskRouter(router=router, input=inputs, output=output, default_model="sentdex-GPyT")

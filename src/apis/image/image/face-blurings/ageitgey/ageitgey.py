@@ -15,13 +15,13 @@ def predict(image: bytes) -> ndarray:
     """
 
     import face_recognition
-    
+
     sigma = 50
 
     image = face_recognition.load_image_file(image)
 
     locations = face_recognition.face_locations(image)
-    
+
     for location in locations:
         (startY, endY) = location[0:2]
         (startX, endX) = location[2:4]

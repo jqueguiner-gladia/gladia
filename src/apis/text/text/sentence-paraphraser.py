@@ -13,10 +13,11 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "paraphrased_text",
-        "type": "str",
-        "example": "paraphrased_text"
-    }
+output = {"name": "paraphrased_text", "type": "str", "example": "paraphrased_text"}
 
-TaskRouter(router=router, input=inputs, output=output, default_model="ramsrigouthamg-t5-large-paraphraser-diverse-high-quality")
+TaskRouter(
+    router=router,
+    input=inputs,
+    output=output,
+    default_model="ramsrigouthamg-t5-large-paraphraser-diverse-high-quality",
+)

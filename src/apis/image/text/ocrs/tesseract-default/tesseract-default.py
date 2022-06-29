@@ -30,9 +30,9 @@ def predict(image: bytes, source_language: str) -> [str]:
         maxval=255,
         type=cv2.THRESH_BINARY | cv2.THRESH_OTSU,
     )[1]
-    
+
     text = pytesseract.image_to_string(gray_thresh)
 
-    out = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]', '', text)
+    out = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]", "", text)
 
     return [out.strip()]

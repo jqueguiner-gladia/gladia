@@ -14,11 +14,13 @@ def predict(text: str) -> str:
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-    input_ids = tokenizer.encode(text, return_tensors='pt')
-    
+    input_ids = tokenizer.encode(text, return_tensors="pt")
+
     outputs = model.generate(input_ids)
-    
-    decoded = tokenizer.decode(outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True)
+
+    decoded = tokenizer.decode(
+        outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True
+    )
 
     del model
     del tokenizer

@@ -1,4 +1,3 @@
-
 def predict(sentence: str) -> str:
     """
     For a given sentence, predict the next word.

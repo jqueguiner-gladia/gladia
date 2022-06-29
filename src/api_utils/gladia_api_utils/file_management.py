@@ -21,7 +21,7 @@ def write_tmp_file(content):
     tmp = tempfile.NamedTemporaryFile(delete=False)
     tmp.write(content)
     tmp.close()
-    
+
     return tmp.name
 
 
@@ -39,14 +39,14 @@ def input_to_files(func):
                 tmp_file = write_tmp_file(arg)
                 tmp_files.append(tmp_file)
                 kwargs[keyword] = tmp_file
-                
+
         result = func(*args, **kwargs)
 
         try:
             remove_all_tmp_file(tmp_files)
         except:
             print("Error while deleting temp files")
-        
+
         return result
 
     return inner

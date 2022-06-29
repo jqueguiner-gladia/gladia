@@ -25,9 +25,9 @@ def predict(image: bytes, source_language: str) -> [str]:
     gray_image = cv2.cvtColor(np_image, cv2.COLOR_BGR2GRAY)
 
     gray_thresh = cv2.medianBlur(gray_image, 3)
-    
+
     text = str(pytesseract.image_to_string(gray_thresh))
 
-    out = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]', '', text)
+    out = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]", "", text)
 
     return [out.strip()]

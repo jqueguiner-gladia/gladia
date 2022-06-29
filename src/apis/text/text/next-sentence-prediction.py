@@ -20,10 +20,8 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "results",
-        "type": "list",
-        "example": "results"
-    }
+output = {"name": "results", "type": "list", "example": "results"}
 
-TaskRouter(router=router, input=inputs, output=output, default_model="bert-base-uncased")
+TaskRouter(
+    router=router, input=inputs, output=output, default_model="bert-base-uncased"
+)

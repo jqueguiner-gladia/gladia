@@ -22,7 +22,7 @@ def __init_config() -> dict:
     :return: config dict
     """
 
-    config_file = os.getenv('API_CONFIG_FILE', 'config.json')
+    config_file = os.getenv("API_CONFIG_FILE", "config.json")
 
     if os.path.isfile(config_file):
         with open("config.json", "r") as f:
@@ -59,9 +59,13 @@ def __init_prometheus_instrumentator(instrumentator_config: dict) -> Instrumenta
         should_respect_env_var=instrumentator_config["should_respect_env_var"],
         env_var_name=instrumentator_config["env_var_name"],
         excluded_handlers=instrumentator_config["excluded_handlers"],
-        should_round_latency_decimals=instrumentator_config["should_round_latency_decimals"],
+        should_round_latency_decimals=instrumentator_config[
+            "should_round_latency_decimals"
+        ],
         round_latency_decimals=instrumentator_config["round_latency_decimals"],
-        should_instrument_requests_inprogress=instrumentator_config["should_instrument_requests_inprogress"],
+        should_instrument_requests_inprogress=instrumentator_config[
+            "should_instrument_requests_inprogress"
+        ],
         inprogress_name=instrumentator_config["inprogress_name"],
         inprogress_labels=instrumentator_config["inprogress_labels"],
     )
@@ -88,13 +92,13 @@ def __set_app_middlewares(api_app: FastAPI, api_config: dict) -> None:
 
 
 def singularize(string: str) -> str:
-    if string[-1] == 's':
-        return string[: -1]
+    if string[-1] == "s":
+        return string[:-1]
 
     return string
 
 
-def __add_router(module: 'module', module_path: str) -> None:
+def __add_router(module: "module", module_path: str) -> None:
     """
     Add the module router to the API app
 
@@ -102,7 +106,9 @@ def __add_router(module: 'module', module_path: str) -> None:
     :param module_path: name of the module
     """
 
-    module_input, module_output, module_task = module_path.replace("apis", "")[1:].split(".")
+    module_input, module_output, module_task = module_path.replace("apis", "")[
+        1:
+    ].split(".")
 
     module_task = singularize(module_task).upper()
     module_config = config["active_tasks"][module_input][module_output]
@@ -110,8 +116,7 @@ def __add_router(module: 'module', module_path: str) -> None:
     active_task_list = list(map(lambda each: singularize(each).upper(), module_config))
 
     if "NONE" not in active_task_list and (
-        module_task in active_task_list
-        or "*" in module_config
+        module_task in active_task_list or "*" in module_config
     ):
         module_prefix = module_path.replace(".", "/").replace("apis", "")
         app.include_router(module.router, prefix=module_prefix)
@@ -123,16 +128,16 @@ def __module_is_an_input_type(split_module_path):
 
 def __module_is_a_modality(split_module_path, module_config):
     return (
-            len(split_module_path) == 2
-            and "None".upper not in map(lambda each: each.upper(), module_config)
-            or len(module_config) == 0
-        )
+        len(split_module_path) == 2
+        and "None".upper not in map(lambda each: each.upper(), module_config)
+        or len(module_config) == 0
+    )
 
 
 def __module_is_a_task(split_module_path, module_config):
-    return len(split_module_path) == 3 \
-       and (
-        split_module_path[2].rstrip("s") in map(lambda each: each.rstrip("s"), module_config)
+    return len(split_module_path) == 3 and (
+        split_module_path[2].rstrip("s")
+        in map(lambda each: each.rstrip("s"), module_config)
         or "*" in module_config
     )
 
@@ -141,7 +146,7 @@ def __module_is_a_model(split_module_path: [str]):
     return len(split_module_path) == 4
 
 
-def import_submodules(package: 'module', recursive: bool = True) -> None:
+def import_submodules(package: "module", recursive: bool = True) -> None:
     """
     Import every task presents in the API by loading each submodule (recursively by default)
 
@@ -166,18 +171,26 @@ def import_submodules(package: 'module', recursive: bool = True) -> None:
             continue
 
         module_split = module_relative_path.split(".")
-        module_config = config["active_tasks"][module_split[0]][module_split[1]] if len(module_split) > 1 else []
+        module_config = (
+            config["active_tasks"][module_split[0]][module_split[1]]
+            if len(module_split) > 1
+            else []
+        )
 
-        if __module_is_an_input_type \
-        or __module_is_a_modality(module_split, module_config) \
-        or __module_is_a_task(module_split, module_config) \
-        or __module_is_a_model(module_split):
+        if (
+            __module_is_an_input_type
+            or __module_is_a_modality(module_split, module_config)
+            or __module_is_a_task(module_split, module_config)
+            or __module_is_a_model(module_split)
+        ):
             import_submodules(module_path)
         else:
             ic(f"skipping {module_relative_path}")
 
 
-os.environ["TRITON_MODELS_PATH"] = os.getenv("TRITON_MODELS_PATH", default="/tmp/gladia/triton")
+os.environ["TRITON_MODELS_PATH"] = os.getenv(
+    "TRITON_MODELS_PATH", default="/tmp/gladia/triton"
+)
 
 config = __init_config()
 logger = __init_logging(config)
@@ -187,6 +200,8 @@ app = FastAPI(default_response_class=ORJSONResponse)
 __set_app_middlewares(app, config)
 
 if config["prometheus"]["active"]:
-    instrumentator = __init_prometheus_instrumentator(config["prometheus"]["instrumentator"])
+    instrumentator = __init_prometheus_instrumentator(
+        config["prometheus"]["instrumentator"]
+    )
 
 import_submodules(apis)

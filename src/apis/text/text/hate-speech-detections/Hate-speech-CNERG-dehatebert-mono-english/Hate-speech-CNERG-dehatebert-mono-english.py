@@ -1,12 +1,14 @@
 import os
 import requests
 import numpy as np
+
 # import tritonclient.http as tritonclient
 
 # from time import sleep
 from warnings import warn
 from transformers import BertTokenizer
 from gladia_api_utils.triton_helper import TritonClient
+
 # from gladia_api_utils.triton_helper import download_triton_model
 
 
@@ -20,20 +22,20 @@ def predict(text: str) -> str:
 
     LABELS = ["hate-speech", "normal", "offensive"]
     MODEL_NAME = "hate-speech-detection_bert-base-uncased-hatexplain_base_traced"
-    TOKENIZER_NAME = 'Hate-speech-CNERG/bert-base-uncased-hatexplain'
-    TRITON_SEVER_URL = os.getenv("TRITON_SERVER_URL", default='localhost:8000')
+    TOKENIZER_NAME = "Hate-speech-CNERG/bert-base-uncased-hatexplain"
+    TRITON_SEVER_URL = os.getenv("TRITON_SERVER_URL", default="localhost:8000")
 
     client = TritonClient(
-        TRITON_SEVER_URL,
-        MODEL_NAME,
-        current_path=os.path.split(__file__)[0]
+        TRITON_SEVER_URL, MODEL_NAME, current_path=os.path.split(__file__)[0]
     )
 
     tokenizer = BertTokenizer.from_pretrained(TOKENIZER_NAME)
 
-    input_ids = tokenizer(text, return_tensors="pt", max_length=256, padding="max_length").input_ids
+    input_ids = tokenizer(
+        text, return_tensors="pt", max_length=256, padding="max_length"
+    ).input_ids
 
-    client.register_new_input(shape=(1, 256), datatype='INT32')
+    client.register_new_input(shape=(1, 256), datatype="INT32")
     output = client(input_ids.detach().numpy().astype(np.int32))[0]
 
     out = LABELS[np.argmax(output)]

@@ -13,10 +13,8 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "analyzed_sentence",
-        "type": "str",
-        "example": "analyzed_sentence"
-    }
+output = {"name": "analyzed_sentence", "type": "str", "example": "analyzed_sentence"}
 
-TaskRouter(router=router, input=inputs, output=output, default_model="UKPLab-all-MiniLM-L6-v2")
+TaskRouter(
+    router=router, input=inputs, output=output, default_model="UKPLab-all-MiniLM-L6-v2"
+)

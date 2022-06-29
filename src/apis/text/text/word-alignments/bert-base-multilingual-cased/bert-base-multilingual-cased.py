@@ -3,7 +3,9 @@ import itertools
 import transformers
 
 
-def get_tokens(input_string: str, tokenizer: transformers.PreTrainedTokenizer) -> ([str], [[str]]):
+def get_tokens(
+    input_string: str, tokenizer: transformers.PreTrainedTokenizer
+) -> ([str], [[str]]):
     """
     Tokenize an input string
 
@@ -18,7 +20,9 @@ def get_tokens(input_string: str, tokenizer: transformers.PreTrainedTokenizer) -
     return sentence, token
 
 
-def tokens_to_tensor(tokens: [[str]], tokenizer: transformers.PreTrainedTokenizer) -> torch.Tensor:
+def tokens_to_tensor(
+    tokens: [[str]], tokenizer: transformers.PreTrainedTokenizer
+) -> torch.Tensor:
     """
     From a given tokenized sentence, return it as a Tensor
 
@@ -31,12 +35,12 @@ def tokens_to_tensor(tokens: [[str]], tokenizer: transformers.PreTrainedTokenize
 
     prepared_ids = tokenizer.prepare_for_model(
         ids=list(itertools.chain(*ids)),
-        return_tensors='pt',
+        return_tensors="pt",
         model_max_length=tokenizer.model_max_length,
-        truncation=True
+        truncation=True,
     )
 
-    return prepared_ids['input_ids']
+    return prepared_ids["input_ids"]
 
 
 def map_tokens_to_words(tokens: [[str]]) -> [int]:
@@ -56,11 +60,11 @@ def map_tokens_to_words(tokens: [[str]]) -> [int]:
 
 
 def get_words_alignment(
-        sentence_src: [str],
-        sentence_tgt: [str],
-        tok2word_map_src: [int],
-        tok2word_map_tgt: [int],
-        softmax_inter: torch.Tensor,
+    sentence_src: [str],
+    sentence_tgt: [str],
+    tok2word_map_src: [int],
+    tok2word_map_tgt: [int],
+    softmax_inter: torch.Tensor,
 ) -> [dict]:
     """
     Associate words from sentence_src to sentence_tgt
@@ -93,9 +97,9 @@ def predict(input_string_language_1: str, input_string_language_2: str) -> [dict
     :return: list of dict associated each word from source to targe
     """
 
-    threshold = 1E-3
+    threshold = 1e-3
     align_layer = 8
-    model_name = 'bert-base-multilingual-cased'
+    model_name = "bert-base-multilingual-cased"
 
     model = transformers.BertModel.from_pretrained(model_name)
     tokenizer = transformers.BertTokenizer.from_pretrained(model_name)
@@ -112,14 +116,20 @@ def predict(input_string_language_1: str, input_string_language_2: str) -> [dict
     tok2word_map_tgt = map_tokens_to_words(tokens_tgt)
 
     with torch.no_grad():
-        out_src = model(tensor_src.unsqueeze(0), output_hidden_states=True)[2][align_layer][0, 1:-1]
-        out_tgt = model(tensor_tgt.unsqueeze(0), output_hidden_states=True)[2][align_layer][0, 1:-1]
+        out_src = model(tensor_src.unsqueeze(0), output_hidden_states=True)[2][
+            align_layer
+        ][0, 1:-1]
+        out_tgt = model(tensor_tgt.unsqueeze(0), output_hidden_states=True)[2][
+            align_layer
+        ][0, 1:-1]
 
     del tensor_src, tensor_tgt
 
     dot_prod = torch.matmul(out_src, out_tgt.transpose(-1, -2))
 
-    softmax_inter = (torch.nn.Softmax(dim=-1)(dot_prod) > threshold) * (torch.nn.Softmax(dim=-2)(dot_prod) > threshold)
+    softmax_inter = (torch.nn.Softmax(dim=-1)(dot_prod) > threshold) * (
+        torch.nn.Softmax(dim=-2)(dot_prod) > threshold
+    )
 
     return get_words_alignment(
         sentence_src=sentence_src,

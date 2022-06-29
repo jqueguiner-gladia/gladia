@@ -1,4 +1,3 @@
-
 def predict(sentence_1: str, sentence_2: str) -> str:
     """
     For two given sentences, say whether they are similar or not.
@@ -10,8 +9,8 @@ def predict(sentence_1: str, sentence_2: str) -> str:
 
     from sentence_transformers import SentenceTransformer, util
 
-    model = SentenceTransformer('all-MiniLM-L6-v2')
-    
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+
     embedding1 = model.encode(sentence_1, convert_to_tensor=True)
     embedding2 = model.encode(sentence_2, convert_to_tensor=True)
 

@@ -1,5 +1,6 @@
 import json
 
+
 def predict(context: str, question: str) -> str:
     """
     Using the given `context`, answer the provided `question`.
@@ -11,9 +12,11 @@ def predict(context: str, question: str) -> str:
 
     from happytransformer import HappyQuestionAnswering
 
-    happy_qa = HappyQuestionAnswering("DISTILBERT", "distilbert-base-cased-distilled-squad")
+    happy_qa = HappyQuestionAnswering(
+        "DISTILBERT", "distilbert-base-cased-distilled-squad"
+    )
     result = happy_qa.answer_question(context, question)
 
     del happy_qa
 
-    return json.dumps({'answer': result[0].answer, 'score': result[0].score})
+    return json.dumps({"answer": result[0].answer, "score": result[0].score})

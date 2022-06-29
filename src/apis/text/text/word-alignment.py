@@ -20,10 +20,11 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "word_aligment",
-        "type": "dict",
-        "example": "word_aligment"
-    }
+output = {"name": "word_aligment", "type": "dict", "example": "word_aligment"}
 
-TaskRouter(router=router, input=inputs, output=output, default_model="bert-base-multilingual-cased")
+TaskRouter(
+    router=router,
+    input=inputs,
+    output=output,
+    default_model="bert-base-multilingual-cased",
+)

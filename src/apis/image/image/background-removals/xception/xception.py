@@ -22,6 +22,7 @@ models_path = download_models(urls)
 # using xcetpion checkpoint 00000
 current_model_path = os.path.join(models_path["xception"]["output_path"], "00000")
 
+
 def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
     """
     Call the model to return the image without its background
@@ -32,10 +33,10 @@ def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
     """
 
     config = tf.ConfigProto()
-    config.gpu_options.allow_growth=True
+    config.gpu_options.allow_growth = True
 
     sess = tf.Session(config=config)
-    
+
     INPUT_TENSOR_NAME = "ImageTensor:0"
     INPUT_SIZE = 513
     FROZEN_GRAPH_NAME = "frozen_inference_graph"
@@ -60,7 +61,7 @@ def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
 
     tf.reset_default_graph()
     sess.close()
-    
+
     return resized_image, seg_map
 
 
@@ -73,7 +74,7 @@ def predict(image) -> Image:
     """
 
     image = _open(image)
-    
+
     resized_im, seg_map = run(image, True)
 
     img = draw_segment(resized_im, seg_map)
