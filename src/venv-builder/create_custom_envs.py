@@ -29,19 +29,29 @@ def retrieve_package_from_env_file(env_file: dict) -> Tuple[List[str], List[str]
 def create_temp_env_file(
     env_name: str,
     packages_to_install_from_channel: List[str],
-    packages_to_install_from_pip: List[str]
+    packages_to_install_from_pip: List[str],
 ) -> str:
 
     tmp = tempfile.NamedTemporaryFile(delete=False)
 
-    content = """
-name: """ + env_name + """
+    content = (
+        """
+name: """
+        + env_name
+        + """
 
-dependencies:""" + ''.join([f"\n  - {package}" for package in packages_to_install_from_channel])
+dependencies:"""
+        + "".join([f"\n  - {package}" for package in packages_to_install_from_channel])
+    )
 
-    if packages_to_install_from_pip is not None and len(packages_to_install_from_pip) > 0:
+    if (
+        packages_to_install_from_pip is not None
+        and len(packages_to_install_from_pip) > 0
+    ):
         content += """
-  - pip:""" + ''.join([f"\n    - {package}" for package in packages_to_install_from_pip])
+  - pip:""" + "".join(
+            [f"\n    - {package}" for package in packages_to_install_from_pip]
+        )
 
     with open(tmp.name, "w") as f:
         f.write(content)
@@ -57,9 +67,14 @@ def create_custom_env(env_name: str, path_to_env_file: str) -> None:
     custom_env = yaml.safe_load(open(path_to_env_file, "r"))
 
     if custom_env is None:
-        raise RuntimeError("Provided config env is empty, you must either specify `inherit` or `dependencies`.")
+        raise RuntimeError(
+            "Provided config env is empty, you must either specify `inherit` or `dependencies`."
+        )
 
-    packages_to_install_from_pip, packages_to_install_from_channel = retrieve_package_from_env_file(custom_env)
+    (
+        packages_to_install_from_pip,
+        packages_to_install_from_channel,
+    ) = retrieve_package_from_env_file(custom_env)
 
     if "inherit" not in custom_env.keys():
         custom_env["inherit"] = []
@@ -70,7 +85,7 @@ def create_custom_env(env_name: str, path_to_env_file: str) -> None:
             os.path.split(os.path.abspath(__file__))[0],
             "envs",
             env_to_inherit.split("-")[0],
-            '-'.join(env_to_inherit.split("-")[1:]) + ".yaml"
+            "-".join(env_to_inherit.split("-")[1:]) + ".yaml",
         )
 
         env_file = yaml.safe_load(open(path_to_env_to_inherit_from, "r"))
@@ -80,15 +95,16 @@ def create_custom_env(env_name: str, path_to_env_file: str) -> None:
         packages_to_install_from_channel += channel_packages
 
     temporary_file = create_temp_env_file(
-        env_name,
-        packages_to_install_from_channel,
-        packages_to_install_from_pip
+        env_name, packages_to_install_from_channel, packages_to_install_from_pip
     )
 
     os.link(temporary_file.name, temporary_file.name + ".yaml")
 
     try:
-        subprocess.run(f"micromamba create -f {temporary_file.name  + '.yaml'} -y".split(" "), check=True)
+        subprocess.run(
+            f"micromamba create -f {temporary_file.name  + '.yaml'} -y".split(" "),
+            check=True,
+        )
 
     except subprocess.CalledProcessError as error:
         raise RuntimeError(f"Couldn't create env {env_name}: {error}")
@@ -113,7 +129,9 @@ def build_specific_envs(paths: List[str]) -> None:
     for path in paths:
 
         if not os.path.exists(path):
-            raise FileNotFoundError(f"custom env {path} not found, please specify a correct path either leading to a model or model's env file.")
+            raise FileNotFoundError(
+                f"custom env {path} not found, please specify a correct path either leading to a model or model's env file."
+            )
 
         if "env.yaml" in path:
             path = os.path.split(path)[0]
@@ -124,8 +142,7 @@ def build_specific_envs(paths: List[str]) -> None:
         print("building", f"{task}-{model}")
 
         create_custom_env(
-            env_name=f"{task}-{model}",
-            path_to_env_file=os.path.join(path, "env.yaml")
+            env_name=f"{task}-{model}", path_to_env_file=os.path.join(path, "env.yaml")
         )
 
 
@@ -138,8 +155,7 @@ def build_env_for_activated_tasks(path_to_config_file: str, path_to_apis: str) -
     """
 
     paths = get_activated_task_path(
-        path_to_config_file=path_to_config_file,
-        path_to_apis=path_to_apis
+        path_to_config_file=path_to_config_file, path_to_apis=path_to_apis
     )
 
     for task in tqdm(paths):
@@ -147,18 +163,23 @@ def build_env_for_activated_tasks(path_to_config_file: str, path_to_apis: str) -
         if os.path.exists(os.path.join(task, "env.yaml")):
             create_custom_env(
                 env_name=os.path.split(task)[1],
-                path_to_env_file=os.path.join(task, "env.yaml")
+                path_to_env_file=os.path.join(task, "env.yaml"),
             )
 
-        models = list(filter(lambda dir : os.path.split(dir)[-1][0] not in ['_', '.'], os.listdir(task)))
+        models = list(
+            filter(
+                lambda dir: os.path.split(dir)[-1][0] not in ["_", "."],
+                os.listdir(task),
+            )
+        )
 
         for model in models:
             if not os.path.exists(os.path.join(task, model, "env.yaml")):
                 continue
 
             create_custom_env(
-                env_name=f"{os.path.split(task)[-1]}-{model}", # FIXME: il y a aura un conflit entre le nom du dossier qui est au pluriel et le nom de la route qui est au singulier
-                path_to_env_file=os.path.join(task, model, 'env.yaml')
+                env_name=f"{os.path.split(task)[-1]}-{model}",  # FIXME: il y a aura un conflit entre le nom du dossier qui est au pluriel et le nom de la route qui est au singulier
+                path_to_env_file=os.path.join(task, model, "env.yaml"),
             )
 
 
@@ -166,10 +187,10 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        '--name',
-        action='append',
+        "--name",
+        action="append",
         type=str,
-        help='Specify the name of a specific env to build. You can define this arg multiple time to build multiple specific envs.'
+        help="Specify the name of a specific env to build. You can define this arg multiple time to build multiple specific envs.",
     )
 
     args = parser.parse_args()
@@ -178,8 +199,7 @@ def main():
         return build_specific_envs(args.name)
 
     return build_env_for_activated_tasks(
-        path_to_config_file="../config.json",
-        path_to_apis="../apis"
+        path_to_config_file="../config.json", path_to_apis="../apis"
     )
 
 

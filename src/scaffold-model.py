@@ -20,7 +20,6 @@ def task_exists(input_type, output_type, task_name):
     if p.singular_noun(task_name) != False:
         task_name = p.singular_noun(task_name)
 
-
     task_routeur_path = os.path.join("apis", input_type, output_type, f"{task_name}.py")
     task_path = os.path.join("apis", input_type, output_type, p.plural(task_name))
 
@@ -50,28 +49,35 @@ def model_exists(input_type, output_type, task_name, model_name):
     model_path = os.path.join(task_path, f"{model_name}")
 
     output = True
-    if not Path(model_path).exists() :
+    if not Path(model_path).exists():
         print(f"Missing {model_path} ; I will build it for you")
         output = False
-    
+
     if not Path(os.path.join(model_path, "__init__.py")).exists():
-        print(f"Missing {os.path.join(model_path, '__init__.py')} ; I will build it for you")
+        print(
+            f"Missing {os.path.join(model_path, '__init__.py')} ; I will build it for you"
+        )
         output = False
-    
+
     if not Path(os.path.join(model_path, f"{model_name}.py")).exists():
-        print(f"Missing {os.path.join(model_path, f'{model_name}.py')} ; I will build it for you")
+        print(
+            f"Missing {os.path.join(model_path, f'{model_name}.py')} ; I will build it for you"
+        )
         output = False
 
     return output
 
-def create_task_routeur(input_type, output_type, task_name, inputs, output, model_name="default_model"):
+
+def create_task_routeur(
+    input_type, output_type, task_name, inputs, output, model_name="default_model"
+):
     input_type = input_type.lower()
     output_type = output_type.lower()
     task_name = task_name.lower()
 
     if p.singular_noun(task_name) != False:
         task_name = p.singular_noun(task_name)
-    
+
     task_routeur_path = os.path.join("apis", input_type, output_type, f"{task_name}.py")
     task_path = os.path.join("apis", input_type, output_type, p.plural(task_name))
     model_name = model_name.lower()
@@ -80,38 +86,66 @@ def create_task_routeur(input_type, output_type, task_name, inputs, output, mode
         Path(task_path).mkdir(parents=True, exist_ok=True)
 
     with open(task_routeur_path, "w") as f:
-        f.write(f"""from fastapi import APIRouter
+        f.write(
+            f"""from fastapi import APIRouter
 from gladia_api_utils.submodules import TaskRouter
 
-router = APIRouter()""")
+router = APIRouter()"""
+        )
 
-        f.write("""
-inputs = [""")
+        f.write(
+            """
+inputs = ["""
+        )
         for input in inputs:
-            f.write("""
+            f.write(
+                """
     {
-        'name': '""" + input['input_name'] + """',
-        'type': '""" + input['input_type'] + """',
-        'default': '""" + input['default_value'] + """',
-        'placeholder': '""" + input['placeholder'] + """',
-        'tooltip': '""" + input['tooltip'] + """'
+        'name': '"""
+                + input["input_name"]
+                + """',
+        'type': '"""
+                + input["input_type"]
+                + """',
+        'default': '"""
+                + input["default_value"]
+                + """',
+        'placeholder': '"""
+                + input["placeholder"]
+                + """',
+        'tooltip': '"""
+                + input["tooltip"]
+                + """'
     },
-""")
-        f.write("""]
-        """)
+"""
+            )
+        f.write(
+            """]
+        """
+        )
 
-        f.write("""
+        f.write(
+            """
 output = {
-        'name': '""" + output['output_name'] + """',
-        'type': '""" + output['output_type'] + """',
-        'example': '""" + output['example_value'] + """'
+        'name': '"""
+            + output["output_name"]
+            + """',
+        'type': '"""
+            + output["output_type"]
+            + """',
+        'example': '"""
+            + output["example_value"]
+            + """'
     }
 
-        """)
+        """
+        )
 
-        f.write(f"""
+        f.write(
+            f"""
 TaskRouter(router=router, input=inputs, output=output, default_model="{model_name}")
-""")
+"""
+        )
 
     return task_routeur_path
 
@@ -130,7 +164,6 @@ def create_model(input_type, output_type, task_name, model_name, inputs, output)
     task_path = os.path.join("apis", input_type, output_type, p.plural(task_name))
 
     model_path = os.path.join(task_path, model_name)
-    
 
     if not os.path.isdir(model_path):
         Path(model_path).mkdir(parents=True, exist_ok=True)
@@ -139,34 +172,42 @@ def create_model(input_type, output_type, task_name, model_name, inputs, output)
         Path(os.path.join(model_path, "__init__.py")).touch()
 
     if len(inputs) == 0:
-        task_routeur = SourceFileLoader("this_task_routeur", task_routeur_path).load_module()
-        
+        task_routeur = SourceFileLoader(
+            "this_task_routeur", task_routeur_path
+        ).load_module()
+
         task_routeur_inputs = task_routeur.inputs
         inputs = []
         for input in task_routeur_inputs:
-            inputs.append({
-                'input_name': input['name'],
-            })
+            inputs.append(
+                {
+                    "input_name": input["name"],
+                }
+            )
 
     with open(os.path.join(model_path, f"{model_name}.py"), "w") as f:
-        f.write(f"""
+        f.write(
+            f"""
 #your imports here
 import os, sys
 
-""")
+"""
+        )
         input_params = ""
 
         for param in inputs:
             input_params += f"{param['input_name']}, "
-        
+
         input_params = input_params[:-2]
-        
-        f.write(f"""
+
+        f.write(
+            f"""
 # mandatory predict function
 def predict({input_params}):
     #your code here
     return output
-""")
+"""
+        )
     return os.path.join(model_path, f"{model_name}.py")
 
 
@@ -174,70 +215,74 @@ def scaffold_task():
 
     set_main_input = [
         inquirer.List(
-            'main_input_type',
+            "main_input_type",
             message="What is the main input type ?",
             choices=["image", "text", "sound", "video"],
-            default='image'
+            default="image",
         ),
     ]
 
-    input_type = inquirer.prompt(set_main_input, theme=GreenPassion())['main_input_type']
+    input_type = inquirer.prompt(set_main_input, theme=GreenPassion())[
+        "main_input_type"
+    ]
 
     set_main_output = [
         inquirer.List(
-            'main_output_type',
+            "main_output_type",
             message="What is the main output type ?",
             choices=["image", "text", "sound", "video"],
-            default='image'
+            default="image",
         ),
     ]
 
-    output_type = inquirer.prompt(set_main_output, theme=GreenPassion())['main_output_type']
-
+    output_type = inquirer.prompt(set_main_output, theme=GreenPassion())[
+        "main_output_type"
+    ]
 
     set_task_name = [
         inquirer.Text(
-            'task_name',
+            "task_name",
             message="What is the task name ?",
-            default= "task_name_no_space_dash_only"
-            #validate=lambda x: x != ""
+            default="task_name_no_space_dash_only"
+            # validate=lambda x: x != ""
         ),
     ]
 
-    task_name = inquirer.prompt(set_task_name, theme=GreenPassion())['task_name'].lower()
-
+    task_name = inquirer.prompt(set_task_name, theme=GreenPassion())[
+        "task_name"
+    ].lower()
 
     set_input = [
         inquirer.List(
             "input_type",
             message="Set input",
             choices=["image", "text", "sound", "video"],
-            default='image'
+            default="image",
         ),
         inquirer.Text(
             "input_name",
             message="Input name for the new {input_type}",
             default="{input_type}"
-#            validate=lambda x: x != ""
+            #            validate=lambda x: x != ""
         ),
         inquirer.Text(
             "default_value",
             message="Default Value for the new {input_type}",
             default="{input_type}"
-#            validate=lambda x: x != ""
+            #            validate=lambda x: x != ""
         ),
         inquirer.Text(
             "placeholder",
             message="Placeholder for the new {input_type}",
             default="{default_value}"
-#            validate=lambda x: x != ""
+            #            validate=lambda x: x != ""
         ),
         inquirer.Text(
             "tooltip",
             message="Tooltip for the new {input_type}",
             default="{placeholder}"
-#            validate=lambda x: x != ""
-        )
+            #            validate=lambda x: x != ""
+        ),
     ]
 
     set_output = [
@@ -245,19 +290,19 @@ def scaffold_task():
             "output_type",
             message="Set output type",
             choices=["image", "text", "sound", "video"],
-            default='image'
+            default="image",
         ),
         inquirer.Text(
             "output_name",
             message="Output name for the {output_type}",
-            default='{output_type}'
-#            validate=lambda x: x != ""
+            default="{output_type}"
+            #            validate=lambda x: x != ""
         ),
         inquirer.Text(
             "example_value",
             message="{output_type} Example Value",
-            default='{output_type}'
-#            validate=lambda x: x != ""
+            default="{output_type}"
+            #            validate=lambda x: x != ""
         ),
     ]
 
@@ -292,26 +337,27 @@ def scaffold_task():
 
 def scaffold_model(input_type, output_type, task_name, inputs, output):
     set_model_name = [
-            inquirer.Text(
+        inquirer.Text(
             "model_name",
             message="Set model name",
-            default="model_name_without_no_space_dash_only"
+            default="model_name_without_no_space_dash_only",
         )
     ]
 
     model_name = inquirer.prompt(set_model_name, theme=GreenPassion())["model_name"]
 
     if not model_exists(input_type, output_type, task_name, model_name):
-        model_file = create_model(input_type, output_type, task_name, model_name, inputs, output)
+        model_file = create_model(
+            input_type, output_type, task_name, model_name, inputs, output
+        )
     else:
         print(f"Model {model_name} already exists")
     return model_file
 
 
 if __name__ == "__main__":
- 
 
     input_type, output_type, task_name, inputs, output = scaffold_task()
     model_file = scaffold_model(input_type, output_type, task_name, inputs, output)
-    
+
     print(f"you can now edit {model_file}")

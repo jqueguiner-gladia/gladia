@@ -2,6 +2,7 @@ import torch
 
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
+
 def predict(text: str) -> str:
     """
     From a given, classify it between 1 (hate) and 5 (love).
@@ -21,4 +22,3 @@ def predict(text: str) -> str:
     predicted_idx = torch.argmax(sequence_classifier[0], dim=1)
 
     return str(predicted_idx.item() + 1)
-    

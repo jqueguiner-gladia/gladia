@@ -13,10 +13,6 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "classified_code",
-        "type": "list",
-        "example": "classified_code"
-    }
+output = {"name": "classified_code", "type": "list", "example": "classified_code"}
 
 TaskRouter(router=router, input=inputs, output=output, default_model="aliostad")

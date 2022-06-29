@@ -1,5 +1,6 @@
 import json
 
+
 def predict(context: str, question: str) -> str:
     """
     Using the given `context`, answer the provided `question`.
@@ -16,4 +17,4 @@ def predict(context: str, question: str) -> str:
 
     del happy_qa
 
-    return json.dumps({'answer': result[0].answer, 'score': result[0].score})
+    return json.dumps({"answer": result[0].answer, "score": result[0].score})

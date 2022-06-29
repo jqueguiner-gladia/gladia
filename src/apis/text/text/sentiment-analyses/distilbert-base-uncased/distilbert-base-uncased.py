@@ -1,5 +1,6 @@
 import json
 
+
 def predict(text: str) -> str:
     """
     For a given text, predict if it's POSITIVE or NEGATIVE
@@ -10,10 +11,14 @@ def predict(text: str) -> str:
 
     from happytransformer import HappyTextClassification
 
-    happy_tc = HappyTextClassification("DISTILBERT", "distilbert-base-uncased", num_labels=2)
+    happy_tc = HappyTextClassification(
+        "DISTILBERT", "distilbert-base-uncased", num_labels=2
+    )
     result = happy_tc.classify_text(text)
 
-    return json.dumps({
-        "label": "POSITIVE" if result.label == "LABEL_0" else "NEGATIVE",
-        "score": result.score,
-    })
+    return json.dumps(
+        {
+            "label": "POSITIVE" if result.label == "LABEL_0" else "NEGATIVE",
+            "score": result.score,
+        }
+    )

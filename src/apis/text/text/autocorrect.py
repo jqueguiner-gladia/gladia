@@ -13,10 +13,11 @@ inputs = [
     }
 ]
 
-output = {
-        "name": "corrected_text",
-        "type": "str",
-        "example": "corrected_text"
-    }
+output = {"name": "corrected_text", "type": "str", "example": "corrected_text"}
 
-TaskRouter(router=router, input=inputs, output=output, default_model="flexudy-t5-base-multi-sentence-doctor")
+TaskRouter(
+    router=router,
+    input=inputs,
+    output=output,
+    default_model="flexudy-t5-base-multi-sentence-doctor",
+)

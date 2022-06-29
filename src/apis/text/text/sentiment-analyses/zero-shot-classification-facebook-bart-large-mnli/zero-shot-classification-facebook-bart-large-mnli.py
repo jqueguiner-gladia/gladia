@@ -15,7 +15,7 @@ def predict(text: str) -> str:
     classifier = pipeline("zero-shot-classification")
     prediction = classifier(text, candidate_labels=["POSITIVE", "NEUTRAL", "NEGATIVE"])
 
-    label = prediction['labels'][np.argmax(prediction['scores'])]
-    score = np.amax(prediction['scores'])
+    label = prediction["labels"][np.argmax(prediction["scores"])]
+    score = np.amax(prediction["scores"])
 
     return json.dumps({"label": label, "score": score})

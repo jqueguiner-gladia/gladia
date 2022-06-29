@@ -12,11 +12,7 @@ inputs = [
     }
 ]
 
-output = {
-        "name": "asciified_image",
-        "type": "text",
-        "example": "asciified_image"
-    }
+output = {"name": "asciified_image", "type": "text", "example": "asciified_image"}
 
 router = APIRouter()
 

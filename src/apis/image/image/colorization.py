@@ -7,18 +7,12 @@ inputs = [
         "name": "image",
         "default": "Image to colorize",
         "placeholder": "Image to colorize",
-        "tooltip": "Image to colorize"
+        "tooltip": "Image to colorize",
     }
 ]
 
-output = {
-        "name": "colorized_image",
-        "type": "image",
-        "example": "image"
-    }
+output = {"name": "colorized_image", "type": "image", "example": "image"}
 
 router = APIRouter()
 
-TaskRouter(
-    router=router, input=inputs, output=output, default_model="deoldify-stable"
-)
+TaskRouter(router=router, input=inputs, output=output, default_model="deoldify-stable")

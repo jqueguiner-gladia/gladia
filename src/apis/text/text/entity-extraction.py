@@ -13,11 +13,12 @@ inputs = [
     }
 ]
 
-output = {
-        "name": "extracted_entities",
-        "type": "list",
-        "example": "extracted_entities"
-    }
+output = {"name": "extracted_entities", "type": "list", "example": "extracted_entities"}
 
 
-TaskRouter(router=router, input=inputs, output=output, default_model="dbmdz-bert-large-cased-finetuned-conll03-english")
+TaskRouter(
+    router=router,
+    input=inputs,
+    output=output,
+    default_model="dbmdz-bert-large-cased-finetuned-conll03-english",
+)

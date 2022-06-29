@@ -29,13 +29,11 @@ inputs = [
         "name": "min_length",
         "default": 40,
         "tooltip": "Minimum lenght of the summary",
-    }
+    },
 ]
 
-output = { 
-        "name": "summarized_text",
-        "type": "str",
-        "example": "summarized_text"
-    }
+output = {"name": "summarized_text", "type": "str", "example": "summarized_text"}
 
-TaskRouter(router=router, input=inputs, output=output, default_model="distilbart-cnn-12-6")
+TaskRouter(
+    router=router, input=inputs, output=output, default_model="distilbart-cnn-12-6"
+)

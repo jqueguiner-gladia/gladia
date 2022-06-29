@@ -13,11 +13,9 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "next_word",
-        "type": "str",
-        "example": "next word"
-    }
+output = {"name": "next_word", "type": "str", "example": "next word"}
 
 
-TaskRouter(router=router, input=inputs, output=output, default_model="distilbert-base-uncased")
+TaskRouter(
+    router=router, input=inputs, output=output, default_model="distilbert-base-uncased"
+)

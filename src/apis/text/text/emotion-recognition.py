@@ -14,10 +14,11 @@ inputs = [
     },
 ]
 
-output = {
-        "name": "results",
-        "type": "str",
-        "example": "results"
-    }
+output = {"name": "results", "type": "str", "example": "results"}
 
-TaskRouter(router=router, input=inputs, output=output, default_model="mrm8488-t5-base-finetuned-emotion")
+TaskRouter(
+    router=router,
+    input=inputs,
+    output=output,
+    default_model="mrm8488-t5-base-finetuned-emotion",
+)

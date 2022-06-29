@@ -7,15 +7,15 @@ inputs = [
         "name": "video",
         "default": "video to interpolate",
         "placeholder": "video to interpolate",
-        "tooltip": "video to interpolate"
+        "tooltip": "video to interpolate",
     }
 ]
 
 output = {
-        "name": "interpolated_video",
-        "type": "video",
-        "example": "interpolated_video"
-    }
+    "name": "interpolated_video",
+    "type": "video",
+    "example": "interpolated_video",
+}
 
 router = APIRouter()
 

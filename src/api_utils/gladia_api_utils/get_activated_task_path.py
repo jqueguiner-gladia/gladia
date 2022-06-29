@@ -2,7 +2,9 @@ import os
 import json
 
 
-def list_tasks_for_modalities(root_path: str, input_modaliy: str, output_modaliy: str) -> str:
+def list_tasks_for_modalities(
+    root_path: str, input_modaliy: str, output_modaliy: str
+) -> str:
     """List every tasks (activated or not) for a certain input/output modality pair
 
     Args:
@@ -16,12 +18,17 @@ def list_tasks_for_modalities(root_path: str, input_modaliy: str, output_modaliy
 
     tasks = os.listdir(os.path.join(root_path, input_modaliy, output_modaliy))
 
-    paths = [os.path.join(root_path, input_modaliy, output_modaliy, task) for task in tasks]
+    paths = [
+        os.path.join(root_path, input_modaliy, output_modaliy, task) for task in tasks
+    ]
 
-    paths = list(filter(
-        lambda dir : os.path.split(dir)[-1][0] not in ["_", "."] and os.path.isdir(dir),
-        paths
-    ))
+    paths = list(
+        filter(
+            lambda dir: os.path.split(dir)[-1][0] not in ["_", "."]
+            and os.path.isdir(dir),
+            paths,
+        )
+    )
 
     return paths
 
@@ -44,13 +51,18 @@ def get_activated_task_path(path_to_config_file: str, path_to_apis: str) -> str:
         for output_modaliy in config["active_tasks"][input_modaliy].keys():
             active_tasks = config["active_tasks"][input_modaliy][output_modaliy]
 
-            if "NONE" in active_tasks: 
+            if "NONE" in active_tasks:
                 continue
 
             if "*" in active_tasks:
-                paths = list_tasks_for_modalities(path_to_apis, input_modaliy, output_modaliy)
+                paths = list_tasks_for_modalities(
+                    path_to_apis, input_modaliy, output_modaliy
+                )
             else:
-                paths = [os.path.join(path_to_apis, input_modaliy, output_modaliy, task) for task in active_tasks]
+                paths = [
+                    os.path.join(path_to_apis, input_modaliy, output_modaliy, task)
+                    for task in active_tasks
+                ]
 
             tasks = tasks.union(set(paths))
 

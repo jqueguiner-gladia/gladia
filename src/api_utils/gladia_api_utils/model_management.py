@@ -23,18 +23,20 @@ def download_model(
     """download a model and uncompress it if necessary
     reset lets you decide not to force sync between huggingface hub and you local repo (for testing purposes for instance)
     """
-    
+
     namespace = sys._getframe(1).f_globals
     cwd = os.getcwd()
     rel_path = namespace["__file__"]
     model_root_path = os.path.dirname(os.path.join(cwd, rel_path))
 
     # check env to see if mutualized_storage had been set
-    mutualized_storage = os.getenv('MODEL_MUTUALIZED_STORAGE', True)
-    mutualized_storage_root = os.getenv('MODEL_MUTUALIZED_STORAGE_ROOT', '/tmp/gladia/models/')
+    mutualized_storage = os.getenv("MODEL_MUTUALIZED_STORAGE", True)
+    mutualized_storage_root = os.getenv(
+        "MODEL_MUTUALIZED_STORAGE_ROOT", "/tmp/gladia/models/"
+    )
 
     if not os.path.isabs(output_path):
-        if mutualized_storage == True :
+        if mutualized_storage == True:
             output_path = os.path.join(mutualized_storage_root, rel_path, output_path)
         else:
             output_path = os.path.join(model_root_path, output_path)
@@ -75,7 +77,7 @@ def download_models(model_list: dict) -> dict:
     namespace = sys._getframe(1).f_globals
     cwd = os.getcwd()
     rel_path = namespace["__file__"]
-    rel_path = rel_path.lstrip('./')
+    rel_path = rel_path.lstrip("./")
     if ".py" in rel_path:
         rel_path = os.path.dirname(rel_path)
 
@@ -87,15 +89,21 @@ def download_models(model_list: dict) -> dict:
     output = dict()
 
     # check env to see if mutualized_storage had been set
-    mutualized_storage = os.getenv('MODEL_MUTUALIZED_STORAGE', True)
-    mutualized_storage_root = os.getenv('MODEL_MUTUALIZED_STORAGE_ROOT', '/tmp/gladia/models/')
+    mutualized_storage = os.getenv("MODEL_MUTUALIZED_STORAGE", True)
+    mutualized_storage_root = os.getenv(
+        "MODEL_MUTUALIZED_STORAGE_ROOT", "/tmp/gladia/models/"
+    )
 
     for key, model in model_list.items():
         if not os.path.isabs(model["output_path"]):
             if mutualized_storage:
-                model["output_path"] = os.path.join(mutualized_storage_root, rel_path,  model["output_path"])
+                model["output_path"] = os.path.join(
+                    mutualized_storage_root, rel_path, model["output_path"]
+                )
             else:
-                model["output_path"] = os.path.join(model_root_path, model["output_path"])
+                model["output_path"] = os.path.join(
+                    model_root_path, model["output_path"]
+                )
 
             t = threading.Thread(
                 target=download_model,

@@ -2,7 +2,7 @@ from PIL import Image
 from gladia_api_utils.io import _open
 
 
-ASCII_CHARS = ['@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.']
+ASCII_CHARS = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."]
 
 
 def resize_image(image: Image, new_width: int = 100) -> Image:
@@ -24,7 +24,9 @@ def resize_image(image: Image, new_width: int = 100) -> Image:
     return new_image
 
 
-def convert_image_to_ascii(image: Image, buckets: int = 255 // (len(ASCII_CHARS) - 1)) -> str:
+def convert_image_to_ascii(
+    image: Image, buckets: int = 255 // (len(ASCII_CHARS) - 1)
+) -> str:
     """
     Replace every pixel with a character whose intensity is similar
 
@@ -38,12 +40,17 @@ def convert_image_to_ascii(image: Image, buckets: int = 255 // (len(ASCII_CHARS)
     initial_pixels = list(image.getdata())
 
     # convert pixels to ascii characters
-    ascii_characters = ''.join([ASCII_CHARS[pixel_value // buckets] for pixel_value in initial_pixels])
+    ascii_characters = "".join(
+        [ASCII_CHARS[pixel_value // buckets] for pixel_value in initial_pixels]
+    )
 
     # Split the image in multiple list (one by row)
-    ascii_image = [ascii_characters[index:index + width] for index in range(0, len(ascii_characters), width)]
+    ascii_image = [
+        ascii_characters[index : index + width]
+        for index in range(0, len(ascii_characters), width)
+    ]
 
-    return '\n'.join(ascii_image)
+    return "\n".join(ascii_image)
 
 
 def predict(image: bytes) -> str:
@@ -59,6 +66,6 @@ def predict(image: bytes) -> str:
     image = _open(image)
 
     image = resize_image(image, new_width=new_width)
-    new_image = convert_image_to_ascii(image.convert('L'))
+    new_image = convert_image_to_ascii(image.convert("L"))
 
     return new_image

@@ -1,4 +1,3 @@
-
 def predict(text: str) -> [(str, float)]:
     """
     Extract keywords from a given sentence

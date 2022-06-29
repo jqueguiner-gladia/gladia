@@ -8,11 +8,12 @@ from warnings import warn
 from .download_active_models import download_triton_model
 
 
-class TritonClient():
-    """Wrapper suggaring triton'client usage
-    """
+class TritonClient:
+    """Wrapper suggaring triton'client usage"""
 
-    def __init__(self, triton_server_url: str, model_name: str, current_path: str = "") -> None:
+    def __init__(
+        self, triton_server_url: str, model_name: str, current_path: str = ""
+    ) -> None:
         """TritonClient's initializer
 
         Args:
@@ -23,19 +24,22 @@ class TritonClient():
         self.__triton_server_url = triton_server_url
         self.__model_name = model_name
 
-        self.__client = tritonclient.InferenceServerClient(url=self.__triton_server_url, verbose=False)
+        self.__client = tritonclient.InferenceServerClient(
+            url=self.__triton_server_url, verbose=False
+        )
 
         self.__registered_inputs = []
 
         self.__registered_outputs = [
             tritonclient.InferRequestedOutput(
-               name=f'output__0',
+                name=f"output__0",
             ),
         ]
 
-
-        if os.getenv('TRITON_MODELS_PATH') == "":
-            warn("[DEBUG] TRITON_MODELS_PATH is not set, please specify it in order to be able to download models.")
+        if os.getenv("TRITON_MODELS_PATH") == "":
+            warn(
+                "[DEBUG] TRITON_MODELS_PATH is not set, please specify it in order to be able to download models."
+            )
 
         self.__download_model(os.path.join(current_path, ".git_path"))
 
@@ -51,20 +55,24 @@ class TritonClient():
             datatype (str): datatype of the input to register
         """
 
-        self.__registered_inputs.append(tritonclient.InferInput(
-            name=f'input__{len(self.__registered_inputs)}',
-            shape=shape,
-            datatype=datatype
-        ))
+        self.__registered_inputs.append(
+            tritonclient.InferInput(
+                name=f"input__{len(self.__registered_inputs)}",
+                shape=shape,
+                datatype=datatype,
+            )
+        )
 
     def register_new_output(self) -> None:
         """Add a new output to the triton inferer. Each ouput has to be registered before usage.\n
         By default one ouput named `output__0` is already registered.
         """
 
-        self.__registered_outputs.append(tritonclient.InferRequestedOutput(
-            name=f'ouput__{len(self.__registered_outputs)}',
-        ))
+        self.__registered_outputs.append(
+            tritonclient.InferRequestedOutput(
+                name=f"ouput__{len(self.__registered_outputs)}",
+            )
+        )
 
     def __download_model(self, path_to_git_path_file: str, sleep_time: int = 0) -> None:
         """Check if the model need to be downloaded, if so download and extract it.
@@ -79,14 +87,16 @@ class TritonClient():
         )
 
         for model in response.json():
-            if model['name'] == self.__model_name:
+            if model["name"] == self.__model_name:
                 return
-        
-        warn('Downloading model from hugging-face, to prevent lazy downloading please specify TRITON_LAZY_DOWNLOAD=False')
+
+        warn(
+            "Downloading model from hugging-face, to prevent lazy downloading please specify TRITON_LAZY_DOWNLOAD=False"
+        )
 
         download_triton_model(
-            triton_models_dir=os.getenv('TRITON_MODELS_PATH'),
-            git_path=path_to_git_path_file
+            triton_models_dir=os.getenv("TRITON_MODELS_PATH"),
+            git_path=path_to_git_path_file,
         )
 
         sleep(sleep_time)
@@ -102,23 +112,28 @@ class TritonClient():
         for arg, registered_input in zip(args, self.__registered_inputs):
             registered_input.set_data_from_numpy(arg)
 
-        requests.post(url=f"http://{self.__triton_server_url}/v2/repository/models/{self.__model_name}/load")
+        requests.post(
+            url=f"http://{self.__triton_server_url}/v2/repository/models/{self.__model_name}/load"
+        )
 
         model_response = self.client.infer(
             self.__model_name,
-            model_version='1',
+            model_version="1",
             inputs=self.__registered_inputs,
-            outputs=self.__registered_outputs
+            outputs=self.__registered_outputs,
         )
 
         response = requests.post(
             url=f"http://{self.__triton_server_url}/v2/repository/models/{self.__model_name}/unload",
             data={
                 "unload_dependents": True,
-            }
+            },
         )
 
         if response.status_code != 200:
             warn(f"{self.__model_name} has not been properly unloaded.")
 
-        return [model_response.as_numpy(output.name())[0] for output in self.__registered_outputs]
+        return [
+            model_response.as_numpy(output.name())[0]
+            for output in self.__registered_outputs
+        ]

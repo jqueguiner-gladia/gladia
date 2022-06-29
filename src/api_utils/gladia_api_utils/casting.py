@@ -44,7 +44,9 @@ def __convert_ndarray_response(response: np.ndarray, output_type: str):
         return JSONResponse(content=jsonable_encoder(response.tolist()))
 
     else:
-        warn(f"response is numpy array but expected output type {output_type} which is not supported.")
+        warn(
+            f"response is numpy array but expected output type {output_type} which is not supported."
+        )
 
         return response
 
@@ -57,7 +59,9 @@ def __convert_bytes_response(response: bytes, output_type: str):
         return StreamingResponse(ioresult, media_type="image/png")
 
     else:
-        warn(f"response is bytes but expected output type {output_type} which is not supported.")
+        warn(
+            f"response is bytes but expected output type {output_type} which is not supported."
+        )
 
     return response
 
@@ -69,7 +73,9 @@ def __convert_io_response(response: io.IOBase, output_type: str):
         return StreamingResponse(response, media_type="image/png")
 
     else:
-        warn(f"response is io but expected output type {output_type} which is not supported.")
+        warn(
+            f"response is io but expected output type {output_type} which is not supported."
+        )
 
     return response
 
@@ -121,7 +127,7 @@ def cast_response(response, expected_output: dict):
         return __convert_io_response(response, expected_output["type"])
 
     elif isinstance(response, list):
-        return json.dumps(response, cls=NpEncoder, ensure_ascii=False).encode('utf8')
+        return json.dumps(response, cls=NpEncoder, ensure_ascii=False).encode("utf8")
 
     elif isinstance(response, str):
         return __convert_string_response(response)

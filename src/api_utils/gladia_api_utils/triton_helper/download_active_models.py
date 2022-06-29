@@ -13,8 +13,10 @@ def __filter_directories(directories: [str]) -> [str]:
     return list(filter(lambda dir_name: not dir_name[0] in ["_", "."], directories))
 
 
-def __get_every_models_path_for_given_task(root_path: str, input_modality: str, output_modality: str, task: str) -> [str]:
-    """Return a list of path leading to each model for a certain task 
+def __get_every_models_path_for_given_task(
+    root_path: str, input_modality: str, output_modality: str, task: str
+) -> [str]:
+    """Return a list of path leading to each model for a certain task
 
     Args:
         root_path (str): path to the root of apis
@@ -23,28 +25,42 @@ def __get_every_models_path_for_given_task(root_path: str, input_modality: str, 
         task (str): task to get the models from
 
     Returns:
-        [str]: list of path leading to each model for a certain task 
+        [str]: list of path leading to each model for a certain task
     """
 
     models_path = []
 
-    directories = os.listdir(os.path.join(root_path, input_modality, output_modality, task))
+    directories = os.listdir(
+        os.path.join(root_path, input_modality, output_modality, task)
+    )
     directories = __filter_directories(directories)
-    directories = [directory for directory in directories if os.path.isdir(os.path.join(root_path, input_modality, output_modality, task, directory))]
+    directories = [
+        directory
+        for directory in directories
+        if os.path.isdir(
+            os.path.join(root_path, input_modality, output_modality, task, directory)
+        )
+    ]
 
     for directory in directories:
-        models_path.append(os.path.join(root_path, input_modality, output_modality, task, directory, ".git_path"))
+        models_path.append(
+            os.path.join(
+                root_path, input_modality, output_modality, task, directory, ".git_path"
+            )
+        )
 
     return models_path
 
 
-def __get_active_models_path_for_modality(root_path: str, input_modality: str, output_modality: str, actives: [str]) -> [str]:
+def __get_active_models_path_for_modality(
+    root_path: str, input_modality: str, output_modality: str, actives: [str]
+) -> [str]:
     """Return path to each activated model for a certain modality
 
     Args:
         root_path (str): path to the root of apis
         input_modality (str): modality of the input
-        output_modality (str): modality of the output 
+        output_modality (str): modality of the output
         actives (str]): list listing each activated task
 
     Returns:
@@ -55,14 +71,24 @@ def __get_active_models_path_for_modality(root_path: str, input_modality: str, o
         return []
 
     if "*" in actives:
-        actives = __filter_directories(os.listdir(os.path.join(root_path, input_modality, output_modality)))
-        actives = [active for active in actives if os.path.isdir(os.path.join(root_path, input_modality, output_modality, active))]
+        actives = __filter_directories(
+            os.listdir(os.path.join(root_path, input_modality, output_modality))
+        )
+        actives = [
+            active
+            for active in actives
+            if os.path.isdir(
+                os.path.join(root_path, input_modality, output_modality, active)
+            )
+        ]
     else:
-        actives = [activity + 's' for activity in actives]
+        actives = [activity + "s" for activity in actives]
 
     models_path = []
     for task in actives:
-        models_path = models_path + __get_every_models_path_for_given_task(root_path, input_modality, output_modality, task)
+        models_path = models_path + __get_every_models_path_for_given_task(
+            root_path, input_modality, output_modality, task
+        )
 
     return models_path
 
@@ -82,10 +108,15 @@ def __get_active_models_path(rooth_path: str, active_tasks: [str]) -> [str]:
 
     for input_modality in active_tasks.keys():
         for output_modality in active_tasks[input_modality].keys():
-            models_path = models_path + __get_active_models_path_for_modality(rooth_path, input_modality, output_modality, active_tasks[input_modality][output_modality])
+            models_path = models_path + __get_active_models_path_for_modality(
+                rooth_path,
+                input_modality,
+                output_modality,
+                active_tasks[input_modality][output_modality],
+            )
 
     return models_path
-            
+
 
 def download_triton_model(triton_models_dir: str, git_path: str) -> None:
     """Download a model stored on git (with lfs) and extract it to `triton_models_dir`
@@ -107,10 +138,14 @@ def download_triton_model(triton_models_dir: str, git_path: str) -> None:
         return
 
     subprocess.run(f"git clone {git_url} {clone_to_path}", shell=True, check=True)
-    subprocess.run(f"cd {clone_to_path} && git lfs fetch && git lfs pull", shell=True, check=True)
+    subprocess.run(
+        f"cd {clone_to_path} && git lfs fetch && git lfs pull", shell=True, check=True
+    )
 
 
-def download_active_triton_models(triton_models_dir: str, config_file_path: str) -> None:
+def download_active_triton_models(
+    triton_models_dir: str, config_file_path: str
+) -> None:
     """Download every models stored in git (with lfs) by reading each `.git_path` files
 
     Args:
