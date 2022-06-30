@@ -95,6 +95,13 @@ def has_only_pr_with_prefix(response, prefix_to_check, verbose):
     help="Return the list of PR associated to the commit",
 )
 @click.option(
+    "--pr_nb_only",
+    is_flag=True,
+    show_default=False,
+    default=False,
+    help="Return PR ids to the commit",
+)
+@click.option(
     "--verbose", is_flag=True, show_default=False, default=False, help="Verbose output"
 )
 def commit_should_run(
@@ -105,6 +112,7 @@ def commit_should_run(
     break_when_only_prefix=False,
     break_if_no_pr=False,
     return_pr=False,
+    pr_nb_only=False,
     verbose=False,
 ):
 
@@ -135,7 +143,10 @@ def commit_should_run(
             prs = []
             if data["total_count"] > 0:
                 for pr in data["items"]:
-                    prs.append(f'{pr["number"]}: {pr["title"]}')
+                    if pr_nb_only:
+                        prs.append(pr["number"])
+                    else:
+                        prs.append(f'{pr["number"]}: {pr["title"]}')
             print(" | ".join(prs))
 
         else:
