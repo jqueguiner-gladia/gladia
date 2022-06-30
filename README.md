@@ -35,6 +35,9 @@
   <a href="https://opensource.org/licenses/MIT" alt="License">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" />
   </a>
+  <a href="[https://opensource.org/licenses/MIT](https://results.pre-commit.ci/latest/github/gladiaio/gladia/mai)" alt="pre-commit.ci">
+    <img src="https://results.pre-commit.ci/badge/github/gladiaio/gladia/main.svg" />
+  </a>
 </p>
 
 <p align="left">
