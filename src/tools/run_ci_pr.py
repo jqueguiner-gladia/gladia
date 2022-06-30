@@ -146,7 +146,7 @@ def commit_should_run(
                     if pr_nb_only:
                         prs.append(pr["number"])
                     else:
-                        prs.append(f'{pr["number"]}: {pr["title"]}')
+                        prs.append(f'[{pr["number"]}] {pr["title"]}')
             print(" | ".join(prs))
 
         else:
