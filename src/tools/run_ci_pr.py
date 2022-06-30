@@ -114,7 +114,9 @@ def commit_should_run(
         if response.json()["total_count"] == 0:
             if break_if_no_pr:
                 if verbose:
-                    print(f"{bcolors.FAIL}No PR found for commit{bcolors.ENDC}")
+                    print(
+                        f"{bcolors.FAIL}No PR found with prefix {prefix_to_check} for commit{bcolors.ENDC}"
+                    )
                 sys.exit(1)
 
         has_honly_prefix = has_only_pr_with_prefix(
