@@ -139,9 +139,9 @@ def write_github_comment(github_token, github_pull_request, output):
     url = f"https://api.github.com/repos/gladiaio/gladia/issues/{github_pull_request}/comments"
     header = {
         "Authorization": f"token {github_token}",
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
-            }
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json",
+    }
     data = '{"body": "' + output.replace("\n", "\\n") + '"}'
 
     response = requests.post(url, headers=header, data=data)
@@ -226,7 +226,7 @@ def main(
     max_retry,
     github_comment,
     github_token,
-    github_pull_request
+    github_pull_request,
 ):
     skip_when_failed = not continue_when_failed
     if specific_endpoints:
