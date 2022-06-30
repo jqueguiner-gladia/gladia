@@ -1,9 +1,7 @@
-from regex import F
 import requests
 import json
 import click
 import sys
-import os
 
 
 class bcolors:
