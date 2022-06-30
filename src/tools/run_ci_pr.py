@@ -18,39 +18,44 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
-
 def has_only_pr_with_prefix(response, prefix_to_check, verbose):
     only_prs_with_prefix = True
     # check all associated PR with a commit
     # if there is at least 1 PR without the prefix in the title
     # change the only_prs_with_prefix to False
     data = response.json()
-    if data['total_count'] > 0:
+    if data["total_count"] > 0:
         if verbose:
             print(f"{bcolors.OKGREEN}Found {data['total_count']} PRs{bcolors.ENDC}")
 
         # for each PR check if the PR title doesn't contains WIP in the title
         # change the skip_build to False
-        for pr in data['items']:
+        for pr in data["items"]:
             if verbose:
-                print(f"{bcolors.OKGREEN}Checking PR {pr['number']}: {pr['title']} {bcolors.ENDC}")
+                print(
+                    f"{bcolors.OKGREEN}Checking PR {pr['number']}: {pr['title']} {bcolors.ENDC}"
+                )
 
             # if the PR title doesn't contains the prefix
             # in the first characters of the title
-            if not pr['title'].upper().startswith(prefix_to_check.upper()):
+            if not pr["title"].upper().startswith(prefix_to_check.upper()):
                 only_prs_with_prefix = False
                 break
         if verbose:
             if only_prs_with_prefix:
-                print(f"{bcolors.FAIL}Only PRs with prefix {prefix_to_check} found{bcolors.ENDC}")
+                print(
+                    f"{bcolors.FAIL}Only PRs with prefix {prefix_to_check} found{bcolors.ENDC}"
+                )
             else:
-                print(f"{bcolors.OKGREEN}PRs without prefix {prefix_to_check} also found{bcolors.ENDC}")
+                print(
+                    f"{bcolors.OKGREEN}PRs without prefix {prefix_to_check} also found{bcolors.ENDC}"
+                )
 
     else:
         print(f"{bcolors.FAIL}No PR found for commit{bcolors.ENDC}")
 
-
     return only_prs_with_prefix
+
 
 # using an access token
 @click.command()
@@ -63,27 +68,69 @@ def has_only_pr_with_prefix(response, prefix_to_check, verbose):
     help="Repo to scan",
 )
 @click.option("--gh_token", default="", required=True, help="Github Token")
-@click.option("--prefix_to_check", default="WIP", show_default=True, required=True, help="PR prefix to check e.g.")
-@click.option("--break_when_only_prefix", is_flag=True, show_default=True, default=False, help="Exit 1 when all PR have the prefix")
-@click.option("--verbose", is_flag=True, show_default=False, default=False, help="Verbose output")
-def commit_should_run(commit_short="", repo="gladiaio/gladia", gh_token="", prefix_to_check="WIP", break_when_only_prefix=False, verbose=False):
+@click.option(
+    "--prefix_to_check",
+    default="WIP",
+    show_default=True,
+    required=True,
+    help="PR prefix to check e.g.",
+)
+@click.option(
+    "--break_when_only_prefix",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Exit 1 when all PR have the prefix",
+)
+@click.option(
+    "--break_if_no_pr",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Exit 1 when all PR have the prefix",
+)
+@click.option(
+    "--verbose", is_flag=True, show_default=False, default=False, help="Verbose output"
+)
+def commit_should_run(
+    commit_short="",
+    repo="gladiaio/gladia",
+    gh_token="",
+    prefix_to_check="WIP",
+    break_when_only_prefix=False,
+    break_if_no_pr=False,
+    verbose=False,
+):
 
     headers = {
-        'Accept': 'application/vnd.github.v3+json',
-        'Authorization': f'token {gh_token}',
+        "Accept": "application/vnd.github.v3+json",
+        "Authorization": f"token {gh_token}",
     }
 
-    query = f'https://api.github.com/search/issues?q={commit_short}+repo:{repo}+type:pr+is:open'
+    query = f"https://api.github.com/search/issues?q={commit_short}+repo:{repo}+type:pr+is:open"
     response = requests.get(query, headers=headers)
 
     if response.status_code == 200:
-        has_honly_prefix=has_only_pr_with_prefix(response, prefix_to_check=prefix_to_check, verbose=verbose)
+        # check if there is a PR associated with the commit
+
+        if response.json()["total_count"] == 0:
+            if break_if_no_pr:
+                if verbose:
+                    print(f"{bcolors.FAIL}No PR found for commit{bcolors.ENDC}")
+                sys.exit(1)
+
+        has_honly_prefix = has_only_pr_with_prefix(
+            response, prefix_to_check=prefix_to_check, verbose=verbose
+        )
         if break_when_only_prefix:
             sys.exit(1 if has_honly_prefix else 0)
         else:
             print(has_honly_prefix)
     else:
-        print(f"{bcolors.FAIL}Error {response.status_code} {response.reason} {bcolors.ENDC}")
+        print(
+            f"{bcolors.FAIL}Error {response.status_code} {response.reason} {bcolors.ENDC}"
+        )
+
 
 if __name__ == "__main__":
     commit_should_run()
