@@ -88,6 +88,13 @@ def has_only_pr_with_prefix(response, prefix_to_check, verbose):
     help="Exit 1 when all PR have the prefix",
 )
 @click.option(
+    "--return_pr",
+    is_flag=True,
+    show_default=False,
+    default=False,
+    help="Return the list of PR associated to the commit",
+)
+@click.option(
     "--verbose", is_flag=True, show_default=False, default=False, help="Verbose output"
 )
 def commit_should_run(
@@ -97,6 +104,7 @@ def commit_should_run(
     prefix_to_check="WIP",
     break_when_only_prefix=False,
     break_if_no_pr=False,
+    return_pr=False,
     verbose=False,
 ):
 
@@ -121,10 +129,20 @@ def commit_should_run(
         has_honly_prefix = has_only_pr_with_prefix(
             response, prefix_to_check=prefix_to_check, verbose=verbose
         )
-        if break_when_only_prefix:
-            sys.exit(1 if has_honly_prefix else 0)
+
+        if return_pr:
+            data = response.json()
+            prs = []
+            if data["total_count"] > 0:
+                for pr in data["items"]:
+                    prs.append(f'{pr["number"]}: {pr["title"]}')
+            print(" | ".join(prs))
+
         else:
-            print(has_honly_prefix)
+            if break_when_only_prefix:
+                sys.exit(1 if has_honly_prefix else 0)
+            else:
+                print(has_honly_prefix)
     else:
         print(
             f"{bcolors.FAIL}Error {response.status_code} {response.reason} {bcolors.ENDC}"
