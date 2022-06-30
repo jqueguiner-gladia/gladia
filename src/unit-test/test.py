@@ -134,6 +134,21 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
     print("|")
 
 
+def write_github_comment(github_token, github_pull_request, output):
+    print("output:" + output)
+    url = f"https://api.github.com/repos/gladiaio/gladia/issues/{github_pull_request}/comments"
+    header = {
+        "Authorization": f"token {github_token}",
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json'
+            }
+    data = '{"body": "' + output.replace("\n", "\\n") + '"}'
+
+    response = requests.post(url, headers=header, data=data)
+
+    return response.status_code
+
+
 @click.command()
 @click.option(
     "-u",
@@ -178,6 +193,30 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
     default=3,
     help="Number of retry for testing endpoints",
 )
+@click.option(
+    "-g",
+    "--github_comment",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Write the test result in a GitHub comment",
+)
+@click.option(
+    "-t",
+    "--github_token",
+    type=str,
+    show_default=False,
+    default="",
+    help="Github Token for the GitHub comment",
+)
+@click.option(
+    "-p",
+    "--github_pull_request",
+    type=str,
+    show_default=False,
+    default="",
+    help="Github Pull request for the GitHub comment",
+)
 def main(
     url,
     bearer_token,
@@ -185,6 +224,9 @@ def main(
     continue_when_failed,
     after_endpoint,
     max_retry,
+    github_comment,
+    github_token,
+    github_pull_request
 ):
     skip_when_failed = not continue_when_failed
     if specific_endpoints:
@@ -253,14 +295,24 @@ def main(
         str_final_status = "Success"
     else:
         str_final_status = "Failure"
-    print(
-        f"""
+    output = f"""
     Final status: {str_final_status}
     Test Passed: {nb_test_passed}/{nb_total_tests} ({round((nb_test_passed / nb_total_tests)*100, 2)}%)
     Test Failed: {nb_test_failed}/{nb_total_tests}  ({round((nb_test_failed / nb_total_tests)*100, 2)}%)
     Test Skipped: {nb_test_skipped}
     """
-    )
+
+    print(output)
+
+    if github_comment:
+        if github_token == "":
+            print("Github token is required to write a comment")
+            sys.exit(1)
+        if github_pull_request == "":
+            print("Github pull request is required to write a comment")
+            sys.exit(1)
+        write_github_comment(github_token, github_pull_request, output)
+
     sys.exit(test_final_status)
 
 
