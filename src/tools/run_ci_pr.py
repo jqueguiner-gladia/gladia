@@ -1,4 +1,4 @@
-from github import Github
+from regex import F
 import requests
 import json
 import click
@@ -18,6 +18,40 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
+
+def has_only_pr_with_prefix(response, prefix_to_check, verbose):
+    only_prs_with_prefix = True
+    # check all associated PR with a commit
+    # if there is at least 1 PR without the prefix in the title
+    # change the only_prs_with_prefix to False
+    data = response.json()
+    if data['total_count'] > 0:
+        if verbose:
+            print(f"{bcolors.OKGREEN}Found {data['total_count']} PRs{bcolors.ENDC}")
+
+        # for each PR check if the PR title doesn't contains WIP in the title
+        # change the skip_build to False
+        for pr in data['items']:
+            if verbose:
+                print(f"{bcolors.OKGREEN}Checking PR {pr['number']}: {pr['title']} {bcolors.ENDC}")
+
+            # if the PR title doesn't contains the prefix
+            # in the first characters of the title
+            if not pr['title'].upper().startswith(prefix_to_check.upper()):
+                only_prs_with_prefix = False
+                break
+        if verbose:
+            if only_prs_with_prefix:
+                print(f"{bcolors.FAIL}Only PRs with prefix {prefix_to_check} found{bcolors.ENDC}")
+            else:
+                print(f"{bcolors.OKGREEN}PRs without prefix {prefix_to_check} also found{bcolors.ENDC}")
+
+    else:
+        print(f"{bcolors.FAIL}No PR found for commit{bcolors.ENDC}")
+
+
+    return only_prs_with_prefix
+
 # using an access token
 @click.command()
 @click.option("--commit_short", default="", required=True, help="Short Sha of commit.")
@@ -25,45 +59,31 @@ class bcolors:
     "--repo",
     default="gladiaio/gladia",
     show_default=True,
-    required=True,
+    required=False,
     help="Repo to scan",
 )
 @click.option("--gh_token", default="", required=True, help="Github Token")
-def commit_should_run(commit_short="", repo="", gh_token=""):
+@click.option("--prefix_to_check", default="WIP", show_default=True, required=True, help="PR prefix to check e.g.")
+@click.option("--break_when_only_prefix", is_flag=True, show_default=True, default=False, help="Exit 1 when all PR have the prefix")
+@click.option("--verbose", is_flag=True, show_default=False, default=False, help="Verbose output")
+def commit_should_run(commit_short="", repo="gladiaio/gladia", gh_token="", prefix_to_check="WIP", break_when_only_prefix=False, verbose=False):
 
-    g = Github(gh_token)
-    repo = g.get_repo(repo)
-    pulls = repo.get_pulls(state="open", sort="created", base="main")
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'token {gh_token}',
+    }
 
-    # 0 is ok
-    # 1 is nok
-    skip_build = True
-    print(commit_short)
-    for pr in pulls:
-        if "WIP" not in pr.title:
-            pr_number = pr.number
-            print(f"- looking into {pr.title}")
-            req = requests.get(
-                f"https://api.github.com/repos/gladiaio/gladia/pulls/{pr_number}/commits"
-            )
-            commits = json.loads(req.text)
-            for commit in commits:
+    query = f'https://api.github.com/search/issues?q={commit_short}+repo:{repo}+type:pr+is:open'
+    response = requests.get(query, headers=headers)
 
-                if commit["sha"][0:7] == commit_short:
-                    skip_build = False
-                    print(" |_ " + bcolors.OKGREEN + commit["sha"][0:7] + bcolors.ENDC)
-                else:
-                    print(f" |_ {commit['sha'][0:7]}")
-
-    if skip_build:
-        print("CI Shouldn't run")
-        sys.exit(1)
+    if response.status_code == 200:
+        has_honly_prefix=has_only_pr_with_prefix(response, prefix_to_check=prefix_to_check, verbose=verbose)
+        if break_when_only_prefix:
+            sys.exit(1 if has_honly_prefix else 0)
+        else:
+            print(has_honly_prefix)
     else:
-        print("CI Should run")
-        sys.exit(0)
-
-    return not skip_build
-
+        print(f"{bcolors.FAIL}Error {response.status_code} {response.reason} {bcolors.ENDC}")
 
 if __name__ == "__main__":
     commit_should_run()
