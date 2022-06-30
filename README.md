@@ -32,9 +32,6 @@
   <a href="https://github.com/gladiaio/gladia/stargazers" alt="Stars">
     <img src="https://img.shields.io/github/stars/gladiaio/gladia" />
   </a>
-  <a href="https://opensource.org/licenses/MIT" alt="License">
-    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" />
-  </a>
   <a href="https://results.pre-commit.ci/latest/github/gladiaio/gladia/main" alt="pre-commit.ci">
     <img src="https://results.pre-commit.ci/badge/github/gladiaio/gladia/main.svg" />
   </a>
