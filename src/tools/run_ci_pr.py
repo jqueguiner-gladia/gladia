@@ -110,7 +110,6 @@ def commit_should_run(
 
     if response.status_code == 200:
         # check if there is a PR associated with the commit
-
         if response.json()["total_count"] == 0:
             if break_if_no_pr:
                 if verbose:
