@@ -3,7 +3,6 @@ import sys
 import os
 
 import requests
-from exitstatus import ExitStatus
 import click
 
 global nb_total_tests
@@ -14,6 +13,10 @@ global status_passed, status_failed, status_skipped
 status_passed = "🟢"
 status_skipped = "🟡"
 status_failed = "🔴"
+
+
+ExitStatus_failure = sys.exit(1)
+ExitStatus_success = sys.exit(0)
 
 
 def get_nb_tests(url, header, endpoints, specific_endpoints):
@@ -94,7 +97,7 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
             else:
                 nb_test_failed += 1
                 status = status_failed
-                test_final_status = ExitStatus.failure
+                test_final_status = ExitStatus_failure
 
         elif input == "text":
             params = [
@@ -119,7 +122,7 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
             else:
                 status = status_failed
                 nb_test_failed += 1
-                test_final_status = ExitStatus.failure
+                test_final_status = ExitStatus_failure
                 if IS_CI:
                     sleep(2)
 
@@ -210,7 +213,7 @@ def main(
     nb_total_tests = get_nb_tests(url, header, endpoints, specific_endpoints)
 
     after_endpoint_continue = False
-    test_final_status = ExitStatus.success
+    test_final_status = ExitStatus_success
     for path, details in endpoints["paths"].items():
         print(f"|__ {path}")
         print(f"|  |")
@@ -249,7 +252,7 @@ def main(
         else:
             perform_test(details, url, header, path, skip_when_failed, max_retry)
 
-    if test_final_status == ExitStatus.success:
+    if test_final_status == ExitStatus_success:
         str_final_status = "Success"
     else:
         str_final_status = "Failure"
