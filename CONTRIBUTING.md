@@ -88,6 +88,41 @@ Do not forget to write docstring for your functions, in-code documentation is ne
 
 Last but not least, do not hesitate to ask help if needed! Our team is here to help as much as we can, we are glad to see you contributing to GladIA, it will be our pleasure to help you.
 
+#### Pre-commit hooks
+
+We use pre-commit to run Git hooks before submitting the code to review. These hook scripts perform simple tasks before each commit (code formatting mostly). To activate the hooks, simply run the following command in your terminal. For full instructions on how to install pre-commit and how to activate it, please see [here](https://pre-commit.com/). But, in short :
+
+* Install `pre-commit` using one of the following depending on your setup
+	* `pip`
+	```bash
+	> pip install pre-commit 
+	```
+	* `homebrew`
+	```bash
+	> brew install pre-commit
+	```
+	* `conda` 
+	```bash
+	> conda install -c conda-forge pre-commit
+	```
+* Install automatically all hooks listed in `.pre-commit-config.yaml` with 
+```bash
+> pre-commit install
+```  
+
+For now on, all hooks will run right before each commit. If you try to commit a non-compliant (i.e. badly formatted) file, `pre-commit` will modify this file and make the commit fail. However you need to stage the new changes **yourself** as `pre-commit` will not do that for you (this is by design). Fortunately, `pre-commit` outputs useful messages.
+
+The list of hooks (and their options) can be found in [`.pre-commit-config.yaml`](https://github.com/gladiaio/gladia/blob/main/.pre-commit-config.yaml).
+For more information, see [their website](https://pre-commit.com/).
+If you want to manually run all pre-commit hooks on a repository, run `pre-commit run --all-files`. To run individual hooks use `pre-commit run <hook_id>`.
+
+The pre-commit hooks will also be added to the CI. Therfore, any attempt to push non-compliant files, will fail the pre-commit job in the CI. 
+
+This setup : 
+
+* Ensures that we have a consistent code style policy accross all codebase
+* Ensures that the contributing developer has the proper tools to make her code compliant
+
 ## FAQ
 > I have a question, where can I ask it?
 
