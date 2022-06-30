@@ -38,6 +38,9 @@
   <a href="https://results.pre-commit.ci/latest/github/gladiaio/gladia/main" alt="pre-commit.ci">
     <img src="https://results.pre-commit.ci/badge/github/gladiaio/gladia/main.svg" />
   </a>
+  <a href="https://github.com/psf/black" alt="code-style">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" />
+  </a>
 </p>
 
 <p align="left">
