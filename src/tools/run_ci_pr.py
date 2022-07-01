@@ -102,6 +102,13 @@ def has_only_pr_with_prefix(response, prefix_to_check, verbose):
     help="Return PR ids to the commit",
 )
 @click.option(
+    "--deploy_message",
+    is_flag=True,
+    show_default=False,
+    default=False,
+    help="Return the deploy message associated to the PR",
+)
+@click.option(
     "--verbose", is_flag=True, show_default=False, default=False, help="Verbose output"
 )
 def commit_should_run(
@@ -113,16 +120,22 @@ def commit_should_run(
     break_if_no_pr=False,
     return_pr=False,
     pr_nb_only=False,
+    deploy_message=False,
     verbose=False,
 ):
+    if deploy_message:
+        pr_nb_only=True
+        return_pr=True
 
     headers = {
         "Accept": "application/vnd.github.v3+json",
         "Authorization": f"token {gh_token}",
     }
 
-    query = f"https://api.github.com/search/issues?q={commit_short}+repo:{repo}+type:pr+is:open"
+    query = f"https://api.github.com/search/issues?q={commit_short}+repo:{repo}+type:pr"
     response = requests.get(query, headers=headers)
+
+    this_pr = dict()
 
     if response.status_code == 200:
         # check if there is a PR associated with the commit
@@ -138,16 +151,48 @@ def commit_should_run(
             response, prefix_to_check=prefix_to_check, verbose=verbose
         )
 
-        if return_pr:
+        if return_pr or deploy_message:
             data = response.json()
             prs = []
             if data["total_count"] > 0:
                 for pr in data["items"]:
                     if pr_nb_only:
                         prs.append(str(pr["number"]))
+                        this_pr = pr
+
                     else:
                         prs.append(f'[{pr["number"]}] {pr["title"]}')
             print(" | ".join(prs))
+
+            if deploy_message:
+                if this_pr:
+                    repository_url = this_pr["repository_url"]
+                    pr_url = this_pr["pull_request"]["html_url"]
+                    title = this_pr["title"]
+                    number = this_pr["number"]
+                    user = this_pr["user"]["login"]
+                    timeline_url = this_pr["timeline_url"]
+
+                    # get the timeline of the PR
+                    # as json to dict using requests
+                    timeline_response = requests.get(timeline_url, headers=headers)
+                    timeline_data = timeline_response.json()
+
+                    # concatenate the deploy message
+                    # extraction all the commit short sha and messages
+                    deploy_message = f"[{number}]{title} by {user} - {pr_url}\\n"
+                    for item in timeline_data:
+                        if item["event"] == "committed":
+                            deploy_message += f"✅ ({item['sha'][:7]}) {item['message']} by {item['committer']['name']}\\n"
+
+                    # print the deploy message
+                    print(deploy_message)
+                    print(timeline_url)
+
+                    print(f"{repository_url} {pr_url} {title} {number} {user}")
+
+                else:
+                    print("No PR found")
 
         else:
             if break_when_only_prefix:
