@@ -181,10 +181,10 @@ def commit_should_run(
 
                     # concatenate the deploy message
                     # extraction all the commit short sha and messages
-                    deploy_message = f"[{number}]{title} by {user} - {pr_url}\\n"
+                    deploy_message = f"[{number}]{title} by {user} - {pr_url}\n"
                     for item in timeline_data:
                         if item["event"] == "committed":
-                            deploy_message += f"✅ ({item['sha'][:7]}) {item['message']} by {item['committer']['name']}\\n"
+                            deploy_message += f"✅ ({item['sha'][:7]}) {item['message']} by {item['committer']['name']}\n"
 
                     # print the deploy message
                     print(deploy_message)
