@@ -135,18 +135,21 @@ def perform_test(details, url, header, path, skip_when_failed, max_retry=3):
 
 
 def write_github_comment(github_token, github_pull_request, output):
-    print("output:" + output)
-    url = f"https://api.github.com/repos/gladiaio/gladia/issues/{github_pull_request}/comments"
-    header = {
-        "Authorization": f"token {github_token}",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "application/json",
-    }
-    data = '{"body": "' + output.replace("\n", "\\n") + '"}'
+    if github_pull_request != "main":
+        print("output:" + output)
+        url = f"https://api.github.com/repos/gladiaio/gladia/issues/{github_pull_request}/comments"
+        header = {
+            "Authorization": f"token {github_token}",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+        }
+        data = '{"body": "' + output.replace("\n", "\\n") + '"}'
 
-    response = requests.post(url, headers=header, data=data)
+        response = requests.post(url, headers=header, data=data)
 
-    return response.status_code
+        return response.status_code
+    else:
+        return "ok"
 
 
 @click.command()
