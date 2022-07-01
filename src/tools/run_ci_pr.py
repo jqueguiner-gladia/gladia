@@ -144,7 +144,7 @@ def commit_should_run(
             if data["total_count"] > 0:
                 for pr in data["items"]:
                     if pr_nb_only:
-                        prs.append(pr["number"])
+                        prs.append(str(pr["number"]))
                     else:
                         prs.append(f'[{pr["number"]}] {pr["title"]}')
             print(" | ".join(prs))
