@@ -124,8 +124,8 @@ def commit_should_run(
     verbose=False,
 ):
     if deploy_message:
-        pr_nb_only=True
-        return_pr=True
+        pr_nb_only = True
+        return_pr = True
 
     headers = {
         "Accept": "application/vnd.github.v3+json",
