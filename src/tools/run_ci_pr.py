@@ -163,7 +163,8 @@ def commit_should_run(
 
                     else:
                         prs.append(f'[{pr["number"]}] {pr["title"]}')
-            print(" | ".join(prs))
+            if not deploy_message:
+                print(" | ".join(prs))
 
             if deploy_message:
                 if this_pr:
