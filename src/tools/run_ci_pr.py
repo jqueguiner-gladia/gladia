@@ -126,6 +126,7 @@ def commit_should_run(
     if deploy_message:
         pr_nb_only = True
         return_pr = True
+        verbose = False
 
     headers = {
         "Accept": "application/vnd.github.v3+json",
@@ -166,7 +167,6 @@ def commit_should_run(
 
             if deploy_message:
                 if this_pr:
-                    repository_url = this_pr["repository_url"]
                     pr_url = this_pr["pull_request"]["html_url"]
                     title = this_pr["title"]
                     number = this_pr["number"]
@@ -187,9 +187,6 @@ def commit_should_run(
 
                     # print the deploy message
                     print(deploy_message)
-                    print(timeline_url)
-
-                    print(f"{repository_url} {pr_url} {title} {number} {user}")
 
                 else:
                     print("No PR found")
