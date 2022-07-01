@@ -15,8 +15,8 @@ status_skipped = "🟡"
 status_failed = "🔴"
 
 
-ExitStatus_failure = sys.exit(1)
-ExitStatus_success = sys.exit(0)
+ExitStatus_failure = 1
+ExitStatus_success = 0
 
 
 def get_nb_tests(url, header, endpoints, specific_endpoints):
