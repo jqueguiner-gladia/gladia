@@ -183,8 +183,46 @@ def commit_should_run(
                     # extraction all the commit short sha and messages
                     deploy_message = f"[{number}]{title} by {user} - {pr_url}\n"
                     for item in timeline_data:
+                        # if user is not github
+                        # and the event is a commit not a merge branch 'main'
+                        # which means an update
+
                         if item["event"] == "committed":
-                            deploy_message += f"✅ ({item['sha'][:7]}) {item['message']} by {item['committer']['name']}\n"
+                            if item["committer"]["name"] != "GitHub":
+                                if item["message"].startswith("feat") or item[
+                                    "message"
+                                ].startswith("add"):
+                                    deploy_message += "✨"
+                                elif item["message"].startswith("fix"):
+                                    deploy_message += "🐛"
+                                elif item["message"].startswith("docs"):
+                                    deploy_message += "📚"
+                                elif item["message"].startswith("style") or item[
+                                    "message"
+                                ].startswith("format"):
+                                    deploy_message += "💄"
+                                elif item["message"].startswith("refactor"):
+                                    deploy_message += "🔧"
+                                elif item["message"].startswith("test"):
+                                    deploy_message += "🔬"
+                                elif item["message"].startswith("chore"):
+                                    deploy_message += "📝"
+                                elif item["message"].startswith("ci"):
+                                    deploy_message += "🚧"
+                                elif item["message"].startswith("revert"):
+                                    deploy_message += "🔙"
+                                elif item["message"].startswith("perf") or item[
+                                    "message"
+                                ].startswith("improve"):
+                                    deploy_message += "🏃"
+                                elif item["message"].startswith("build"):
+                                    deploy_message += "🚧"
+                                elif item["message"].startswith("release"):
+                                    deploy_message += "🏷"
+                                else:
+                                    deploy_message += "💬"
+
+                                deploy_message += f"({item['sha'][:7]}) {item['message']} ({item['committer']['name']})\n"
 
                     # print the deploy message
                     print(deploy_message)
