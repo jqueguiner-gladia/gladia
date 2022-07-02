@@ -9,7 +9,7 @@ def predict(image: bytes, top_k: int = 1) -> [str]:
     img = _open(image)
 
     output = list()
-    weights = EfficientNet_B2_Weights.IMAGENET1K_V1
+    weights = EfficientNet_B2_Weights.DEFAULT
     model = efficientnet_b2(weights=weights)
     model.eval()
 
