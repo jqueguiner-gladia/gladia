@@ -1,5 +1,5 @@
 from torchvision.io import read_image
-from torchvision.models import efficientnet_b2, EfficientNet_B2_Weights
+from torchvision.models import convnext_small, ConvNeXt_Small_Weights
 
 
 from gladia_api_utils.io import _open
@@ -9,8 +9,8 @@ def predict(image: bytes, top_k: int = 1) -> [str]:
     img = _open(image)
 
     output = list()
-    weights = EfficientNet_B2_Weights.DEFAULT
-    model = efficientnet_b2(weights=weights)
+    weights = ConvNeXt_Small_Weights.DEFAULT
+    model = convnext_small(weights=weights)
     model.eval()
 
     # Step 2: Initialize the inference transforms
