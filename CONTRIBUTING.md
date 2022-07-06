@@ -107,7 +107,8 @@ We use pre-commit to run Git hooks before submitting the code to review. These h
 	```
 * Install automatically all hooks listed in `.pre-commit-config.yaml` with 
 ```bash
-> pre-commit install
+> pre-commit install --hook-type pre-commit
+> pre-commit install --hook-type commit-msg
 ```  
 
 For now on, all hooks will run right before each commit. If you try to commit a non-compliant (i.e. badly formatted) file, `pre-commit` will modify this file and make the commit fail. However you need to stage the new changes **yourself** as `pre-commit` will not do that for you (this is by design). Fortunately, `pre-commit` outputs useful messages.
