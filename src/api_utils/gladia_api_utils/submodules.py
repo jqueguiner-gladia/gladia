@@ -217,7 +217,9 @@ class TaskRouter:
             elif input == "text":
                 input_list.append(
                     forge.arg(
-                        "text", type=str, default=Body(default="", description="")
+                        "text",
+                        type=str,
+                        default=Body("default Text", description="default Text"),
                     )
                 )
             elif input == "list":
@@ -257,7 +259,9 @@ class TaskRouter:
                 else:
                     input_list.append(
                         forge.arg(
-                            item["name"], type=item["type"], default=item["default"]
+                            item["name"],
+                            type=item["type"],
+                            default=Body(item["default"]),
                         )
                     )
 
