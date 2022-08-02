@@ -35,4 +35,12 @@ def predict(text: str) -> str:
 
     output = client(numpy_input)[0][0]
 
-    return output.index(max(output))
+    # output in theory is more than negative / neutral / positive
+    # but we want to return a score sentiment
+    # so we need to normalize the output
+    # it should have been
+    # rating = {0: "hate", 1: "negative", 2: "neutral", 3: "positive", 4: "love"}
+
+    rating = {0: "negative", 1: "negative", 2: "neutral", 3: "positive", 4: "positive"}
+
+    return rating[output.index(max(output))]
