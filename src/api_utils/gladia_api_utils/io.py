@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any
 
 import cv2
-import magic
 import numpy as np
 import pandas as pd
 from icecream import ic
