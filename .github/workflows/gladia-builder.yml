@@ -19,7 +19,7 @@ jobs:
     needs: lint
     if: |
       ${{ !contains(github.event.*.labels.*.name, fromJson('["docs","ci"]')) }} || 
-      ${{ !github.event.pull_request.draft }}
+      github.event.pull_request.draft == false
     runs-on: [self-hosted, linux, STD]
     steps:
       - name: Checkout
