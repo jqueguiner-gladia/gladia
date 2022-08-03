@@ -1,0 +1,16 @@
+name: PR Labeler
+on:
+  workflow_call:
+  workflow_run:
+    workflows: [PR Linter]
+    types:
+      - completed
+    
+jobs:
+  label:
+    name: Update labels
+    runs-on: [self-hosted, linux, STD]
+    steps:
+    - uses: srvaroa/labeler@master
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
