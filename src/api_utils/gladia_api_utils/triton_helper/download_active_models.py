@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from time import time
 
 
@@ -129,6 +130,7 @@ def download_triton_model(triton_models_dir: str, git_path: str) -> None:
     """
 
     if not os.path.exists(git_path):
+        print(f"{git_path} does not exist", file=sys.stderr)
         return
 
     git_url = open(git_path).read()

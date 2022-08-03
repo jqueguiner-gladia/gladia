@@ -46,6 +46,13 @@ class TritonClient:
 
         self.__preload_model: bool = kwargs.get("preload_model", False)
 
+        if os.getenv("TRITON_MODELS_PATH") == "":
+            warn(
+                "[DEBUG] TRITON_MODELS_PATH is not set, please specify it in order to be able to download models."
+            )
+
+        self.__download_model(os.path.join(self.__current_path, ".git_path"))
+
         if self.__preload_model and not self.load_model():
             warn(
                 f"{self.__model_name} has not been properly loaded. Setting back lazy load to True"
@@ -64,13 +71,6 @@ class TritonClient:
                 name=kwargs.get("output_name", "output__0")
             )
         ]
-
-        if os.getenv("TRITON_MODELS_PATH") == "":
-            warn(
-                "[DEBUG] TRITON_MODELS_PATH is not set, please specify it in order to be able to download models."
-            )
-
-        self.__download_model(os.path.join(self.__current_path, ".git_path"))
 
     @property
     def client(self):
@@ -185,12 +185,15 @@ class TritonClient:
             [Any]: List of outputs from the model
         """
 
-        del kwds
-
         for arg, registered_input in zip(args, self.__registered_inputs.values()):
             registered_input.set_data_from_numpy(arg)
 
-        if not self.__preload_model and not self.load_model():
+        need_to_load_model = True
+
+        if self.__preload_model or str(kwds.get("load_model", "")).lower() == "false":
+            need_to_load_model = False
+
+        if need_to_load_model and not self.load_model():
             warn(
                 f"{self.__model_name} has not been properly loaded. Returning empty response"
             )
@@ -204,7 +207,12 @@ class TritonClient:
             outputs=self.__registered_outputs,
         )
 
-        if not self.__preload_model and not self.unload_model():
+        need_to_unload_model = True
+
+        if self.__preload_model or str(kwds.get("unload_model", "")).lower() == "false":
+            need_to_unload_model = False
+
+        if need_to_unload_model and not self.unload_model():
             warn(f"{self.__model_name} has not been properly unloaded.")
 
         return [
