@@ -181,7 +181,7 @@ def cast_response(response, expected_output: dict):
         return {"prediction": str(response)}
 
     elif isinstance(response, int):
-        return {"prediction": str(response)}
+        return {"prediction": response}
 
     warn(f"Response type not supported ({type(response)}), returning a stream")
 
