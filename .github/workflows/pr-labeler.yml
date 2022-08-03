@@ -1,8 +1,6 @@
 name: PR Labeler
 on:
   workflow_call:
-  pull_request:
-    types: [edited]
   workflow_run:
     workflows: [PR Linter]
     types:
