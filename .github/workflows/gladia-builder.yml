@@ -62,7 +62,7 @@ jobs:
           --cpus 14 --memory 32g --gpus '"device=${{steps.gpuid.outputs.gpuid}}"' --shm-size=5g \
           -e IS_CI="True" -e NVIDIA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}} -e CUDA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}} \
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000 \
-          -v /mnt/models/volume:/tmp/gladia/models \
+          -v /data/volumes/models:/tmp/gladia/models \
           --name jlmagouille-${{ github.sha	}} gladiaio/gladia:ci-${{ github.sha }}
       - name: Gladia container readiness
         uses: nick-fields/retry@v2
