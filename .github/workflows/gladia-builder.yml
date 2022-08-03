@@ -13,9 +13,7 @@ concurrency:
 jobs:
 
   lint:
-    runs-on: [self-hosted, linux, STD]
-    steps:
-      - uses: gladiaio/gladia/.github/workflows/pr-linter.yml@main
+    uses: gladiaio/gladia/.github/workflows/pr-linter.yml@main
 
   build:
     if: ${{ !contains(github.event.*.labels.*.name, fromJson('["docs","ci"]')) }} || !github.event.pull_request.draft
