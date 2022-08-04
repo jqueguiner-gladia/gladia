@@ -20,8 +20,8 @@ jobs:
     needs: lint
     if: |-
       ${{ 
-        ! contains(github.event.*.labels.*.name, fromJson('["docs","ci"]')) ||
-        ! github.event.pull_request.draft
+        !contains(github.event.*.labels.*.name, fromJson('["docs","ci"]')) ||
+        !github.event.pull_request.draft
       }}
     runs-on: [self-hosted, linux, STD]
     steps:
