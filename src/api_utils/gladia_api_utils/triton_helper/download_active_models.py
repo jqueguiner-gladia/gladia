@@ -2,11 +2,14 @@ import json
 import os
 import shutil
 import subprocess
-import sys
+from logging import getLogger
 from time import time
+from typing import List
+
+logger = getLogger(__name__)
 
 
-def __filter_directories(directories: [str]) -> [str]:
+def __filter_directories(directories: List[str]) -> List[str]:
     """
     Remove hidden directories from `directories`
 
@@ -16,9 +19,9 @@ def __filter_directories(directories: [str]) -> [str]:
     return list(filter(lambda dir_name: not dir_name[0] in ["_", "."], directories))
 
 
-def __get_every_models_path_for_given_task(
+def __get_every_models_git_path_for_given_task(
     root_path: str, input_modality: str, output_modality: str, task: str
-) -> [str]:
+) -> List[str]:
     """Return a list of path leading to each model for a certain task
 
     Args:
@@ -46,18 +49,18 @@ def __get_every_models_path_for_given_task(
     ]
 
     for directory in directories:
-        models_path.append(
-            os.path.join(
-                root_path, input_modality, output_modality, task, directory, ".git_path"
-            )
+        path_to_git_path_file = os.path.join(
+            root_path, input_modality, output_modality, task, directory, ".git_path"
         )
+        if os.path.exists(path_to_git_path_file):
+            models_path.append(path_to_git_path_file)
 
     return models_path
 
 
 def __get_active_models_path_for_modality(
-    root_path: str, input_modality: str, output_modality: str, actives: [str]
-) -> [str]:
+    root_path: str, input_modality: str, output_modality: str, actives: List[str]
+) -> List[str]:
     """Return path to each activated model for a certain modality
 
     Args:
@@ -89,14 +92,14 @@ def __get_active_models_path_for_modality(
 
     models_path = []
     for task in actives:
-        models_path = models_path + __get_every_models_path_for_given_task(
+        models_path = models_path + __get_every_models_git_path_for_given_task(
             root_path, input_modality, output_modality, task
         )
 
     return models_path
 
 
-def __get_active_models_path(rooth_path: str, active_tasks: [str]) -> [str]:
+def __get_active_models_path(rooth_path: str, active_tasks: List[str]) -> List[str]:
     """Return a list of path to each model that is activated
 
     Args:
@@ -130,7 +133,8 @@ def download_triton_model(triton_models_dir: str, git_path: str) -> None:
     """
 
     if not os.path.exists(git_path):
-        print(f"{git_path} does not exist", file=sys.stderr)
+        logger.error(f"Given path to .git_path file does not exist: {git_path}")
+
         return
 
     git_url = open(git_path).read()
@@ -147,6 +151,10 @@ def download_triton_model(triton_models_dir: str, git_path: str) -> None:
 
     for filename in os.listdir(clone_to_path):
         if filename[0] == "." or filename in already_downloaded_models:
+            logger.debug(
+                f"{filename} not moved to {triton_models_dir} as it's either a hidden file or it does already exist in target path"
+            )
+
             continue
 
         shutil.move(os.path.join(clone_to_path, filename), triton_models_dir)
