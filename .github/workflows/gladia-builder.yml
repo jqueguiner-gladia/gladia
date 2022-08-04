@@ -89,6 +89,10 @@ jobs:
           -e PR=${{ github.event.pull_request.number }} -e GHT=${{ secrets.GITHUB_TOKEN }} \
           jlmagouille-${{ github.sha }} \
           /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py --continue_when_failed'
+      - name: Logs (Test try 1/2)
+        if: ${{ steps.test2.outcome != 'success' }}
+        run: |
+           docker logs jlmagouille-${{ github.sha }}
       - name: Test (try 2/2)
         if: ${{ steps.test1.outcome != 'success' }}
         run: | 
@@ -96,6 +100,10 @@ jobs:
           -e PR=${{ github.event.pull_request.number }} -e GHT=${{ secrets.GITHUB_TOKEN }} \
           jlmagouille-${{ github.sha }} \
           /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py'
+      - name: Logs (Test try 2/2)
+        if: ${{ steps.test2.outcome != 'success' }}
+        run: |
+           docker logs jlmagouille-${{ github.sha }}
       - name: Clean Docker Test Env
         if: always()
         continue-on-error: True
