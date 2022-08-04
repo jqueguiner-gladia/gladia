@@ -1,15 +1,16 @@
 import io
-from logging import raiseExceptions
+from logging import getLogger
 from pathlib import Path
 from typing import Any
 
 import cv2
 import numpy as np
 import pandas as pd
-from icecream import ic
 from PIL import Image
 
 from .file_management import get_buffer_category, get_buffer_type, get_mime_category
+
+logger = getLogger(__name__)
 
 
 def _open(input, btype=None, options=dict()) -> Any:
@@ -20,8 +21,9 @@ def _open(input, btype=None, options=dict()) -> Any:
     output = None
 
     if isinstance(input, io.BytesIO):
-        ic("Converting io.BytesIO to bytes object")
+        logger.debug("Converting io.BytesIO to bytes object")
         buffer = input.read()
+
     elif isinstance(input, str):
         if Path(input).is_file():
             with open(input, "rb") as fh:
@@ -29,25 +31,27 @@ def _open(input, btype=None, options=dict()) -> Any:
                 buffer = buffer.getvalue()
         else:
             buffer = input
+
     else:
         buffer = input
 
     if btype in ["numpy", "pil"]:
         if get_buffer_category(buffer) == "image":
-            ic("pil/numpy-image")
+            logger.debug("pil/numpy-image")
             output = cv2.imdecode(np.fromstring(buffer, np.uint8), cv2.IMREAD_COLOR)
         else:
-            ic("pil/numpy-else")
+            logger.debug("pil/numpy-else")
             output = globals()[f"to_{btype}"](buffer)
 
     else:
-        ic("infere type")
+        logger.debug("infere type")
         btype = get_buffer_category(buffer)
+
         if btype == "image":
-            ic("infere type image")
+            logger.debug("infere type image")
             output = to_pil(buffer)
         elif btype == "flat_structured_data":
-            ic("infere type structured data")
+            logger.debug("infere type structured data")
             output = to_pandas(buffer)
         else:
             output = buffer
@@ -61,6 +65,7 @@ def to_numpy(buffer):
 
 def to_pil(buffer):
     data = to_numpy(buffer)
+
     return Image.fromarray(np.uint8(data))
 
 
@@ -68,6 +73,7 @@ def np_to_img_buffer(data, format="PNG"):
     buf = io.BytesIO()
     img = Image.fromarray(np.uint8(data))
     img.save(buf, format=format)
+
     return buf.getvalue()
 
 
@@ -78,23 +84,21 @@ def to_pandas(buffer):
 
     if buffer_mime_type == "text/csv":
         output = pd.read_csv(buffer)
+
     elif buffer_mime_type == "json":
         output = pd.read_json(buffer)
+
     elif get_buffer_category == "excel":
         output = pd.read_json(buffer)
+
     elif get_buffer_category == "web_content":
         output = pd.read_html(buffer)
-    elif buffer_mime_type == "hdf5":
-        raiseExceptions("Not implemented Yet")
-    elif buffer_mime_type == "orc":
-        raiseExceptions("Not implemented Yet")
-    elif buffer_mime_type == "parquet":
-        raiseExceptions("Not implemented Yet")
-    elif buffer_mime_type == "sas":
-        raiseExceptions("Not implemented Yet")
-    elif buffer_mime_type == "spss":
-        raiseExceptions("Not implemented Yet")
-    elif buffer_mime_type == "pickle":
-        raiseExceptions("Not implemented Yet")
+
+    elif buffer_mime_type in ["hdf5", "orc", "parquet", "sas", "spss", "pickle"]:
+        error_message = f"Type {buffer_mime_type} is not implemented yet."
+
+        logger.error(error_message)
+
+        raise RuntimeError(error_message)
 
     return output

@@ -3,11 +3,14 @@ import os
 import re
 import subprocess
 import tempfile
+from logging import getLogger
 from typing import List, Tuple
 
 import yaml
 from gladia_api_utils import get_activated_task_path
 from tqdm import tqdm
+
+logger = getLogger(__name__)
 
 
 def retrieve_package_from_env_file(env_file: dict) -> Tuple[List[str], List[str]]:
@@ -63,14 +66,16 @@ dependencies:"""
 
 
 def create_custom_env(env_name: str, path_to_env_file: str) -> None:
-    print(f"Creating env : {env_name}")
+    logger.debug(f"Creating env : {env_name}")
 
     custom_env = yaml.safe_load(open(path_to_env_file, "r"))
 
     if custom_env is None:
-        raise RuntimeError(
-            "Provided config env is empty, you must either specify `inherit` or `dependencies`."
-        )
+        error_message = "Provided config env is empty, you must either specify `inherit` or `dependencies`."
+
+        logger.error(error_message)
+
+        raise RuntimeError(error_message)
 
     (
         packages_to_install_from_pip,
@@ -118,6 +123,8 @@ def create_custom_env(env_name: str, path_to_env_file: str) -> None:
         os.remove(temporary_file.name)
         os.remove(temporary_file.name + ".yaml")
 
+        logger.info("Env {env_name} has been successfully created")
+
 
 def build_specific_envs(paths: List[str]) -> None:
     """Build mamba envs using the provided {paths}
@@ -144,7 +151,7 @@ def build_specific_envs(paths: List[str]) -> None:
         task_path, model = os.path.split(path)
         task = os.path.split(task_path)[1]
 
-        print("building", f"{task}-{model}")
+        logger.debug(f"building environemnt {task}-{model}")
 
         create_custom_env(
             env_name=f"{task}-{model}", path_to_env_file=os.path.join(path, "env.yaml")
@@ -167,13 +174,12 @@ def build_env_for_activated_tasks(
     )
 
     for task in tqdm(paths):
-        print(task)
 
         if not bool(re.search(modality[0], task)):
-            print("skip")
+            logger.debug(f"Skipping task {task}")
+
             continue
 
-        print("process")
         if os.path.exists(os.path.join(task, "env.yaml")):
             create_custom_env(
                 env_name=os.path.split(task)[1],

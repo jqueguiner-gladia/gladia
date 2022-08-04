@@ -7,8 +7,7 @@ import subprocess
 import sys
 import tempfile
 import urllib.parse
-import warnings
-from email.policy import default
+from logging import getLogger
 from pathlib import Path
 from shlex import quote
 from typing import Union
@@ -19,17 +18,15 @@ import inflect
 import starlette
 from fastapi import APIRouter, Body, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
-from icecream import ic
 from pydantic import create_model
 
 from .casting import cast_response
 from .file_management import write_tmp_file
 from .responses import AudioResponse, ImageResponse, VideoResponse
 
-ic.configureOutput(includeContext=True)
-
 versions = list()
 available_versions = list()
+logger = getLogger(__name__)
 
 PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
 PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
@@ -194,12 +191,14 @@ def exec_in_subprocess(
             executable="/bin/bash",
         )
 
-        output, error = proc.communicate()
-
-        print("[error]:", error, file=sys.stderr)
+        proc.communicate()
 
     except subprocess.CalledProcessError as error:
-        raise RuntimeError(f"Couldn't activate custom env {env_name}: {error}")
+        error_message = f"Could not run in subprocess command {cmd}: {error}"
+
+        logger.error(error_message)
+
+        raise RuntimeError(error_message)
 
 
 def get_module_env_name(module_path: str) -> str:
@@ -459,14 +458,17 @@ class TaskRouter:
 
                 # This is where we launch the inference without custom env
                 result = getattr(this_module, f"predict")(*args, **kwargs)
-            try:
 
+            try:
                 return cast_response(result, self.output)
             except Exception as e:
-                print(e, file=sys.stderr)
+                error_message = f"Couldn't cast response: {e}"
+
+                logger.error(error_message)
+
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"The following error occurred: {str(e)}",
+                    detail=error_message,
                 )
             finally:
 
@@ -498,19 +500,17 @@ class TaskRouter:
         )
 
         if not os.path.exists(root_package_path):
-            warnings.warn(
+            logger.warn(
                 f"task dir ({root_package_path}) does not exist, skipping {self.task}"
             )
             return False
 
         elif not os.path.exists(model_dir):
-            warnings.warn(
-                f"model_dir ({model_dir}) does not exist, skipping {self.task}"
-            )
+            logger.warn(f"model_dir ({model_dir}) does not exist, skipping {self.task}")
             return False
 
         elif not os.path.exists(model_file):
-            warnings.warn(
+            logger.warn(
                 f"model_file ({model_file}) does not exist, skipping {self.task}"
             )
             return False

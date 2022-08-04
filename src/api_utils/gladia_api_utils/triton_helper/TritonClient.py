@@ -1,6 +1,7 @@
 import os
 import pathlib
 import sys
+from logging import getLogger
 from time import sleep
 from typing import Any
 from warnings import warn
@@ -9,6 +10,8 @@ import requests
 import tritonclient.http as tritonclient
 
 from .download_active_models import download_triton_model
+
+logger = getLogger(__name__)
 
 
 class TritonClient:
@@ -54,7 +57,7 @@ class TritonClient:
         self.__download_model(os.path.join(self.__current_path, ".git_path"))
 
         if self.__preload_model and not self.load_model():
-            warn(
+            logger.error(
                 f"{self.__model_name} has not been properly loaded. Setting back lazy load to True"
             )
 
@@ -194,7 +197,7 @@ class TritonClient:
             need_to_load_model = False
 
         if need_to_load_model and not self.load_model():
-            warn(
+            logger.error(
                 f"{self.__model_name} has not been properly loaded. Returning empty response"
             )
 
@@ -213,7 +216,7 @@ class TritonClient:
             need_to_unload_model = False
 
         if need_to_unload_model and not self.unload_model():
-            warn(f"{self.__model_name} has not been properly unloaded.")
+            logger.error(f"{self.__model_name} has not been properly unloaded.")
 
         return [
             model_response.as_numpy(output.name()).tolist()

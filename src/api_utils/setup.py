@@ -33,7 +33,6 @@ setup(
         "xtract",
         "gdown",
         "python-magic",
-        "icecream",
         "huggingface_hub",
         "transformers",
         "GitPython",

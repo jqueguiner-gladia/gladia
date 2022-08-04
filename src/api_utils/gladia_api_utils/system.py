@@ -7,7 +7,6 @@ from pathlib import Path
 from posixpath import isabs
 
 from genericpath import isdir
-from icecream import ic
 
 
 def copy(source, destination):

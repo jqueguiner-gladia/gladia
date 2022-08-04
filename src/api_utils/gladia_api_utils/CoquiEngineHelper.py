@@ -6,7 +6,6 @@ from pathlib import Path
 import ffmpeg
 import numpy as np
 from gladia_api_utils.model_management import download_model
-from icecream import ic
 from stt import Model
 
 
@@ -17,8 +16,6 @@ class SpeechToTextEngine:
         model: str = "model.tflite",
         scorer: str = "huge-vocabulary.scorer",
     ):
-
-        language, author, version = model_uri.split("/")
 
         model_path_prefix = f"{os.getenv('MODEL_CACHE_ROOT')}/audio/text/{model_uri}"
 

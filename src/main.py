@@ -3,12 +3,12 @@ import json
 import logging
 import os
 import pkgutil
+from logging.handlers import RotatingFileHandler
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
 from fastapi_utils.timing import add_timing_middleware
-from icecream import ic
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.responses import RedirectResponse
 
@@ -27,7 +27,7 @@ def __init_config() -> dict:
     config_file = os.getenv("API_CONFIG_FILE", "config.json")
 
     if os.path.isfile(config_file):
-        with open("config.json", "r") as f:
+        with open("config.json", "r") as f:  # FIXME: config_file is unused
             return json.load(f)
 
 
@@ -40,11 +40,36 @@ def __init_logging(api_config: dict) -> logging.Logger:
     """
 
     try:
-        logging.basicConfig(level=logging.INFO, format=api_config["logs"]["log_format"])
+
+        logging.basicConfig(
+            level={
+                None: logging.NOTSET,
+                "": logging.NOTSET,
+                "none": logging.NOTSET,
+                "debug": logging.DEBUG,
+                "info": logging.INFO,
+                "warning": logging.WARNING,
+                "error": logging.ERROR,
+                "critical": logging.CRITICAL,
+            }.get(api_config["logs"]["log_level"], logging.INFO),
+            format=api_config["logs"]["log_format"],
+        )
+
     except KeyError:
         logging.basicConfig(level=logging.INFO)
 
-    return logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
+
+    handler = RotatingFileHandler(
+        api_config["logs"]["log_path"],
+        maxBytes=2000,
+        backupCount=10,
+    )
+    handler.setFormatter(logging.Formatter(api_config["logs"]["log_format"]))
+
+    logger.addHandler(handler)
+
+    return logger
 
 
 def __init_prometheus_instrumentator(instrumentator_config: dict) -> Instrumentator:
@@ -82,7 +107,7 @@ def __set_app_middlewares(api_app: FastAPI, api_config: dict) -> None:
     """
 
     if api_config["logs"]["timing_activated"]:
-        add_timing_middleware(api_app, record=logger.info, prefix="app")
+        add_timing_middleware(api_app, record=logging.info, prefix="app")
 
     api_app.add_middleware(
         CORSMiddleware,
@@ -187,7 +212,7 @@ def import_submodules(package: "module", recursive: bool = True) -> None:
         ):
             import_submodules(module_path)
         else:
-            ic(f"skipping {module_relative_path}")
+            logger.debug(f"skipping {module_relative_path}")
 
 
 os.environ["TRITON_MODELS_PATH"] = os.getenv(

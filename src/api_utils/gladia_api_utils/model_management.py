@@ -1,13 +1,15 @@
 import os
 import sys
 import threading
+from logging import getLogger
 from pathlib import Path
 from urllib.parse import urlparse
 
 from git import Repo
-from icecream import ic
 
-from .file_management import create_directory, download_file, is_archive, uncompress
+from .file_management import download_file, is_archive, uncompress
+
+logger = getLogger(__name__)
 
 
 def download_model(
@@ -39,30 +41,32 @@ def download_model(
         else:
             output_path = os.path.join(model_root_path, output_path)
 
-    ic("Downloading model", url, output_path)
+    logger.debug(f"Downloading model from {url} to {output_path}")
 
     url_domain = urlparse(url).netloc
 
     if url_domain == "huggingface.co" or url_domain == "www.huggingface.co":
-        # check if directory exists if not clone it
-        # else pull
+        # check if directory exists if not clone it else pull
         os.environ["GIT_LFS_SKIP_SMUDGE"] = "1"
+
         if not os.path.isdir(Path(output_path)):
-            ic("Cloning HuggingFace Model", url)
+            logger.debug(f"Cloning HuggingFace Model from {url}")
             Repo.clone_from(url, output_path)
             os.system(f"cd {output_path} && git lfs pull")
+
         else:
             if reset:
-                ic("Pulling HuggingFace Model", url)
+                logger.debug(f"Pulling HuggingFace Model from {url}")
                 repo = Repo(output_path)
                 repo.git.reset("--hard", "origin/main")
                 os.system(f"cd {output_path} && git lfs pull")
+
     else:
-        ic("Downloading", url)
+        logger.debug(f"Downloading {url}")
         download_file(url, output_path)
 
         if is_archive(output_path) and uncompress_after_download:
-            ic("Uncompressing", output_path)
+            logger.debug("Uncompressing {output_path}")
             uncompress(output_path)
 
     return output_path
@@ -82,7 +86,7 @@ def download_models(model_list: dict) -> dict:
     # used in case of relative path
     model_root_path = os.path.dirname(os.path.join(cwd, rel_path))
 
-    ic("Downloading multiple models")
+    logger.debug("Downloading multiple models")
     threads = []
     output = dict()
 
