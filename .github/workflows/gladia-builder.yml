@@ -13,6 +13,7 @@ concurrency:
 jobs:
 
   lint:
+    if: github.event_name == 'pull_request'
     uses: gladiaio/gladia/.github/workflows/pr-linter.yml@main
 
   build:
@@ -93,7 +94,7 @@ jobs:
           docker exec -i \
           -e PR=${{ github.event.pull_request.number }} -e GHT=${{ secrets.GITHUB_TOKEN }} \
           jlmagouille-${{ github.sha }} \
-          /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py --continue_when_failed'
+          /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py'
       - name: Clean Docker Test Env
         if: always()
         continue-on-error: True
