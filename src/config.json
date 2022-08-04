@@ -17,12 +17,14 @@
         ],
         "allow_credentials": true
     },
+
     "logs": {
         "timing_activated": true,
         "log_level": "info",
         "log_path": "/tmp/aipi",
         "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     },
+
     "prometheus": {
         "active": false,
         "host": "http://localhost:9090",
@@ -40,10 +42,7 @@
             "inprogress_labels": false
         }
     },
-    "redis-ai": {
-        "active": false,
-        "host": "http://localhost:6379"
-    },
+
     "active_tasks": {
         "image": {
             "image":["*"],
@@ -70,28 +69,12 @@
             "audio": ["*"]
         }
     },
-    "cookie": {
-        "cookie_domain": "paperswithapi.com"
-    },
+
     "server": {
         "port": 443,
         "protocol": "https://",
         "full_host_name": "paperswithapi.com",
         "api_location": "{protocol}{full_host_name}:{port_number}"
-    },
-    "authorizations": {
-        "google": {
-            "active": true,
-            "cookie_authorization_name": "Authorization",
-            "client_id": "",
-            "client_secrets_json": "",
-            "swap_token_endpoint": "/swap_token",
-            "success_route": "/users/me",
-            "error_route": "/login_error",
-            "secret_key": "",
-            "algorithm": "HS256",
-            "access_token_expire_minutes": 30
-        }
     },
 
     "triton" : {
