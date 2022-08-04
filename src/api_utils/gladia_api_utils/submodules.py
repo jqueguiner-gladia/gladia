@@ -31,6 +31,8 @@ logger = getLogger(__name__)
 PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
 PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
 
+url_input_description = "File URL if no file upload"
+
 
 def is_binary_file(file_path: str) -> bool:
     textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
@@ -249,7 +251,7 @@ class TaskRouter:
                     forge.arg(
                         f"{input}_url",
                         type=str,
-                        default=Body(description="File URL if no file upload"),
+                        default=Body(description=url_input_description),
                     )
                 )
             elif input == "text":
@@ -290,7 +292,7 @@ class TaskRouter:
                             type=str,
                             default=Body(
                                 default=item["default"],
-                                description="File URL if no file upload",
+                                description=url_input_description,
                             ),
                         )
                     )

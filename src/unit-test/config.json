@@ -1,0 +1,7 @@
+{
+    "formats_to_test": {
+        "image": [".jpg", ".png"],
+        "audio": [".mp3", ".wav", ".m4a"],
+        "video": []
+    }
+}

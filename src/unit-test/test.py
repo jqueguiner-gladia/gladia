@@ -1,9 +1,11 @@
+import json
 import os
 import sys
 from time import sleep
 
 import click
 import requests
+from gladia_api_utils.submodules import url_input_description
 
 global nb_total_tests
 global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
@@ -20,6 +22,7 @@ ExitStatus_failure = 1
 ExitStatus_success = 0
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
+current_files = os.listdir(current_directory)
 
 
 def get_nb_tests(url, header, endpoints, specific_endpoints=[], specific_models=""):
@@ -43,23 +46,28 @@ def get_nb_models(url, path, header):
     return len(models)
 
 
-def request_endpoint(
-    url, path, header, params=False, data={}, files=False, max_retry=3
-):
+def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=3):
+    headers = header.copy()
+    # If data is simple singular input (str/int/float/bool),
+    # special header and parsing need to be applied
+    if len(data) > 1:
+        headers["Content-Type"] = "application/json"
+        data = json.dumps(data)
+
     response = type("", (), {})()
     response.status_code = 500
     tries = 1
     while tries <= max_retry and response.status_code != 200:
-        if params != False and files != False:
-            response = requests.post(
-                f"{url}{path}", headers=header, params=params, data=data, files=files
+
+        response = requests.post(
+            f"{url}{path}", headers=headers, params=params, data=data, files=files
+        )
+        if files:
+            used_files = [value[0] for key, value in files.items()]
+            print(
+                f"|  |       ___ Try : {tries}/{max_retry}    ({', '.join(used_files)})"
             )
-            file = files[next(iter(files))][0]
-            if file is None:
-                file = "url"
-            print(f"|  |       ___ Try : {tries}/{max_retry}    ({file})")
         else:
-            response = requests.post(f"{url}{path}", headers=header, params=params)
             print(f"|  |       ___ Try : {tries}/{max_retry}")
         print(f"|  |      |    |_ Response : {response.status_code} ")
         tries += 1
@@ -77,8 +85,181 @@ def perform_test(
     global nb_total_tests
     global IS_CI
     global endpoints
+    global formats_to_test
 
-    tag = details["get"]["tags"][0]
+    output_content_type_asserts = {
+        "image/*": "image/png",
+        "application/json": "application/json",
+        "audio/*": "",  # TODO: define the casting content type for audio output
+        "video/*": "",  # TODO: define the casting content type for video output
+    }
+
+    # Create a list a inputs to make requests needed to test the model properly
+    def get_requests_inputs():
+        requests_inputs = []
+
+        if "application/json" in details["post"]["requestBody"]["content"]:
+            request_body_info = details["post"]["requestBody"]["content"][
+                "application/json"
+            ]["schema"]
+        else:
+            request_body_info = details["post"]["requestBody"]["content"][
+                "multipart/form-data"
+            ]["schema"]
+
+        if "title" in request_body_info:
+            # Simple singular input (str/int/float/bool)
+            data = {request_body_info["title"]: request_body_info["default"]}
+            requests_inputs.append({"data": data, "files": {}})
+        else:
+            # Not simple input (json of length >2, image, audio, video)
+            schema = request_body_info["$ref"].split("/")[-1]
+            properties = endpoints["components"]["schemas"][schema]["properties"]
+
+            # List all kinds of inputs
+            urls_files = []
+            texts = []
+            audios = []
+            videos = []
+            images = []
+            for key, value in properties.items():
+                if "format" not in value:
+                    if "description" in value:
+                        if value["description"] == url_input_description:
+                            # URL
+                            if "audio" in key or "audio" in value["title"].lower():
+                                # URL audio
+                                urls_files.append(
+                                    {
+                                        value["title"]: (
+                                            "audio_url",
+                                            "https://anshe.org/audio/3Weeks-080715.mp3",
+                                        )
+                                    }
+                                )
+                            elif "video" in key or "video" in value["title"].lower():
+                                # URL Video
+                                urls_files.append(
+                                    {
+                                        value["title"]: (
+                                            "video_url",
+                                            "https://upload.wikimedia.org/wikipedia/commons/8/80/Expedition_50-51_Crew_Docks_to_the_Space_Station.webm",
+                                        )
+                                    }
+                                )
+                            else:
+                                # URL Image
+                                urls_files.append(
+                                    {
+                                        value["title"]: (
+                                            "image_url",
+                                            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
+                                        )
+                                    }
+                                )
+                    else:
+                        # Text
+                        texts.append({value["title"]: ("text", value["default"])})
+                else:
+                    if "audio" in key or "audio" in value["title"].lower():
+                        # Audio
+                        audios.append(
+                            {value["title"]: ("audio", formats_to_test["audio"])}
+                        )
+                    elif "video" in key or "video" in value["title"].lower():
+                        # Video
+                        videos.append(
+                            {value["title"]: ("video", formats_to_test["video"])}
+                        )
+                    else:
+                        # Image
+                        images.append(
+                            {value["title"]: ("image", formats_to_test["image"])}
+                        )
+
+            # Create all requests to send for good testing of the model
+            data = {}
+            dict_to_merge = {
+                key: value[1] for text in texts for key, value in text.items()
+            }
+            data.update(dict_to_merge)
+
+            if urls_files:
+                # If urls_files, there is file to send
+                # Create a first request testing url version ot them
+                request_files = {}
+                for url_file in urls_files:
+                    request_files.update(url_file)
+                requests_inputs.append({"data": data, "files": request_files})
+
+                # Then, for each input type (audio, video, image),
+                # create requests testing each format,
+                # using first one by default for the other input type
+                all_files = [("audio", audios), ("image", images), ("video", videos)]
+                for types_files in all_files:
+                    # Keep only other types files (ex: 'audio' and 'video' if 'image')
+                    other_types_file = [
+                        item for item in all_files if item != types_files
+                    ]
+                    other_input_files = {}
+                    # Add a a file with default type format (fist one) for each other file to send
+                    for other_type_file in other_types_file:
+                        other_input_files = add_default_files(
+                            other_input_files, other_type_file[1]
+                        )
+                    # Add a new set of request files for each format to test
+                    for format in formats_to_test[types_files[0]]:
+                        request_files = other_input_files.copy()
+                        # Use the same type of format for each file of this type (ex: jpg for all images)
+                        for type_file in types_files[1]:
+                            # Retieve the test file in current directory with the good format ...
+                            file = [
+                                file for file in current_files if file.endswith(format)
+                            ][0]
+                            file_path = os.path.join(current_directory, file)
+                            # ... and add it to the request files
+                            for key, value in type_file.items():
+                                request_files.update(
+                                    {key: (file, open(file_path, "rb"))}
+                                )
+                            requests_inputs.append(
+                                {"data": data, "files": request_files}
+                            )
+
+            else:
+                requests_inputs.append({"data": data, "files": {}})
+
+        return requests_inputs
+
+    def add_default_files(initial_files, files_to_add):
+        """ex of files to add:
+            {"Image": ("image", "[.jpg, .png]")}
+
+        This fonction will take only the first format in the list
+        and merge it with initial_files to become the new dict
+
+        result from ex with initial_files = {}:
+            {"Image": ("image", ".jpg")}
+        """
+        dict_to_merge = {
+            key: (value[0], value[1][0])
+            for files in files_to_add
+            for key, value in files.items()
+        }
+        initial_files.update(dict_to_merge)
+        return initial_files
+
+    def is_file_in_inputs(requests_inputs):
+        for request_inputs in requests_inputs:
+            if request_inputs["files"]:
+                return True
+        return False
+
+    requests_inputs = get_requests_inputs()
+
+    response_output_type = list(details["post"]["responses"]["200"]["content"].keys())[
+        0
+    ]
 
     if specific_models != []:
         models = specific_models
@@ -90,144 +271,59 @@ def perform_test(
         if IS_CI:
             sleep(1)
 
-        input, output, task = details["post"]["tags"][0].split(".")
-        status = ""
+        params = {"model": model}
 
-        if input == "image":
-            params = (("model", model),)
-
-            files_to_test = ["test.jpg", "test.png"]
-            valid = True
-
-            for file_name in files_to_test:
-                file_path = os.path.join(current_directory, file_name)
-                files = {"image": (file_name, open(file_path, "rb"))}
-
-                response = request_endpoint(
-                    url=url,
-                    path=path,
-                    header=header,
-                    params=params,
-                    files=files,
-                    max_retry=max_retry,
-                )
-
-                if response.status_code != 200:
-                    valid = False
-
-            # testing url ref for heavy modality
-            files = {
-                "image_url": (
-                    None,
-                    "http://files.gladia.io/test/test.png",
-                ),
-            }
+        valid = True
+        output_type_ok = True
+        for request in requests_inputs:
             response = request_endpoint(
                 url=url,
                 path=path,
                 header=header,
                 params=params,
-                files=files,
+                data=request["data"],
+                files=request["files"],
                 max_retry=max_retry,
             )
-            if response.status_code != 200:
+
+            if (
+                output_content_type_asserts[response_output_type]
+                != response.headers["content-type"]
+            ):
+                output_type_ok = False
+
+            if response.status_code != 200 or not output_type_ok:
                 valid = False
 
-            if valid:
-                nb_test_passed += 1
-                status = status_passed
-            else:
-                nb_test_failed += 1
-                status = status_failed
-                test_final_status = ExitStatus_failure
-
-        elif input == "audio":
-            params = (("model", model),)
-
-            files_to_test = ["test.mp3", "test.wav", "test.m4a"]
-            valid = True
-
-            for file_name in files_to_test:
-                file_path = os.path.join(current_directory, file_name)
-                files = {"audio": (file_name, open(file_path, "rb"))}
-
-                response = request_endpoint(
-                    url=url,
-                    path=path,
-                    header=header,
-                    params=params,
-                    files=files,
-                    max_retry=max_retry,
-                )
-
-                if response.status_code != 200:
-                    valid = False
-
-            # testing url ref for heavy modality
-            files = {
-                "audio_url": (None, "https://anshe.org/audio/3Weeks-080715.mp3"),
-            }
-            response = request_endpoint(
-                url=url,
-                path=path,
-                header=header,
-                params=params,
-                files=files,
-                max_retry=max_retry,
-            )
-            if response.status_code != 200:
-                valid = False
-
-            if valid:
-                nb_test_passed += 1
-                status = status_passed
-            else:
-                nb_test_failed += 1
-                status = status_failed
-                test_final_status = ExitStatus_failure
-
-        elif input == "text":
-            params = {"model": model}
-            request_body_info = details["post"]["requestBody"]["content"][
-                "application/json"
-            ]["schema"]
-            data = {}
-            if "title" in request_body_info:
-                data[request_body_info["title"]] = request_body_info["default"]
-            else:
-                schema = request_body_info["$ref"].split("/")[-1]
-                properties = endpoints["components"]["schemas"][schema]["properties"]
-                for key, value in properties.items():
-                    data[value["title"]] = value["default"]
-
-            response = request_endpoint(
-                url=url,
-                path=path,
-                header=header,
-                params=params,
-                data=data,
-                max_retry=max_retry,
-            )
-
-            if response.status_code == 200:
-                status = status_passed
-                nb_test_passed += 1
-
-            else:
-                status = status_failed
-                nb_test_failed += 1
-                test_final_status = ExitStatus_failure
-                if IS_CI:
-                    sleep(2)
+        if valid:
+            nb_test_passed += 1
+            status = status_passed
+        else:
+            nb_test_failed += 1
+            status = status_failed
+            test_final_status = ExitStatus_failure
+            if IS_CI and not is_file_in_inputs(requests_inputs):
+                sleep(2)
 
         nb_test_ran += 1
 
         progress = round((nb_test_ran / nb_total_tests) * 100, 2)
-        print(f"|  |__ {status} {model} ({progress}%)  <{response.status_code}>")
+        output_type_message = (
+            " ({} instead of {})".format(
+                response.headers["content-type"],
+                output_content_type_asserts[response_output_type],
+            )
+            if response.status_code == 200 and not output_type_ok
+            else ""
+        )
+        print(
+            f"|  |__ {status} {model} ({progress}%)  <{response.status_code}>{output_type_message}"
+        )
         print(f"|  |")
         if skip_when_failed:
             if status == status_failed:
                 sys.exit(status_failed)
+
     print("|")
 
 
@@ -324,6 +420,27 @@ def write_github_comment(github_token, github_pull_request, output):
     default="",
     help="Github Pull request for the GitHub comment",
 )
+@click.option(
+    "--audio_file",
+    type=str,
+    show_default=False,
+    default="",
+    help="Format to test for audio file (ex: .mp3)",
+)
+@click.option(
+    "--image_file",
+    type=str,
+    show_default=False,
+    default="",
+    help="Format to test for image file (ex: .jpg)",
+)
+@click.option(
+    "--video_file",
+    type=str,
+    show_default=False,
+    default="",
+    help="Format to test for video file (ex: .avi)",
+)
 def main(
     url,
     bearer_token,
@@ -335,9 +452,51 @@ def main(
     github_comment,
     github_token,
     github_pull_request,
+    audio_file,
+    image_file,
+    video_file,
 ):
 
     global endpoints
+    global formats_to_test
+
+    formats_to_test = {}
+    config_path = os.path.join(current_directory, "config.json")
+    with open(config_path, "r") as config_file:
+        config = json.load(config_file)
+
+        # Set audio files to use in test
+        if audio_file:
+            if audio_file in config["formats_to_test"]["audio"]:
+                formats_to_test["audio"] = [audio_file]
+            else:
+                print(f"{audio_file} is not an accepted format for audio file")
+                print("Try one of these ", config["formats_to_test"]["audio"])
+                sys.exit(1)
+        else:
+            formats_to_test["audio"] = config["formats_to_test"]["audio"]
+
+        # Set image files to use in test
+        if image_file:
+            if image_file in config["formats_to_test"]["image"]:
+                formats_to_test["image"] = [image_file]
+            else:
+                print(f"{image_file} is not accepted format for image file")
+                print("Try one of these ", config["formats_to_test"]["image"])
+                sys.exit(1)
+        else:
+            formats_to_test["image"] = config["formats_to_test"]["image"]
+
+        # Set video files to use in test
+        if video_file:
+            if video_file in config["formats_to_test"]["video"]:
+                formats_to_test["video"] = [video_file]
+            else:
+                print(f"{video_file} is not accepted format for video file")
+                print("Try one of these ", config["formats_to_test"]["video"])
+                sys.exit(1)
+        else:
+            formats_to_test["video"] = config["formats_to_test"]["video"]
 
     skip_when_failed = not continue_when_failed
     if specific_endpoints:
