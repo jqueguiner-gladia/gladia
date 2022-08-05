@@ -47,7 +47,7 @@ The `docker build` command may take some time to run since it is building the co
 Please see the [Claap video](https://app.claap.io/gladia/howto101-start-a-container-using-your-own-image-c-IPbrCarAMH-F_dxT_URkA7L).
 
 ```bash
-> docker run -it --gpus all -e CUDA_VISIBLE_DEVICES=0 --shm-size 8g -p 8080:8080 -v $PWD:/app oboulant/mamba /bin/bash
+> docker run -it --gpus all -e CUDA_VISIBLE_DEVICES=0 --shm-size 8g -p 8080:8080 -v $PWD:/app --name whatever_name_dev oboulant/mamba /bin/bash
 ```
 
 Few comments :
@@ -57,13 +57,14 @@ Few comments :
 * `-e CUDA_VISIBLE_DEVICES=<GPU_ID>` Enable the designated GPU to be used for the docker application. Without this the application will assume all GPUs can be provisioned. You can list the available GPUs using the command
 * `--shm-size 8g` Increase shared memory to 8 gigabits in order to process some models
 * `-p 8080:8080` Publish the 8080 port in order to access it from your navigator if necessary
+* `--name <your container name>` gives a user friendly name to your container once it runs, making it easy to retrieve among many other running containers
 
 ```bash
 > nvidia-smi
 ```
 
 * `-v $PWD:/app` tells docker to mount a volume on the container (more on this later on)
-* `oboulant/mamba` tells docker which `REPOSITORY`  image to use
+* `oboulant/mamba` tells docker which `REPOSITORY` image to use
 * `/bin/bash` tells docker to start a bash console
 
 ## Start the Gladia server from within your own running container
@@ -150,6 +151,6 @@ Please see the [Clapp video](https://app.claap.io/gladia/howto101-run-the-tests-
 
 The `--continue_when_failed` option (or `-c` in short version) prevents the testing framework to stop whenever a single test fails. It tells it to “continue” in such cases.
 
-# Bonus : Make your very fisrt debug `print` 
+# Bonus : Make your very first debug `print` 
 
 Please see the [Claap video](https://app.claap.io/gladia/howto101-make-your-very-first-debug-print-c-IPbrCarAMH-aYRK_Jy3nhrX).
