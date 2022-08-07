@@ -39,35 +39,52 @@ def __init_logging(api_config: dict) -> logging.Logger:
     :return: logger initialized
     """
 
-    try:
+    logging_level = {
+        None: logging.NOTSET,
+        "": logging.NOTSET,
+        "none": logging.NOTSET,
+        "debug": logging.DEBUG,
+        "info": logging.INFO,
+        "warning": logging.WARNING,
+        "error": logging.ERROR,
+        "critical": logging.CRITICAL,
+    }.get(api_config["logs"]["log_level"], logging.INFO)
 
-        logging.basicConfig(
-            level={
-                None: logging.NOTSET,
-                "": logging.NOTSET,
-                "none": logging.NOTSET,
-                "debug": logging.DEBUG,
-                "info": logging.INFO,
-                "warning": logging.WARNING,
-                "error": logging.ERROR,
-                "critical": logging.CRITICAL,
-            }.get(api_config["logs"]["log_level"], logging.INFO),
-            format=api_config["logs"]["log_format"],
-        )
-
-    except KeyError:
-        logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        level=logging_level,
+        format=api_config["logs"]["log_format"],
+    )
 
     logger = logging.getLogger(__name__)
 
     handler = RotatingFileHandler(
         api_config["logs"]["log_path"],
-        maxBytes=2000,
+        maxBytes=100_000,
         backupCount=10,
     )
     handler.setFormatter(logging.Formatter(api_config["logs"]["log_format"]))
+    handler.setLevel(logging_level)
 
     logger.addHandler(handler)
+
+    existing_loggers = [logging.getLogger()]
+    existing_loggers += [
+        logging.getLogger(name) for name in logging.root.manager.loggerDict
+    ]
+
+    set_logger_handlers = set(logger.handlers)
+
+    for external_logger in existing_loggers:
+        if "gladia_api_utils" in external_logger.name:
+            continue
+
+        for handler in external_logger.handlers:
+            handler.setLevel(logging_level)
+
+        # Prevents having multiple times the same handler
+        external_logger.handlers = list(
+            set(external_logger.handlers).union(set(set_logger_handlers))
+        )
 
     return logger
 
