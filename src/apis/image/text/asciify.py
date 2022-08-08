@@ -7,7 +7,6 @@ inputs = [
         "name": "image",
         "default": "http://files.gladia.io/test/test.png",
         "placeholder": "image url to convert to ascii if no file upload",
-        "tooltip": "Insert the image to convert to ascii",
     }
 ]
 

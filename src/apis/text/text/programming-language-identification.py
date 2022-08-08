@@ -9,7 +9,6 @@ inputs = [
         "name": "text",
         "default": "def is_palendrome(s):",
         "placeholder": "Input code to get programing language from",
-        "tooltip": "Input code to get programing language from",
     }
 ]
 

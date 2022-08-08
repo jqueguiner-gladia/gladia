@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "text",
         "default": "I hate you piece of shit",
-        "placeholder": "I hate you piece of shit",
-        "tooltip": "Insert the text to classify as hate or not",
+        "placeholder": "Insert the text to classify as hate or not",
     }
 ]
 

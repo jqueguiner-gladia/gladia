@@ -8,13 +8,13 @@ inputs = [
         "type": "text",
         "name": "text",
         "default": "Лорем ипсум долор сит амет",
-        "tooltip": "Insert the text to transliterate here",
+        "placeholder": "Insert the text to transliterate here",
     },
     {
         "type": "text",
         "name": "language",
         "default": "ru",
-        "tooltip": "Insert the language code here",
+        "placeholder": "Insert the language code here",
     },
 ]
 

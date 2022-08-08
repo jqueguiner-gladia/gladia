@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "sentence",
         "default": "Once, a group of frogs was roaming around the forest in search of water.",
-        "placeholder": "Once, a group of frogs was roaming around the forest in search of water.",
-        "tooltip": "Insert the sentence to perform the Pairwise Sentence Scoring Tasks",
+        "placeholder": "Insert the sentence to perform the Pairwise Sentence Scoring Tasks",
     }
 ]
 

@@ -7,14 +7,12 @@ inputs = [
         "name": "image",
         "default": "http://files.gladia.io/test/test.png",
         "placeholder": "Image to classify",
-        "tooltip": "Image to classify",
     },
     {
         "type": "int",
         "name": "top_k",
         "default": 1,
         "placeholder": "Top K",
-        "tooltip": "Top K",
     },
 ]
 

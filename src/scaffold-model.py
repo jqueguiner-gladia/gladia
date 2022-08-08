@@ -111,9 +111,6 @@ inputs = ["""
                 + """',
         'placeholder': '"""
                 + input["placeholder"]
-                + """',
-        'tooltip': '"""
-                + input["tooltip"]
                 + """'
     },
 """
@@ -270,12 +267,6 @@ def scaffold_task():
             "placeholder",
             message="Placeholder for the new {input_type}",
             default="{default_value}"
-            #            validate=lambda x: x != ""
-        ),
-        inquirer.Text(
-            "tooltip",
-            message="Tooltip for the new {input_type}",
-            default="{placeholder}"
             #            validate=lambda x: x != ""
         ),
     ]

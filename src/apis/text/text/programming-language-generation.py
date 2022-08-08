@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "code_snippet",
         "default": "def is_palendrome(s):",
-        "placeholder": "Input code to start generation from",
-        "tooltip": "Insert the code to generate from",
+        "placeholder": "Insert the code to generate from",
     }
 ]
 

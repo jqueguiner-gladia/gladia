@@ -6,8 +6,7 @@ inputs = [
         "type": "image",
         "name": "image",
         "default": "http://files.gladia.io/test/test.png",
-        "placeholder": "Image to background removal",
-        "tooltip": "Image to background removal",
+        "placeholder": "Image to remove the background from",
     }
 ]
 

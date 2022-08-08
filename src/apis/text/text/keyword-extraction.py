@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "text",
         "default": "The Crown is a historical drama streaming television series about the reign of Queen Elizabeth II, created and principally written by Peter Morgan, and produced by Left Bank Pictures and Sony Pictures Television for Netflix.",
-        "placeholder": "The Crown is a historical drama streaming television series about the reign of Queen Elizabeth II, created and principally written by Peter Morgan, and produced by Left Bank Pictures and Sony Pictures Television for Netflix.",
-        "tooltip": "Insert the text to summarize here",
+        "placeholder": "Insert the text to summarize here",
     }
 ]
 

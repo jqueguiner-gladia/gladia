@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "text",
         "default": "Input text to start generation from",
-        "placeholder": "Input text to start generation from",
-        "tooltip": "Insert the text to generate from",
+        "placeholder": "Insert the text to generate from",
     }
 ]
 

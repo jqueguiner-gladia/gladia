@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "sentence",
         "default": "I think therefore I",
-        "placeholder": "I think therefore I",
-        "tooltip": "Insert the text to find the next word from.",
+        "placeholder": "Insert the text to find the next word from.",
     }
 ]
 

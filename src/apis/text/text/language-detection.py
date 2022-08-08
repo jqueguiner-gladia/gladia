@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "text",
         "default": "Input text to perform language detection on",
-        "placeholder": "Input text to perform language detection on",
-        "tooltip": "Insert the text to perform language detection on",
+        "placeholder": "Insert the text to perform language detection on",
     }
 ]
 

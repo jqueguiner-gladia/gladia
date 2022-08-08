@@ -8,20 +8,19 @@ inputs = [
         "type": "text",
         "name": "input_string",
         "default": "Text to translate",
-        "placeholder": "Text to translate",
-        "tooltip": "Insert the text to translate here",
+        "placeholder": "Insert the text to translate here",
     },
     {
         "type": "text",
         "name": "source_language",
         "default": "en",
-        "tooltip": "Please use the ISO 2 letters representation for source language",
+        "placeholder": "Use the ISO 2 letters representation for source language",
     },
     {
         "type": "text",
         "name": "target_language",
         "default": "fr",
-        "tooltip": "Please use the ISO 2 letters representation for target language",
+        "placeholder": "Use the ISO 2 letters representation for target language",
     },
 ]
 

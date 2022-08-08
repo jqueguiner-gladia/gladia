@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "text",
         "default": "Hugging Face Inc. is a company based in New York City. Its headquarters are in DUMBO, therefore very close to the Manhattan Bridge.",
-        "placeholder": "I like you. I love you",
-        "tooltip": "Insert the text to anlayse sentiment from",
+        "placeholder": "Insert the text to anlayse sentiment from",
     }
 ]
 
