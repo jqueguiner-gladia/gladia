@@ -7,7 +7,7 @@ pull_request_rules:
     conditions:
       - base=main
       - "#approved-reviews-by>=1"
-      - check-success=Gladia Builder
+      - check-success=Gladia Builder / test
     actions:
       queue:
         name: default
