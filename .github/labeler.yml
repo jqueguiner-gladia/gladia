@@ -10,7 +10,7 @@ labels:
   title: "^chore.*"
 - label: "type: ci"
   title: "^ci.*"
-- label: "type: documentations"
+- label: "type: documentation"
   title: "^docs.*"
 - label: "type: code style"
   title: "^(format|style).*"
