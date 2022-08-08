@@ -8,15 +8,13 @@ inputs = [
         "type": "text",
         "name": "sentence_1",
         "default": "",
-        "placeholder": "I like Python because I can do data analytics",
-        "tooltip": "Insert the text to compare here",
+        "placeholder": "Insert the first text to compare here",
     },
     {
         "type": "text",
         "name": "sentence_2",
         "default": "",
-        "placeholder": "Second sentence to compare to",
-        "tooltip": "Insert the text to compare here",
+        "placeholder": "Insert the second text to compare here",
     },
 ]
 

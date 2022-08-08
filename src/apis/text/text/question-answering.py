@@ -8,14 +8,13 @@ inputs = [
         "type": "text",
         "name": "context",
         "default": "My name is Clara and I live in Berkeley.",
-        "placeholder": "Context to extract answer from",
-        "tooltip": "Insert the text to extract answer from",
+        "placeholder": "Insert the text to extract answer from",
     },
     {
         "type": "text",
         "name": "question",
         "default": "What's my name?",
-        "tooltip": "Insert the question to be answered",
+        "placeholder": "Insert the question to be answered",
     },
 ]
 

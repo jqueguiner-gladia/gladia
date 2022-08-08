@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "context",
         "default": "Once, a group of frogs was roaming around the forest in search of water.",
-        "placeholder": "Once, a group of frogs was roaming around the forest in search of water.",
-        "tooltip": "Insert the text to paraphrase here",
+        "placeholder": "Insert the text to paraphrase here",
     }
 ]
 

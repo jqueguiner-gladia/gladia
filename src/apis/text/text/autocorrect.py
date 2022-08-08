@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "sentence",
         "default": "Text to corrcte",
-        "placeholder": "Text to corrcte",
-        "tooltip": "Insert the text to correct here",
+        "placeholder": "Insert the text to correct",
     }
 ]
 

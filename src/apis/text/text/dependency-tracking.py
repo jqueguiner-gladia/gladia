@@ -8,8 +8,7 @@ inputs = [
         "type": "text",
         "name": "input_string",
         "default": "Text to analyzed",
-        "placeholder": "Text to analyzed",
-        "tooltip": "Insert the text to analyzed here",
+        "placeholder": "Insert the text to analyze here",
     }
 ]
 
