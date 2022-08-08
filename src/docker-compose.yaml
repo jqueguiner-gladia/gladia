@@ -8,6 +8,7 @@ services:
       - TRITON_SERVER_URL=0.0.0.0:8000
       - TRITON_LAZY_DOWNLOAD=false
       - TRITON_MODELS_PATH=/tmp/gladia/triton
+      - API_SERVER_WORKERS=4
     volumes:
       - /tmp/gladia/:/tmp/gladia/
     container_name: gladia
