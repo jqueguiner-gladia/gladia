@@ -1,0 +1,13 @@
+queue_rules:
+  - name: default
+    conditions: []  # no extra conditions needed to get merged
+
+pull_request_rules:
+  - name: merge using the merge queue
+    conditions:
+      - base=main
+      - "#approved-reviews-by>=1"
+      - check-success=Gladia Builder
+    actions:
+      queue:
+        name: default
