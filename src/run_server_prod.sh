@@ -2,7 +2,7 @@ micromamba run -n server python warm_up.py
 
 API_SERVER_PORT_HTTP="${API_SERVER_PORT_HTTP:-8080}"
 API_SERVER_WORKERS="${API_SERVER_WORKERS:-1}"
-API_SERVER_TIMEOUT="${API_SERVER_TIMEOUT:-600}"
+API_SERVER_TIMEOUT="${API_SERVER_TIMEOUT:-1200}"
 
 micromamba run -n server tritonserver \
   --http-port ${TRITON_SERVER_PORT_HTTP} \
