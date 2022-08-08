@@ -28,7 +28,11 @@ def predict(image: bytes) -> Image:
     from deoldify import device, visualize
     from deoldify.device_id import DeviceId
 
-    device.set(device=DeviceId.GPU0)
+    try:
+        # TODO: check which GPU is available
+        device.set(device=DeviceId.GPU0)
+    except:
+        device.set(device=DeviceId.CPU)
 
     render_factor = 30
 
