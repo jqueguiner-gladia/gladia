@@ -503,7 +503,23 @@ def main(
     header = {"Authorization": "Bearer " + bearer_token}
     response = requests.get(f"{url}/openapi.json", headers=header)
     endpoints = response.json()
+<<<<<<< HEAD
     endpoints = reorder_endpoints(endpoints)
+=======
+
+    # Reorder the enpoints in order to pass fastest test in first
+    input_order = ["text", "image", "audio", "video"]
+    reorder_paths = {}
+    for input_order_item in input_order:
+        reorder_paths.update(
+            {
+                key: value
+                for key, value in endpoints["paths"].items()
+                if key.split("/")[1] == input_order_item
+            }
+        )
+    endpoints["paths"] = reorder_paths
+>>>>>>> [pre-commit.ci] auto fixes from pre-commit.com hooks
 
     # if the specific endpoint is less
     # then 4 it means it's looking to
