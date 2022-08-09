@@ -45,6 +45,14 @@ def get_nb_models(url, path, header):
     models = response.json()["models"]
     return len(models)
 
+def reorder_endpoints(endpoints):
+    # Reorder the enpoints in order to pass fastest test in first
+    input_order = ["text", "image", "audio", "video"]
+    reorder_paths = {}
+    for input_order_item in input_order:
+        reorder_paths.update({key: value for key, value in endpoints["paths"].items() if key.split('/')[1] == input_order_item})
+    endpoints["paths"] = reorder_paths
+    return endpoints
 
 def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=3):
     headers = header.copy()
@@ -495,13 +503,7 @@ def main(
     header = {"Authorization": "Bearer " + bearer_token}
     response = requests.get(f"{url}/openapi.json", headers=header)
     endpoints = response.json()
-
-    # Reorder the enpoints in order to pass fastest test in first
-    input_order = ["text", "image", "audio", "video"]
-    reorder_paths = {}
-    for input_order_item in input_order:
-        reorder_paths.update({key: value for key, value in endpoints["paths"].items() if key.split('/')[1] == input_order_item})
-    endpoints["paths"] = reorder_paths
+    endpoints = reorder_endpoints(endpoints)
 
     # if the specific endpoint is less
     # then 4 it means it's looking to
