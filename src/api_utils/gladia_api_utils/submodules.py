@@ -33,6 +33,13 @@ PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
 
 url_input_description = "File URL if no file upload"
 
+file_types = ["image", "audio", "video"]
+text_types = ["text", "str", "string"]
+number_types = ["number", "int", "integer"]
+decimal_types = ["float", "decimal"]
+boolean_types = ["bool", "boolean"]
+singular_types = text_types + number_types + decimal_types + boolean_types
+
 
 def is_binary_file(file_path: str) -> bool:
     textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
@@ -245,7 +252,7 @@ class TaskRouter:
         if isinstance(input, str):
             if input in ["image", "video", "audio"]:
                 input_list.append(
-                    forge.arg(input, type=Union[UploadFile, None], default=File(None))
+                 forge.arg(input, type=Union[UploadFile, None], default=File(None))
                 )
                 input_list.append(
                     forge.arg(
@@ -268,15 +275,21 @@ class TaskRouter:
                 input_list.append(forge.arg("dict", type=dict, default=dict()))
 
         elif isinstance(input, list):
-            for item in input:
-                if item["type"] in ["text", "str", "string"]:
-                    item["type"] = str
-                elif item["type"] in ["number", "int", "integer"]:
-                    item["type"] = int
-                elif item["type"] in ["float", "decimal"]:
-                    item["type"] = float
 
-                if item["type"] in ["image", "audio", "video"]:
+            singular_input_count = sum(item["type"] in singular_types for item in input)
+            is_input_contain_file = any(item["type"] in  file_types for item in input)
+
+            for item in input:
+                if item["type"] in text_types:
+                    item["type"] = str
+                elif item["type"] in number_types:
+                    item["type"] = int
+                elif item["type"] in decimal_types:
+                    item["type"] = float
+                elif item["type"] in boolean_types:
+                    item["type"] = bool
+
+                if item["type"] in  file_types:
                     arg_name = item["name"]
 
                     input_list.append(
@@ -297,11 +310,17 @@ class TaskRouter:
                         )
                     )
                 else:
+                    if singular_input_count > 1  or is_input_contain_file:
+                        default_body = Body(item["default"])
+                    else:
+                        # To avoid an orphan singular input to be interpreted as a string,
+                        # we force it to be given as a dict : 
+                        default_body = Body({item["name"]:item["default"]})
                     input_list.append(
                         forge.arg(
                             item["name"],
                             type=item["type"],
-                            default=Body(item["default"]),
+                            default=default_body,
                         )
                     )
 
@@ -375,19 +394,16 @@ class TaskRouter:
                 )
 
             # if uploaded input file is present, it si converted to bytes
-            # else if url file is present, it is converted to bytes and replace
+            # else if url file is present, it is converted to bytes and replace 
             # and uploaded input file in kwargs
             # else, code_400 is send with message
             for input in inputs:
                 # heavy modality
-                if input["type"] in ["image", "audio", "video"]:
+                if input["type"] in file_types:
                     input_name = input["name"]
 
                     # if the input file is in kwargs:
-                    if isinstance(
-                        kwargs.get(input_name, None),
-                        starlette.datastructures.UploadFile,
-                    ):
+                    if isinstance(kwargs.get(input_name, None), starlette.datastructures.UploadFile):
                         # make all io to files
                         kwargs[input_name] = await kwargs[input_name].read()
 
@@ -415,7 +431,7 @@ class TaskRouter:
                 # input_files to clean
                 input_files = list()
                 for input in inputs:
-                    if input["type"] in ["image", "audio", "video"]:
+                    if input["type"] in file_types:
                         tmp_file = write_tmp_file(kwargs[input["name"]])
                         kwargs[input["name"]] = tmp_file
                         input_files.append(tmp_file)
