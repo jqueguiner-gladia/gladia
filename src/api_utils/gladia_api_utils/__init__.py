@@ -34,6 +34,7 @@ rotating_file_handler = RotatingFileHandler(
     backupCount=10,
 )
 rotating_file_handler.setFormatter(logging.Formatter(logging_format))
+rotating_file_handler.setLevel(logging_level)
 
 stream_handler = StreamHandler()
 stream_handler.setFormatter(logging.Formatter(logging_format))
