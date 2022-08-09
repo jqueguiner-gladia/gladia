@@ -54,21 +54,28 @@ def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=
         headers["Content-Type"] = "application/json"
         data = json.dumps(data)
 
+    files_for_request = {key: open(value[1], "rb") for key, value in files.items()}
+
     response = type("", (), {})()
     response.status_code = 500
     tries = 1
     while tries <= max_retry and response.status_code != 200:
 
         response = requests.post(
-            f"{url}{path}", headers=headers, params=params, data=data, files=files
+            f"{url}{path}",
+            headers=headers,
+            params=params,
+            data=data,
+            files=files_for_request,
         )
-        if files:
-            used_files = [value[0] for key, value in files.items()]
-            print(
-                f"|  |       ___ Try : {tries}/{max_retry}    ({', '.join(used_files)})"
-            )
-        else:
-            print(f"|  |       ___ Try : {tries}/{max_retry}")
+
+        uploaded_files = [value[0] for key, value in files.items()]
+        if isinstance(data, str):
+            data = json.loads(data)
+        url_files = [key for key, value in data.items() if key.endswith("_url")]
+        used_files = uploaded_files + url_files
+        files_message = f" ({', '.join(used_files)})"
+        print(f"|  |       ___ Try : {tries}/{max_retry}{files_message}")
         print(f"|  |      |    |_ Response : {response.status_code} ")
         tries += 1
     print(f"|  |      |")
@@ -130,71 +137,50 @@ def perform_test(
                             if "audio" in key or "audio" in value["title"].lower():
                                 # URL audio
                                 urls_files.append(
-                                    {
-                                        value["title"]: (
-                                            "audio_url",
-                                            "https://anshe.org/audio/3Weeks-080715.mp3",
-                                        )
-                                    }
+                                    {key: "https://anshe.org/audio/3Weeks-080715.mp3"}
                                 )
                             elif "video" in key or "video" in value["title"].lower():
                                 # URL Video
                                 urls_files.append(
                                     {
-                                        value["title"]: (
-                                            "video_url",
-                                            "https://upload.wikimedia.org/wikipedia/commons/8/80/Expedition_50-51_Crew_Docks_to_the_Space_Station.webm",
-                                        )
+                                        key: "https://upload.wikimedia.org/wikipedia/commons/8/80/Expedition_50-51_Crew_Docks_to_the_Space_Station.webm"
                                     }
                                 )
                             else:
                                 # URL Image
                                 urls_files.append(
                                     {
-                                        value["title"]: (
-                                            "image_url",
-                                            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png",
-                                        )
+                                        key: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png"
                                     }
                                 )
                     else:
                         # Text
-                        texts.append({value["title"]: ("text", value["default"])})
+                        texts.append({key: ("text", value["default"])})
                 else:
                     if "audio" in key or "audio" in value["title"].lower():
                         # Audio
-                        audios.append(
-                            {value["title"]: ("audio", formats_to_test["audio"])}
-                        )
+                        audios.append({key: ("audio", formats_to_test["audio"])})
                     elif "video" in key or "video" in value["title"].lower():
                         # Video
-                        videos.append(
-                            {value["title"]: ("video", formats_to_test["video"])}
-                        )
+                        videos.append({key: ("video", formats_to_test["video"])})
                     else:
                         # Image
-                        images.append(
-                            {value["title"]: ("image", formats_to_test["image"])}
-                        )
+                        images.append({key: ("image", formats_to_test["image"])})
 
             # Create all requests to send for good testing of the model
-            data = {}
-            dict_to_merge = {
-                key: value[1] for text in texts for key, value in text.items()
-            }
-            data.update(dict_to_merge)
+            data = {key: value[1] for text in texts for key, value in text.items()}
 
             if urls_files:
-                # If urls_files, there is file to send
-                # Create a first request testing url version ot them
-                request_files = {}
+                # Create a first request testing url version of files
+                url_data = data.copy()
                 for url_file in urls_files:
-                    request_files.update(url_file)
-                requests_inputs.append({"data": data, "files": request_files})
+                    url_data.update(url_file)
+                requests_inputs.append({"data": url_data, "files": {}})
 
                 # Then, for each input type (audio, video, image),
-                # create requests testing each format,
+                # create requests testing each file format,
                 # using first one by default for the other input type
+                # ex: .mp3 audio format will be tested using .jpg format for images
                 all_files = [("audio", audios), ("image", images), ("video", videos)]
                 for types_files in all_files:
                     # Keep only other types files (ex: 'audio' and 'video' if 'image')
@@ -202,7 +188,7 @@ def perform_test(
                         item for item in all_files if item != types_files
                     ]
                     other_input_files = {}
-                    # Add a a file with default type format (fist one) for each other file to send
+                    # Add a file with default type format (fist one) for each other file to send
                     for other_type_file in other_types_file:
                         other_input_files = add_default_files(
                             other_input_files, other_type_file[1]
@@ -219,9 +205,7 @@ def perform_test(
                             file_path = os.path.join(current_directory, file)
                             # ... and add it to the request files
                             for key, value in type_file.items():
-                                request_files.update(
-                                    {key: (file, open(file_path, "rb"))}
-                                )
+                                request_files.update({value[0]: (file, file_path)})
                             requests_inputs.append(
                                 {"data": data, "files": request_files}
                             )
@@ -286,13 +270,12 @@ def perform_test(
                 max_retry=max_retry,
             )
 
-            if (
+            output_type_ok = (
                 output_content_type_asserts[response_output_type]
-                != response.headers["content-type"]
-            ):
-                output_type_ok = False
+                == response.headers["content-type"]
+            )
 
-            if response.status_code != 200 or not output_type_ok:
+            if response.status_code != 200 or output_type_ok is False:
                 valid = False
 
         if valid:

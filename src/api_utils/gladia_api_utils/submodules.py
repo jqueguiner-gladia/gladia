@@ -358,11 +358,9 @@ class TaskRouter:
         )
         @forge.sign(*input_list)
         async def apply(*args, **kwargs):
-
-            for key, value in kwargs.items():
-                if isinstance(value, starlette.datastructures.UploadFile):
-                    # make all io to files ?
-                    kwargs[key] = await value.read()
+            routeur = singularize(self.root_package_path)
+            this_routeur = importlib.import_module(routeur.replace("/", "."))
+            inputs = this_routeur.inputs
 
             model = kwargs["model"]
             # avoid passing the model to the predict function
@@ -370,40 +368,48 @@ class TaskRouter:
             del kwargs["model"]
 
             module_path = f"{self.root_package_path}/{model}/"
-
             if not os.path.exists(module_path):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Model {model} does not exist",
                 )
 
-            env_name = get_module_env_name(module_path)
-
-            routeur = singularize(self.root_package_path)
-            this_routeur = importlib.import_module(routeur.replace("/", "."))
-            inputs = this_routeur.inputs
-
-            # if input in kwargs has heavy modality (image/sound/video)
-            # and if url not empty => wget image
-            # and make it a byte stream
-            input_files = list()
+            # if uploaded input file is present, it si converted to bytes
+            # else if url file is present, it is converted to bytes and replace
+            # and uploaded input file in kwargs
+            # else, code_400 is send with message
             for input in inputs:
                 # heavy modality
                 if input["type"] in ["image", "audio", "video"]:
                     input_name = input["name"]
-                    if kwargs[f"{input_name}_url"]:
+
+                    # if the input file is in kwargs:
+                    if isinstance(
+                        kwargs.get(input_name, None),
+                        starlette.datastructures.UploadFile,
+                    ):
+                        # make all io to files
+                        kwargs[input_name] = await kwargs[input_name].read()
+
+                    # if an url key is in the kwargs and if a file is in it
+                    elif kwargs.get(f"{input_name}_url", None):
                         url = kwargs[f"{input_name}_url"]
                         kwargs[input_name] = urlopen(url).read()
 
+                    # if not, an input is missing
+                    else:
+                        return JSONResponse(
+                            status_code=400,
+                            content={"message": f"Input '{input_name}' is missing."},
+                        )
+
+                    # remove the url arg to avoid it to be passed in predict
+                    if f"{input_name}_url" in kwargs:
                         del kwargs[f"{input_name}_url"]
 
+            env_name = get_module_env_name(module_path)
             # if its a subprocess
             if env_name is not None:
-                routeur = singularize(self.root_package_path)
-
-                this_routeur = importlib.import_module(routeur.replace("/", "."))
-
-                inputs = this_routeur.inputs
 
                 # convert io Bytes to files
                 # input_files to clean
@@ -418,7 +424,6 @@ class TaskRouter:
                         kwargs[input["name"]] = quote(kwargs[input["name"]])
 
                 output_tmp_result = tempfile.NamedTemporaryFile().name
-                sync = False
 
                 model = quote(model)
                 output_tmp_result = quote(output_tmp_result)
