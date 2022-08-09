@@ -124,7 +124,7 @@ def perform_test(
 
         if "title" in request_body_info:
             # Simple singular input (str/int/float/bool)
-            data = {request_body_info["title"]: request_body_info["default"]}
+            data = request_body_info["default"]
             requests_inputs.append({"data": data, "files": {}})
         else:
             # Not simple input (json of length >2, image, audio, video)
