@@ -252,7 +252,7 @@ class TaskRouter:
         if isinstance(input, str):
             if input in ["image", "video", "audio"]:
                 input_list.append(
-                 forge.arg(input, type=Union[UploadFile, None], default=File(None))
+                    forge.arg(input, type=Union[UploadFile, None], default=File(None))
                 )
                 input_list.append(
                     forge.arg(
