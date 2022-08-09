@@ -277,7 +277,7 @@ class TaskRouter:
         elif isinstance(input, list):
 
             singular_input_count = sum(item["type"] in singular_types for item in input)
-            is_input_contain_file = any(item["type"] in  file_types for item in input)
+            is_input_contain_file = any(item["type"] in file_types for item in input)
 
             for item in input:
                 if item["type"] in text_types:
@@ -289,7 +289,7 @@ class TaskRouter:
                 elif item["type"] in boolean_types:
                     item["type"] = bool
 
-                if item["type"] in  file_types:
+                if item["type"] in file_types:
                     arg_name = item["name"]
 
                     input_list.append(
@@ -310,12 +310,12 @@ class TaskRouter:
                         )
                     )
                 else:
-                    if singular_input_count > 1  or is_input_contain_file:
+                    if singular_input_count > 1 or is_input_contain_file:
                         default_body = Body(item["default"])
                     else:
                         # To avoid an orphan singular input to be interpreted as a string,
-                        # we force it to be given as a dict : 
-                        default_body = Body({item["name"]:item["default"]})
+                        # we force it to be given as a dict :
+                        default_body = Body({item["name"]: item["default"]})
                     input_list.append(
                         forge.arg(
                             item["name"],
@@ -394,7 +394,7 @@ class TaskRouter:
                 )
 
             # if uploaded input file is present, it si converted to bytes
-            # else if url file is present, it is converted to bytes and replace 
+            # else if url file is present, it is converted to bytes and replace
             # and uploaded input file in kwargs
             # else, code_400 is send with message
             for input in inputs:
@@ -403,7 +403,10 @@ class TaskRouter:
                     input_name = input["name"]
 
                     # if the input file is in kwargs:
-                    if isinstance(kwargs.get(input_name, None), starlette.datastructures.UploadFile):
+                    if isinstance(
+                        kwargs.get(input_name, None),
+                        starlette.datastructures.UploadFile,
+                    ):
                         # make all io to files
                         kwargs[input_name] = await kwargs[input_name].read()
 
