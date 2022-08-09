@@ -496,6 +496,13 @@ def main(
     response = requests.get(f"{url}/openapi.json", headers=header)
     endpoints = response.json()
 
+    # Reorder the enpoints in order to pass fastest test in first
+    input_order = ["text", "image", "audio", "video"]
+    reorder_paths = {}
+    for input_order_item in input_order:
+        reorder_paths.update({key: value for key, value in endpoints["paths"].items() if key.split('/')[1] == input_order_item})
+    endpoints["paths"] = reorder_paths
+
     # if the specific endpoint is less
     # then 4 it means it's looking to
     # have a input or input/output mod
