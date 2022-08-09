@@ -500,7 +500,13 @@ def main(
     input_order = ["text", "image", "audio", "video"]
     reorder_paths = {}
     for input_order_item in input_order:
-        reorder_paths.update({key: value for key, value in endpoints["paths"].items() if key.split('/')[1] == input_order_item})
+        reorder_paths.update(
+            {
+                key: value
+                for key, value in endpoints["paths"].items()
+                if key.split("/")[1] == input_order_item
+            }
+        )
     endpoints["paths"] = reorder_paths
 
     # if the specific endpoint is less
