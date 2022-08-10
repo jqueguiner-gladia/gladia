@@ -605,12 +605,12 @@ def main(
 
                 if after_endpoint_continue:
                     perform_test(
-                        details,
-                        url,
-                        header,
-                        path,
-                        skip_when_failed,
-                        max_retry,
+                        details, 
+                        url, 
+                        header, 
+                        path, 
+                        skip_when_failed, 
+                        max_retry, 
                         specific_models,
                         default_models,
                     )
@@ -650,8 +650,8 @@ def main(
                 path, 
                 skip_when_failed, 
                 max_retry,
-                        
-                        default_models)
+                default_models,
+            )
 
     if test_final_status == ExitStatus_success:
         str_final_status = "Success"
