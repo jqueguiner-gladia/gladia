@@ -79,6 +79,22 @@ def reorder_endpoints(endpoints):
     return endpoints
 
 
+def reorder_endpoints(endpoints):
+    # Reorder the enpoints in order to pass fastest test in first
+    input_order = ["text", "image", "audio", "video"]
+    reorder_paths = {}
+    for input_order_item in input_order:
+        reorder_paths.update(
+            {
+                key: value
+                for key, value in endpoints["paths"].items()
+                if key.split("/")[1] == input_order_item
+            }
+        )
+    endpoints["paths"] = reorder_paths
+    return endpoints
+
+
 def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=3):
     headers = header.copy()
     # If data is simple singular input (str/int/float/bool),
@@ -609,12 +625,12 @@ def main(
 
                 if after_endpoint_continue:
                     perform_test(
-                        details, 
-                        url, 
-                        header, 
-                        path, 
-                        skip_when_failed, 
-                        max_retry, 
+                        details,
+                        url,
+                        header,
+                        path,
+                        skip_when_failed,
+                        max_retry,
                         specific_models,
                         default_models,
                     )
@@ -634,14 +650,18 @@ def main(
 
             if after_endpoint_continue:
                 perform_test(
-                    details, 
-                    url, 
+                    details,
+                    url,
                     header,
-                    path, 
-                    skip_when_failed, 
+                    path,
+                    skip_when_failed,
                     max_retry,
+<<<<<<< HEAD
                     specific_models,
                     default_models
+=======
+                    default_models,
+>>>>>>> ebd0fc8d76c95d6e0dbcd76bd3fb65ba504dd45e
                 )
             else:
                 print(f"|  |__ {status_skipped}  <Skipped>")
@@ -649,11 +669,11 @@ def main(
                 nb_test_skipped += 1
         else:
             perform_test(
-                details, 
-                url, 
-                header, 
-                path, 
-                skip_when_failed, 
+                details,
+                url,
+                header,
+                path,
+                skip_when_failed,
                 max_retry,
                 specific_models,
                 default_models,
