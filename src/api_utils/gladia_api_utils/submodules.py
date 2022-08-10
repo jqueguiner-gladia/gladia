@@ -226,28 +226,14 @@ def get_module_env_name(module_path: str) -> str:
     else:
         return None
 
+
 def get_input_type(input):
     type_correspondence = [
-        {
-            "string_names": file_types,
-            "type": Union[UploadFile, None]
-        },
-        {
-            "string_names": text_types,
-            "type": str
-        },
-        {
-            "string_names": number_types,
-            "type": int
-        },
-        {
-            "string_names": decimal_types,
-            "type": float
-        },
-        {
-            "string_names": boolean_types,
-            "type": bool
-        }
+        {"string_names": file_types, "type": Union[UploadFile, None]},
+        {"string_names": text_types, "type": str},
+        {"string_names": number_types, "type": int},
+        {"string_names": decimal_types, "type": float},
+        {"string_names": boolean_types, "type": bool},
     ]
 
     input_type = None
@@ -256,15 +242,17 @@ def get_input_type(input):
             input_type = type_item["type"]
             break
     if input_type == None:
-        raise TypeError(f"'{input['type']}' is an unknown type") 
+        raise TypeError(f"'{input['type']}' is an unknown type")
     return input_type
+
 
 def get_input_default(input):
     if input["type"] in file_types:
-        input_default = File(None)      
+        input_default = File(None)
     else:
         input_default = Body(input["default"])
     return input_default
+
 
 def add_input_to_input_list(input_list, input):
     item_type = get_input_type(input)
@@ -285,6 +273,7 @@ def add_input_to_input_list(input_list, input):
                 ),
             )
         )
+
 
 class TaskRouter:
     def __init__(self, router: APIRouter, input, output, default_model: str):
@@ -402,7 +391,9 @@ class TaskRouter:
                     else:
                         return JSONResponse(
                             status_code=400,
-                            content={"message": f"File '{input_name}' or '{input_name}_url' is missing."},
+                            content={
+                                "message": f"File '{input_name}' or '{input_name}_url' is missing."
+                            },
                         )
 
                     # remove the url arg to avoid it to be passed in predict
@@ -413,7 +404,9 @@ class TaskRouter:
                     if not kwargs.get(input_name, None):
                         return JSONResponse(
                             status_code=400,
-                            content={"message": f"Input '{input_name}' or type '{input['type']}' is missing."},
+                            content={
+                                "message": f"Input '{input_name}' or type '{input['type']}' is missing."
+                            },
                         )
 
             env_name = get_module_env_name(module_path)
