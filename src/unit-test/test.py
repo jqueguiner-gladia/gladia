@@ -70,7 +70,6 @@ def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=
 
     files_for_request = {key: open(value[1], "rb") for key, value in files.items()}
 
-
     response = type("", (), {})()
     response.status_code = 500
     tries = 1
@@ -131,7 +130,6 @@ def perform_test(
 
         if "title" in request_body_info:
             # Simple singular input (str/int/float/bool)
-            print('request_body_info["default"]:', request_body_info["default"])
             data = request_body_info["default"]
             requests_inputs.append({"data": data, "files": {}})
         else:
@@ -184,7 +182,6 @@ def perform_test(
                         images.append({key: ("image", formats_to_test["image"])})
 
             # Create all requests to send for good testing of the model
-            print('texts:', texts)
             data = {key: value[1] for text in texts for key, value in text.items()}
 
             if urls_files:
