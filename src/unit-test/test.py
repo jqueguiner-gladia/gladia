@@ -69,6 +69,9 @@ def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=
     if len(data) > 1:
         headers["Content-Type"] = "application/json"
         data = json.dumps(data)
+    else:
+        # Plain text
+        data = list(data.values())[0]
 
     files_for_request = {key: open(value[1], "rb") for key, value in files.items()}
 
@@ -87,8 +90,11 @@ def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=
 
         uploaded_files = [value[0] for key, value in files.items()]
         if isinstance(data, str):
-            data = json.loads(data)
-        url_files = [key for key, value in data.items() if key.endswith("_url")]
+            try:
+                data = json.loads(data)
+                url_files = [key for key, value in data.items() if key.endswith("_url")]
+            except:
+                url_files = []
         used_files = uploaded_files + url_files
         files_message = f" ({', '.join(used_files)})"
         print(f"|  |       ___ Try : {tries}/{max_retry}{files_message}")
