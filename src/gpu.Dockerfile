@@ -57,10 +57,19 @@ RUN mkdir -p $TRITON_MODELS_PATH && \
     mkdir -p $TRITON_MODELS_PATH && \
     mkdir -p $PATH_TO_GLADIA_SRC
 
-COPY . $PATH_TO_GLADIA_SRC
+ADD ./tools/docker/clean-layer.sh $CLEAN_LAYER_SCRIPT
 
+RUN mkdir -p $TRITON_MODELS_PATH && \
+    mkdir -p $GLADIA_TMP_PATH && \
+    mkdir -p $MODEL_CACHE_ROOT && \
+    mkdir -p $TRANSFORMERS_CACHE && \
+    mkdir -p $PYTORCH_TRANSFORMERS_CACHE && \
+    mkdir -p $PYTORCH_PRETRAINED_BERT_CACHE && \
+    mkdir -p $NLTK_DATA && \
+    mkdir -p $TRITON_MODELS_PATH && \
+    mkdir -p $PATH_TO_GLADIA_SRC && \
 # Update apt repositories - Add Nvidia GPG key
-RUN apt-key del 7fa2af80 && \
+    apt-key del 7fa2af80 && \
     apt-get install -y apt-transport-https && \
     wget https://developer.download.nvidia.com/compute/cuda/repos/$distro/$arch/cuda-keyring_1.0-1_all.deb && \
     dpkg -i cuda-keyring_1.0-1_all.deb && \
@@ -98,7 +107,9 @@ RUN apt-key del 7fa2af80 && \
     micromamba shell init -s bash && \
     micromamba config set always_softlink $MAMBA_ALWAYS_SOFTLINK && \
     $CLEAN_LAYER_SCRIPT
-  
+
+COPY . $PATH_TO_GLADIA_SRC
+
 # Automatically activate micromaba for every bash shell
 RUN mv $PATH_TO_GLADIA_SRC/tools/docker/_activate_current_env.sh /usr/local/bin/ && \
     echo "source /usr/local/bin/_activate_current_env.sh" >> ~/.bashrc && \
