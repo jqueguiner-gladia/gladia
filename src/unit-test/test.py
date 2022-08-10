@@ -46,6 +46,22 @@ def get_nb_models(url, path, header):
     return len(models)
 
 
+def reorder_endpoints(endpoints):
+    # Reorder the enpoints in order to pass fastest test in first
+    input_order = ["text", "image", "audio", "video"]
+    reorder_paths = {}
+    for input_order_item in input_order:
+        reorder_paths.update(
+            {
+                key: value
+                for key, value in endpoints["paths"].items()
+                if key.split("/")[1] == input_order_item
+            }
+        )
+    endpoints["paths"] = reorder_paths
+    return endpoints
+
+
 def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=3):
     headers = header.copy()
     # If data is simple singular input (str/int/float/bool),
@@ -116,7 +132,7 @@ def perform_test(
 
         if "title" in request_body_info:
             # Simple singular input (str/int/float/bool)
-            data = {request_body_info["title"]: request_body_info["default"]}
+            data = request_body_info["default"]
             requests_inputs.append({"data": data, "files": {}})
         else:
             # Not simple input (json of length >2, image, audio, video)
@@ -495,6 +511,7 @@ def main(
     header = {"Authorization": "Bearer " + bearer_token}
     response = requests.get(f"{url}/openapi.json", headers=header)
     endpoints = response.json()
+    endpoints = reorder_endpoints(endpoints)
 
     # if the specific endpoint is less
     # then 4 it means it's looking to
