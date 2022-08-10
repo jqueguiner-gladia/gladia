@@ -25,20 +25,31 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 current_files = os.listdir(current_directory)
 
 
-def get_nb_tests(url, header, endpoints, specific_endpoints=[], specific_models="", default_models_only=False):
+def get_nb_tests(
+    url,
+    header,
+    endpoints,
+    specific_endpoints=[],
+    specific_models="",
+    default_models_only=False,
+):
     nb_total_tests = 0
     for path, details in endpoints["paths"].items():
         models = get_endpoints_models(url, path, header)
         if specific_endpoints:
             if path in specific_endpoints:
                 if specific_models:
-                    nb_total_tests += len([model for model in models if model in specific_models])
+                    nb_total_tests += len(
+                        [model for model in models if model in specific_models]
+                    )
                 elif default_models_only:
                     nb_total_tests += 1
                 else:
                     nb_total_tests += len(models)
         elif specific_models:
-            nb_total_tests += len([model for model in models if model in specific_models])
+            nb_total_tests += len(
+                [model for model in models if model in specific_models]
+            )
         elif default_models_only:
             nb_total_tests += 1
         else:
@@ -106,7 +117,14 @@ def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=
 
 
 def perform_test(
-    details, url, header, path, skip_when_failed, max_retry=3, specific_models=[], default_models_only=False
+    details,
+    url,
+    header,
+    path,
+    skip_when_failed,
+    max_retry=3,
+    specific_models=[],
+    default_models_only=False,
 ):
     global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
@@ -269,7 +287,9 @@ def perform_test(
 
     response = requests.get(f"{url}{path}", headers=header)
     if specific_models != []:
-        models = [model for model in response.json()["models"] if model in specific_models]
+        models = [
+            model for model in response.json()["models"] if model in specific_models
+        ]
     elif default_models_only:
         models = [details["post"]["parameters"][0]["schema"]["default"]]
     else:
@@ -576,7 +596,7 @@ def main(
                     skip_when_failed,
                     max_retry,
                     specific_models,
-                    default_models
+                    default_models,
                 )
 
             elif after_endpoint != "":
@@ -585,14 +605,14 @@ def main(
 
                 if after_endpoint_continue:
                     perform_test(
-                        details, 
-                        url, 
-                        header, 
-                        path, 
-                        skip_when_failed, 
-                        max_retry, 
+                        details,
+                        url,
+                        header,
+                        path,
+                        skip_when_failed,
+                        max_retry,
                         specific_models,
-                        default_models
+                        default_models,
                     )
                 else:
                     print(f"|  |__ {status_skipped}  <Skipped>")
