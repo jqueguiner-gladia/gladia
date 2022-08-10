@@ -126,6 +126,7 @@ def perform_test(
     specific_models=[],
     default_models_only=False,
 ):
+    print('specific_models 3', specific_models)
     global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
     global status_passed, status_failed, status_skipped
@@ -286,6 +287,7 @@ def perform_test(
     ]
 
     response = requests.get(f"{url}{path}", headers=header)
+    print('specific_models', specific_models)
     if specific_models != []:
         models = [
             model for model in response.json()["models"] if model in specific_models
@@ -545,6 +547,8 @@ def main(
     else:
         specific_models = []
 
+    print('specific_models 1', specific_models)
+
     header = {"Authorization": "Bearer " + bearer_token}
     response = requests.get(f"{url}/openapi.json", headers=header)
     endpoints = response.json()
@@ -636,6 +640,7 @@ def main(
                     path, 
                     skip_when_failed, 
                     max_retry,
+                    specific_models,
                     default_models
                 )
             else:
@@ -650,6 +655,7 @@ def main(
                 path, 
                 skip_when_failed, 
                 max_retry,
+                specific_models,
                 default_models,
             )
 
