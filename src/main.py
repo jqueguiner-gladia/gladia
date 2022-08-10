@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import pkgutil
+from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
 
 from fastapi import FastAPI
@@ -57,15 +58,22 @@ def __init_logging(api_config: dict) -> logging.Logger:
 
     logger = logging.getLogger(__name__)
 
-    handler = RotatingFileHandler(
+    rotating_file_handler = RotatingFileHandler(
         api_config["logs"]["log_path"],
         maxBytes=100_000,
         backupCount=10,
     )
-    handler.setFormatter(logging.Formatter(api_config["logs"]["log_format"]))
-    handler.setLevel(logging_level)
+    rotating_file_handler.setFormatter(
+        logging.Formatter(api_config["logs"]["log_format"])
+    )
+    rotating_file_handler.setLevel(logging_level)
 
-    logger.addHandler(handler)
+    stream_handler = StreamHandler()
+    stream_handler.setFormatter(logging.Formatter(api_config["logs"]["log_format"]))
+    stream_handler.setLevel(logging_level)
+
+    logger.addHandler(rotating_file_handler)
+    logger.addHandler(stream_handler)
 
     existing_loggers = [logging.getLogger()]
     existing_loggers += [
