@@ -79,6 +79,22 @@ def reorder_endpoints(endpoints):
     return endpoints
 
 
+def reorder_endpoints(endpoints):
+    # Reorder the enpoints in order to pass fastest test in first
+    input_order = ["text", "image", "audio", "video"]
+    reorder_paths = {}
+    for input_order_item in input_order:
+        reorder_paths.update(
+            {
+                key: value
+                for key, value in endpoints["paths"].items()
+                if key.split("/")[1] == input_order_item
+            }
+        )
+    endpoints["paths"] = reorder_paths
+    return endpoints
+
+
 def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=3):
     headers = header.copy()
     # If data is simple singular input (str/int/float/bool),
