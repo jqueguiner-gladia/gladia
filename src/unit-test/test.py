@@ -379,7 +379,15 @@ def write_github_comment(github_token, github_pull_request, output):
     "--specific_models",
     type=str,
     default="",
-    help="CSV separated list of specific models to test format is model1,model2",
+    help="CSV separated list of specific models to test. Format is model1,model2. A model is not tested if there are specific endpoints and if the model is not in it",
+)
+@click.option(
+    "-d",
+    "--default_models",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="if default_model, only defaults models will be used, except if specific_models are selected too",
 )
 @click.option(
     "-c",
@@ -601,13 +609,29 @@ def main(
                 after_endpoint_continue = True
 
             if after_endpoint_continue:
-                perform_test(details, url, header, path, skip_when_failed, max_retry)
+                perform_test(
+                    details, 
+                    url, 
+                    header,
+                    path, 
+                    skip_when_failed, 
+                    max_retry,
+                    default_models
+                )
             else:
                 print(f"|  |__ {status_skipped}  <Skipped>")
                 print(f"|")
                 nb_test_skipped += 1
         else:
-            perform_test(details, url, header, path, skip_when_failed, max_retry)
+            perform_test(
+                details, 
+                url, 
+                header, 
+                path, 
+                skip_when_failed, 
+                max_retry,
+                        
+                        default_models)
 
     if test_final_status == ExitStatus_success:
         str_final_status = "Success"
