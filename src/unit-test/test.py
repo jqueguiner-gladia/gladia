@@ -62,7 +62,9 @@ def reorder_endpoints(endpoints):
     return endpoints
 
 
-def request_endpoint(url, path, header, contain_file, params={}, data={}, files={}, max_retry=3):
+def request_endpoint(
+    url, path, header, contain_file, params={}, data={}, files={}, max_retry=3
+):
     headers = header.copy()
     # If data is simple singular input (str/int/float/bool),
     # special header and parsing need to be applied
@@ -75,7 +77,9 @@ def request_endpoint(url, path, header, contain_file, params={}, data={}, files=
     else:
         data_for_request = data.copy()
 
-    files_for_request = {key: (value[0], open(value[1], "rb")) for key, value in files.items()}
+    files_for_request = {
+        key: (value[0], open(value[1], "rb")) for key, value in files.items()
+    }
 
     response = type("", (), {})()
     response.status_code = 500
@@ -289,7 +293,7 @@ def perform_test(
                 data=request["data"],
                 files=request["files"],
                 max_retry=max_retry,
-                contain_file=contain_file
+                contain_file=contain_file,
             )
 
             output_type_ok = (
