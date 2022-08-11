@@ -228,48 +228,62 @@ def get_module_env_name(module_path: str) -> str:
 
 
 def get_input_type(input):
-    type_correspondence = [
-        {"string_names": file_types, "type": Union[UploadFile, None]},
-        {"string_names": text_types, "type": str},
-        {"string_names": number_types, "type": int},
-        {"string_names": decimal_types, "type": float},
-        {"string_names": boolean_types, "type": bool},
-    ]
-
-    input_type = None
-    for type_item in type_correspondence:
-        if input["type"] in type_item["string_names"]:
-            input_type = type_item["type"]
-            break
+    type_correspondence = {key:str for key in text_types}
+    type_correspondence.update({key:int for key in number_types})
+    type_correspondence.update({key:float for key in decimal_types})
+    type_correspondence.update({key:bool for key in boolean_types})
+    type_correspondence.update({key:Union[UploadFile, None] for key in file_types})
+    
+    input_type=type_correspondence.get(input["type"], None)
     if input_type == None:
         raise TypeError(f"'{input['type']}' is an unknown type")
     return input_type
 
 
-def get_input_default(input):
+def get_default_value_for_input(input):
     if input["type"] in file_types:
-        input_default = File(None)
+        default_value = File(None)
     else:
-        input_default = Body(input["default"])
-    return input_default
+        default_value = Body(input["default"])
+    return default_value
 
+def add_model_to_input_list(input_list, default_model, models):
+    input_list.append(
+        forge.arg(
+            "model",
+            type=str,
+            default=Query(default_model, enum=models),
+        )
+    )
+
+def add_url_file_input_to_input_list(input_list, input):
+    input_list.append(
+        forge.arg(
+            f"{input['name']}_url",
+            type=str,
+            default=Body(
+                default=input["default"],
+                description=url_input_description,
+            ),
+        )
+    )
 
 def add_input_to_input_list(input_list, input):
     item_type = get_input_type(input)
-    item_default = get_input_default(input)
+    item_default = get_default_value_for_input(input)
     input_list.append(forge.arg(input["name"], type=item_type, default=item_default))
     # Add an url input for each file
     if input["type"] in file_types:
-        input_list.append(
-            forge.arg(
-                input["name"] + "_url",
-                type=str,
-                default=Body(
-                    default=input["default"],
-                    description=url_input_description,
-                ),
-            )
-        )
+        add_url_file_input_to_input_list(input_list, input)
+
+
+def get_error_reponse(code:int, message:str):
+    JSONResponse(
+        status_code=code,
+        content={
+            "message": message
+        },
+    )
 
 
 class TaskRouter:
@@ -293,17 +307,7 @@ class TaskRouter:
             return
 
         input_list = list()
-
-        # Add the model input
-        input_list.append(
-            forge.arg(
-                "model",
-                type=str,
-                default=Query(self.default_model, enum=set(self.versions.keys())),
-            )
-        )
-
-        # Add all the other inputs of the task
+        add_model_to_input_list(input_list, self.default_model, models=set(self.versions.keys()))
         for input_item in input:
             add_input_to_input_list(input_list, input_item)
 
@@ -386,12 +390,8 @@ class TaskRouter:
 
                     # if not, file is missing
                     else:
-                        return JSONResponse(
-                            status_code=400,
-                            content={
-                                "message": f"File '{input_name}' or '{input_name}_url' is missing."
-                            },
-                        )
+                        error_message = f"File '{input_name}' or '{input_name}_url' is missing."
+                        return get_error_reponse(400, error_message)
 
                     # remove the url arg to avoid it to be passed in predict
                     if f"{input_name}_url" in kwargs:
@@ -399,12 +399,8 @@ class TaskRouter:
 
                 else:
                     if not kwargs.get(input_name, None):
-                        return JSONResponse(
-                            status_code=400,
-                            content={
-                                "message": f"Input '{input_name}' or type '{input['type']}' is missing."
-                            },
-                        )
+                        error_message = f"Input '{input_name}' of '{input['type']}' type is missing."
+                        return get_error_reponse(400, error_message)
 
             env_name = get_module_env_name(module_path)
             # if its a subprocess
@@ -444,12 +440,10 @@ class TaskRouter:
 
                 if is_binary_file(output_tmp_result):
                     file = open(output_tmp_result, "rb")
-                    result = file.read()
-                    file.close()
                 else:
                     file = open(output_tmp_result, "r")
-                    result = file.read()
-                    file.close()
+                result = file.read()
+                file.close()
 
                 os.system(f"rm {output_tmp_result}")
 
