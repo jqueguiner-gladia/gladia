@@ -228,13 +228,13 @@ def get_module_env_name(module_path: str) -> str:
 
 
 def get_input_type(input):
-    type_correspondence = {key:str for key in text_types}
-    type_correspondence.update({key:int for key in number_types})
-    type_correspondence.update({key:float for key in decimal_types})
-    type_correspondence.update({key:bool for key in boolean_types})
-    type_correspondence.update({key:Union[UploadFile, None] for key in file_types})
-    
-    input_type=type_correspondence.get(input["type"], None)
+    type_correspondence = {key: str for key in text_types}
+    type_correspondence.update({key: int for key in number_types})
+    type_correspondence.update({key: float for key in decimal_types})
+    type_correspondence.update({key: bool for key in boolean_types})
+    type_correspondence.update({key: Union[UploadFile, None] for key in file_types})
+
+    input_type = type_correspondence.get(input["type"], None)
     if input_type == None:
         raise TypeError(f"'{input['type']}' is an unknown type")
     return input_type
@@ -247,6 +247,7 @@ def get_default_value_for_input(input):
         default_value = Body(input["default"])
     return default_value
 
+
 def add_model_to_input_list(input_list, default_model, models):
     input_list.append(
         forge.arg(
@@ -255,6 +256,7 @@ def add_model_to_input_list(input_list, default_model, models):
             default=Query(default_model, enum=models),
         )
     )
+
 
 def add_url_file_input_to_input_list(input_list, input):
     input_list.append(
@@ -268,6 +270,7 @@ def add_url_file_input_to_input_list(input_list, input):
         )
     )
 
+
 def add_input_to_input_list(input_list, input):
     item_type = get_input_type(input)
     item_default = get_default_value_for_input(input)
@@ -277,12 +280,10 @@ def add_input_to_input_list(input_list, input):
         add_url_file_input_to_input_list(input_list, input)
 
 
-def get_error_reponse(code:int, message:str):
+def get_error_reponse(code: int, message: str):
     JSONResponse(
         status_code=code,
-        content={
-            "message": message
-        },
+        content={"message": message},
     )
 
 
@@ -307,7 +308,9 @@ class TaskRouter:
             return
 
         input_list = list()
-        add_model_to_input_list(input_list, self.default_model, models=set(self.versions.keys()))
+        add_model_to_input_list(
+            input_list, self.default_model, models=set(self.versions.keys())
+        )
         for input_item in input:
             add_input_to_input_list(input_list, input_item)
 
@@ -400,7 +403,9 @@ class TaskRouter:
 
                     # if not, file is missing
                     else:
-                        error_message = f"File '{input_name}' or '{input_name}_url' is missing."
+                        error_message = (
+                            f"File '{input_name}' or '{input_name}_url' is missing."
+                        )
                         return get_error_reponse(400, error_message)
 
                     # remove the url arg to avoid it to be passed in predict
