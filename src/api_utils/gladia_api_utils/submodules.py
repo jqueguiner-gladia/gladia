@@ -257,11 +257,7 @@ def get_input_default(input):
 def add_input_to_input_list(input_list, input):
     item_type = get_input_type(input)
     item_default = get_input_default(input)
-    input_list.append(
-        forge.arg(
-            input["name"], type=item_type, default=item_default
-        )
-    )
+    input_list.append(forge.arg(input["name"], type=item_type, default=item_default))
     # Add an url input for each file
     if input["type"] in file_types:
         input_list.append(
@@ -356,11 +352,11 @@ class TaskRouter:
         )
         @forge.sign(*input_list)
         async def apply(*args, **kwargs):
-            print('init_args:', args, file=sys.stderr)
-            print('init_kwargs:', file=sys.stderr)
+            print("init_args:", args, file=sys.stderr)
+            print("init_kwargs:", file=sys.stderr)
             for key, value in kwargs.items():
                 try:
-                    if len(value)>100:
+                    if len(value) > 100:
                         print(key, ":", value[0:100], file=sys.stderr)
                     else:
                         print(key, ":", value, file=sys.stderr)
