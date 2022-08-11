@@ -317,11 +317,11 @@ def perform_test(
                 url=url,
                 path=path,
                 header=header,
+                contain_file=contain_file,
                 params=params,
                 data=request["data"],
                 files=request["files"],
                 max_retry=max_retry,
-                contain_file=contain_file,
             )
 
             output_type_ok = (
