@@ -62,20 +62,20 @@ def reorder_endpoints(endpoints):
     return endpoints
 
 
-def request_endpoint(url, path, header, params={}, data={}, files={}, max_retry=3):
+def request_endpoint(url, path, header, contain_file, params={}, data={}, files={}, max_retry=3):
     headers = header.copy()
     # If data is simple singular input (str/int/float/bool),
     # special header and parsing need to be applied
     if len(data) > 1:
         headers["Content-Type"] = "application/json"
         data_for_request = json.dumps(data)
-    elif len(data) == 1:
+    elif len(data) == 1 and not contain_file:
         # Plain text
         data_for_request = list(data.values())[0]
     else:
-        data_for_request = {}
+        data_for_request = data.copy()
 
-    files_for_request = {key: open(value[1], "rb") for key, value in files.items()}
+    files_for_request = {key: (value[0], open(value[1], "rb")) for key, value in files.items()}
 
     response = type("", (), {})()
     response.status_code = 500
@@ -136,7 +136,7 @@ def perform_test(
 
         if "title" in request_body_info:
             # Simple singular input (str/int/float/bool)
-            data = request_body_info["default"]
+            data = {request_body_info["title"]: request_body_info["default"]}
             requests_inputs.append({"data": data, "files": {}})
         else:
             # Not simple input (json of length >2, image, audio, video)
@@ -279,6 +279,7 @@ def perform_test(
 
         valid = True
         output_type_ok = True
+        contain_file = is_file_in_inputs(requests_inputs)
         for request in requests_inputs:
             response = request_endpoint(
                 url=url,
@@ -288,6 +289,7 @@ def perform_test(
                 data=request["data"],
                 files=request["files"],
                 max_retry=max_retry,
+                contain_file=contain_file
             )
 
             output_type_ok = (
