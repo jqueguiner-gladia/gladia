@@ -615,12 +615,12 @@ def main(
 
                 if after_endpoint_continue:
                     perform_test(
-                        details, 
-                        url, 
-                        header, 
-                        path, 
-                        skip_when_failed, 
-                        max_retry, 
+                        details,
+                        url,
+                        header,
+                        path,
+                        skip_when_failed,
+                        max_retry,
                         specific_models,
                         default_models,
                     )
@@ -640,14 +640,14 @@ def main(
 
             if after_endpoint_continue:
                 perform_test(
-                    details, 
-                    url, 
+                    details,
+                    url,
                     header,
-                    path, 
-                    skip_when_failed, 
+                    path,
+                    skip_when_failed,
                     max_retry,
                     specific_models,
-                    default_models
+                    default_models,
                 )
             else:
                 print(f"|  |__ {status_skipped}  <Skipped>")
@@ -655,11 +655,11 @@ def main(
                 nb_test_skipped += 1
         else:
             perform_test(
-                details, 
-                url, 
-                header, 
-                path, 
-                skip_when_failed, 
+                details,
+                url,
+                header,
+                path,
+                skip_when_failed,
                 max_retry,
                 specific_models,
                 default_models,
