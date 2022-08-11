@@ -1,8 +1,9 @@
 name: Gladia Docker Hub Push
 
 on:
-  push:
-    branches: [ main ]
+  pull_request:
+    types:
+      - closed
 
 concurrency:
   group: '${{ github.workflow }}'
@@ -10,6 +11,7 @@ concurrency:
 
 jobs:
   promote:
+    if: github.event.pull_request.merged == true
     runs-on: [self-hosted, linux, STD]
     steps:
       - name: Tag built image to latest
