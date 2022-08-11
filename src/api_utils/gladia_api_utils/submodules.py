@@ -359,16 +359,6 @@ class TaskRouter:
         )
         @forge.sign(*input_list)
         async def apply(*args, **kwargs):
-            print("init_args:", args, file=sys.stderr)
-            print("init_kwargs:", file=sys.stderr)
-            for key, value in kwargs.items():
-                try:
-                    if len(value) > 100:
-                        print(key, ":", value[0:100], file=sys.stderr)
-                    else:
-                        print(key, ":", value, file=sys.stderr)
-                except:
-                    print(key, ":", value, file=sys.stderr)
             routeur = singularize(self.root_package_path)
             this_routeur = importlib.import_module(routeur.replace("/", "."))
             inputs = this_routeur.inputs
