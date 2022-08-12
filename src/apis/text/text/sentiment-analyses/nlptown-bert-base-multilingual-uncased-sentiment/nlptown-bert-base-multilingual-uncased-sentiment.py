@@ -7,7 +7,7 @@ from gladia_api_utils.triton_helper import (
 )
 
 
-def predict(text: str) -> str:
+def predict(text: str) -> dict:
     """
     From a given, classify it between 1 (hate) and 5 (love).
 
