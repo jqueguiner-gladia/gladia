@@ -227,6 +227,66 @@ def get_module_env_name(module_path: str) -> str:
         return None
 
 
+def get_input_type(input):
+    type_correspondence = {key: str for key in text_types}
+    type_correspondence.update({key: int for key in number_types})
+    type_correspondence.update({key: float for key in decimal_types})
+    type_correspondence.update({key: bool for key in boolean_types})
+    type_correspondence.update({key: Union[UploadFile, None] for key in file_types})
+
+    input_type = type_correspondence.get(input["type"], None)
+    if input_type == None:
+        raise TypeError(f"'{input['type']}' is an unknown type")
+    return input_type
+
+
+def get_default_value_for_input(input):
+    if input["type"] in file_types:
+        default_value = File(None)
+    else:
+        default_value = Body(input["default"])
+    return default_value
+
+
+def add_model_to_input_list(input_list, default_model, models):
+    input_list.append(
+        forge.arg(
+            "model",
+            type=str,
+            default=Query(default_model, enum=models),
+        )
+    )
+
+
+def add_url_file_input_to_input_list(input_list, input):
+    input_list.append(
+        forge.arg(
+            f"{input['name']}_url",
+            type=str,
+            default=Body(
+                default=input["default"],
+                description=url_input_description,
+            ),
+        )
+    )
+
+
+def add_input_to_input_list(input_list, input):
+    item_type = get_input_type(input)
+    item_default = get_default_value_for_input(input)
+    input_list.append(forge.arg(input["name"], type=item_type, default=item_default))
+    # Add an url input for each file
+    if input["type"] in file_types:
+        add_url_file_input_to_input_list(input_list, input)
+
+
+def get_error_reponse(code: int, message: str):
+    JSONResponse(
+        status_code=code,
+        content={"message": message},
+    )
+
+
 class TaskRouter:
     def __init__(self, router: APIRouter, input, output, default_model: str):
         self.input = input
@@ -248,89 +308,11 @@ class TaskRouter:
             return
 
         input_list = list()
-
-        if isinstance(input, str):
-            if input in ["image", "video", "audio"]:
-                input_list.append(
-                    forge.arg(input, type=Union[UploadFile, None], default=File(None))
-                )
-                input_list.append(
-                    forge.arg(
-                        f"{input}_url",
-                        type=str,
-                        default=Body(description=url_input_description),
-                    )
-                )
-            elif input == "text":
-                input_list.append(
-                    forge.arg(
-                        "text",
-                        type=str,
-                        default=Body("default Text", description="default Text"),
-                    )
-                )
-            elif input == "list":
-                input_list.append(forge.arg("list", type=list, default=list()))
-            elif input == "dict":
-                input_list.append(forge.arg("dict", type=dict, default=dict()))
-
-        elif isinstance(input, list):
-
-            singular_input_count = sum(item["type"] in singular_types for item in input)
-            is_input_contain_file = any(item["type"] in file_types for item in input)
-
-            for item in input:
-                if item["type"] in text_types:
-                    item["type"] = str
-                elif item["type"] in number_types:
-                    item["type"] = int
-                elif item["type"] in decimal_types:
-                    item["type"] = float
-                elif item["type"] in boolean_types:
-                    item["type"] = bool
-
-                if item["type"] in file_types:
-                    arg_name = item["name"]
-
-                    input_list.append(
-                        forge.arg(
-                            arg_name, type=Union[UploadFile, None], default=File(None)
-                        )
-                    )
-                    arg_name_url = arg_name + "_url"
-
-                    input_list.append(
-                        forge.arg(
-                            arg_name_url,
-                            type=str,
-                            default=Body(
-                                default=item["default"],
-                                description=url_input_description,
-                            ),
-                        )
-                    )
-                else:
-                    if singular_input_count > 1 or is_input_contain_file:
-                        default_body = Body(item["default"])
-                    else:
-                        # To avoid an orphan singular input to be interpreted as a string,
-                        # we force it to be given as a dict :
-                        default_body = Body({item["name"]: item["default"]})
-                    input_list.append(
-                        forge.arg(
-                            item["name"],
-                            type=item["type"],
-                            default=default_body,
-                        )
-                    )
-
-        input_list.append(
-            forge.arg(
-                "model",
-                type=str,
-                default=Query(self.default_model, enum=set(self.versions.keys())),
-            )
+        add_model_to_input_list(
+            input_list, self.default_model, models=set(self.versions.keys())
         )
+        for input_item in input:
+            add_input_to_input_list(input_list, input_item)
 
         # Define the get routes implemented by fastapi
         # The @router.get() content define the informations
@@ -382,8 +364,7 @@ class TaskRouter:
             inputs = this_routeur.inputs
 
             model = kwargs["model"]
-            # avoid passing the model to the predict function
-            # therefor removing it from the kwargs
+            # remove it from kwargs to avoid passing it to the predict function
             del kwargs["model"]
 
             module_path = f"{self.root_package_path}/{model}/"
@@ -393,15 +374,10 @@ class TaskRouter:
                     detail=f"Model {model} does not exist",
                 )
 
-            # if uploaded input file is present, it si converted to bytes
-            # else if url file is present, it is converted to bytes and replace
-            # and uploaded input file in kwargs
-            # else, code_400 is send with message
             for input in inputs:
-                # heavy modality
-                if input["type"] in file_types:
-                    input_name = input["name"]
+                input_name = input["name"]
 
+                if input["type"] in file_types:
                     # if the input file is in kwargs:
                     if isinstance(
                         kwargs.get(input_name, None),
@@ -415,16 +391,21 @@ class TaskRouter:
                         url = kwargs[f"{input_name}_url"]
                         kwargs[input_name] = urlopen(url).read()
 
-                    # if not, an input is missing
+                    # if not, file is missing
                     else:
-                        return JSONResponse(
-                            status_code=400,
-                            content={"message": f"Input '{input_name}' is missing."},
+                        error_message = (
+                            f"File '{input_name}' or '{input_name}_url' is missing."
                         )
+                        return get_error_reponse(400, error_message)
 
                     # remove the url arg to avoid it to be passed in predict
                     if f"{input_name}_url" in kwargs:
                         del kwargs[f"{input_name}_url"]
+
+                else:
+                    if not kwargs.get(input_name, None):
+                        error_message = f"Input '{input_name}' of '{input['type']}' type is missing."
+                        return get_error_reponse(400, error_message)
 
             env_name = get_module_env_name(module_path)
             # if its a subprocess
@@ -464,12 +445,10 @@ class TaskRouter:
 
                 if is_binary_file(output_tmp_result):
                     file = open(output_tmp_result, "rb")
-                    result = file.read()
-                    file.close()
                 else:
                     file = open(output_tmp_result, "r")
-                    result = file.read()
-                    file.close()
+                result = file.read()
+                file.close()
 
                 os.system(f"rm {output_tmp_result}")
 

@@ -8,13 +8,13 @@ inputs = [
         "type": "text",
         "name": "sentence_1",
         "default": "",
-        "placeholder": "Insert the first text to compare here",
+        "placeholder": "",
     },
     {
         "type": "text",
         "name": "sentence_2",
         "default": "",
-        "placeholder": "Insert the second text to compare here",
+        "placeholder": "",
     },
 ]
 
