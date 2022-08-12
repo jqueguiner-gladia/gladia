@@ -47,4 +47,4 @@ def predict(text: str) -> dict:
     return {
         "label": label,
         "score": 1,
-    }  # TODO there is no confidence score from this model
+    }  # NOTE: there is no confidence score from this model
