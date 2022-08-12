@@ -13,7 +13,7 @@ from .file_management import get_buffer_category, get_buffer_type, get_mime_cate
 logger = getLogger(__name__)
 
 
-def _open(input, btype=None, options=dict()) -> Any:
+def _open(input) -> Any:
     """
     convert input to infer, numpy, PIL image, binary, pdf,
     """
@@ -35,26 +35,17 @@ def _open(input, btype=None, options=dict()) -> Any:
     else:
         buffer = input
 
-    if btype in ["numpy", "pil"]:
-        if get_buffer_category(buffer) == "image":
-            logger.debug("pil/numpy-image")
-            output = cv2.imdecode(np.fromstring(buffer, np.uint8), cv2.IMREAD_COLOR)
-        else:
-            logger.debug("pil/numpy-else")
-            output = globals()[f"to_{btype}"](buffer)
+    logger.debug("infere type")
+    btype = get_buffer_category(buffer)
 
+    if btype == "image":
+        logger.debug("infere type image")
+        output = to_pil(buffer)
+    elif btype == "flat_structured_data":
+        logger.debug("infere type structured data")
+        output = to_pandas(buffer)
     else:
-        logger.debug("infere type")
-        btype = get_buffer_category(buffer)
-
-        if btype == "image":
-            logger.debug("infere type image")
-            output = to_pil(buffer)
-        elif btype == "flat_structured_data":
-            logger.debug("infere type structured data")
-            output = to_pandas(buffer)
-        else:
-            output = buffer
+        output = buffer
 
     return output
 
