@@ -43,6 +43,5 @@ def predict(text: str) -> dict:
 
     rating = {0: "negative", 1: "negative", 2: "neutral", 3: "positive", 4: "positive"}
     label = rating[output.index(max(output))].upper()
-    score = max(output)
 
-    return {"label": label, "score": score}
+    return {"label": label, "score": 1} # TODO there is no confidence score from this model
