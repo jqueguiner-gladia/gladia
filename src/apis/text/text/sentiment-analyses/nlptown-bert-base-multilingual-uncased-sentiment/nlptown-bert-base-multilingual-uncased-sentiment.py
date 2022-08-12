@@ -7,7 +7,7 @@ from gladia_api_utils.triton_helper import (
 )
 
 
-def predict(text: str) -> str:
+def predict(text: str) -> dict:
     """
     From a given, classify it between 1 (hate) and 5 (love).
 
@@ -42,5 +42,9 @@ def predict(text: str) -> str:
     # rating = {0: "hate", 1: "negative", 2: "neutral", 3: "positive", 4: "love"}
 
     rating = {0: "negative", 1: "negative", 2: "neutral", 3: "positive", 4: "positive"}
+    label = rating[output.index(max(output))].upper()
 
-    return rating[output.index(max(output))]
+    return {
+        "label": label,
+        "score": 1,
+    }  # NOTE: there is no confidence score from this model
