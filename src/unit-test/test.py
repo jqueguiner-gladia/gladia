@@ -25,25 +25,42 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 current_files = os.listdir(current_directory)
 
 
-def get_nb_tests(url, header, endpoints, specific_endpoints=[], specific_models=""):
+def get_nb_tests(
+    url,
+    header,
+    endpoints,
+    specific_endpoints=[],
+    specific_models="",
+    default_models_only=False,
+):
     nb_total_tests = 0
     for path, details in endpoints["paths"].items():
+        models = get_endpoints_models(url, path, header)
         if specific_endpoints:
             if path in specific_endpoints:
                 if specific_models:
-                    nb_total_tests += len(specific_models)
+                    nb_total_tests += len(
+                        [model for model in models if model in specific_models]
+                    )
+                elif default_models_only:
+                    nb_total_tests += 1
                 else:
-                    nb_total_tests += get_nb_models(url, path, header)
+                    nb_total_tests += len(models)
+        elif specific_models:
+            nb_total_tests += len(
+                [model for model in models if model in specific_models]
+            )
+        elif default_models_only:
+            nb_total_tests += 1
         else:
-            nb_total_tests += get_nb_models(url, path, header)
+            nb_total_tests += len(models)
 
     return nb_total_tests
 
 
-def get_nb_models(url, path, header):
+def get_endpoints_models(url, path, header):
     response = requests.get(f"{url}{path}", headers=header)
-    models = response.json()["models"]
-    return len(models)
+    return response.json()["models"]
 
 
 def reorder_endpoints(endpoints):
@@ -108,7 +125,14 @@ def request_endpoint(
 
 
 def perform_test(
-    details, url, header, path, skip_when_failed, max_retry=3, specific_models=[]
+    details,
+    url,
+    header,
+    path,
+    skip_when_failed,
+    max_retry=3,
+    specific_models=[],
+    default_models_only=False,
 ):
     global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
@@ -269,10 +293,14 @@ def perform_test(
         0
     ]
 
+    response = requests.get(f"{url}{path}", headers=header)
     if specific_models != []:
-        models = specific_models
+        models = [
+            model for model in response.json()["models"] if model in specific_models
+        ]
+    elif default_models_only:
+        models = [details["post"]["parameters"][0]["schema"]["default"]]
     else:
-        response = requests.get(f"{url}{path}", headers=header)
         models = response.json()["models"]
 
     for model in models:
@@ -381,7 +409,15 @@ def write_github_comment(github_token, github_pull_request, output):
     "--specific_models",
     type=str,
     default="",
-    help="CSV separated list of specific models to test format is model1,model2",
+    help="CSV separated list of specific models to test. Format is model1,model2. A model is not tested if there are specific endpoints and if the model is not in it",
+)
+@click.option(
+    "-d",
+    "--default_models",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="if default_model, only defaults models will be used, except if specific_models are selected too",
 )
 @click.option(
     "-c",
@@ -455,6 +491,7 @@ def main(
     bearer_token,
     specific_endpoints,
     specific_models,
+    default_models,
     continue_when_failed,
     after_endpoint,
     max_retry,
@@ -550,7 +587,7 @@ def main(
     nb_test_failed = 0
     nb_test_ran = 0
     nb_total_tests = get_nb_tests(
-        url, header, endpoints, specific_endpoints, specific_models
+        url, header, endpoints, specific_endpoints, specific_models, default_models
     )
 
     after_endpoint_continue = False
@@ -569,6 +606,7 @@ def main(
                     skip_when_failed,
                     max_retry,
                     specific_models,
+                    default_models,
                 )
 
             elif after_endpoint != "":
@@ -577,7 +615,14 @@ def main(
 
                 if after_endpoint_continue:
                     perform_test(
-                        details, url, header, path, skip_when_failed, max_retry
+                        details,
+                        url,
+                        header,
+                        path,
+                        skip_when_failed,
+                        max_retry,
+                        specific_models,
+                        default_models,
                     )
                 else:
                     print(f"|  |__ {status_skipped}  <Skipped>")
@@ -594,13 +639,31 @@ def main(
                 after_endpoint_continue = True
 
             if after_endpoint_continue:
-                perform_test(details, url, header, path, skip_when_failed, max_retry)
+                perform_test(
+                    details,
+                    url,
+                    header,
+                    path,
+                    skip_when_failed,
+                    max_retry,
+                    specific_models,
+                    default_models,
+                )
             else:
                 print(f"|  |__ {status_skipped}  <Skipped>")
                 print(f"|")
                 nb_test_skipped += 1
         else:
-            perform_test(details, url, header, path, skip_when_failed, max_retry)
+            perform_test(
+                details,
+                url,
+                header,
+                path,
+                skip_when_failed,
+                max_retry,
+                specific_models,
+                default_models,
+            )
 
     if test_final_status == ExitStatus_success:
         str_final_status = "Success"
