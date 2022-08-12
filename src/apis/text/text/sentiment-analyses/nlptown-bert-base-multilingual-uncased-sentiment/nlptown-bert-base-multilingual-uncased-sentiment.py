@@ -42,5 +42,7 @@ def predict(text: str) -> str:
     # rating = {0: "hate", 1: "negative", 2: "neutral", 3: "positive", 4: "love"}
 
     rating = {0: "negative", 1: "negative", 2: "neutral", 3: "positive", 4: "positive"}
+    label = rating[output.index(max(output))].upper()
+    score = max(output)
 
-    return rating[output.index(max(output))]
+    return {"label": label, "score": score}
