@@ -12,6 +12,7 @@ inputs = [
         "type": "text",
         "name": "source_language",
         "default": "en",
+        "placeholder": "Source language",
     },
 ]
 

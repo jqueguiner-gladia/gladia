@@ -1,7 +1,6 @@
 import importlib
 import json
 import os
-import pathlib
 import re
 import subprocess
 import sys
@@ -10,15 +9,15 @@ import urllib.parse
 from logging import getLogger
 from pathlib import Path
 from shlex import quote
-from typing import Union
+from typing import Optional
 from urllib.request import urlopen
 
 import forge
 import inflect
 import starlette
-from fastapi import APIRouter, Body, File, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
-from pydantic import create_model
+from pydantic import BaseModel, create_model
 
 from .casting import cast_response
 from .file_management import write_tmp_file
@@ -30,8 +29,6 @@ logger = getLogger(__name__)
 
 PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
 PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
-
-url_input_description = "File URL if no file upload"
 
 file_types = ["image", "audio", "video"]
 text_types = ["text", "str", "string"]
@@ -100,7 +97,7 @@ def get_module_infos(root_path=None) -> list:
     else:
         caller_file = sys._getframe(1).f_globals["__file__"]
 
-    pwd = str(pathlib.Path(caller_file).absolute()).split("/")
+    pwd = str(Path(caller_file).absolute()).split("/")
 
     plugin = pwd[len(pwd) - 3 : len(pwd)]
     tags = ".".join(plugin)[:-3]
@@ -130,9 +127,7 @@ def get_model_versions(root_path=None) -> dict:
     for fname in os.listdir(package_path):
         if os.path.isdir(os.path.join(package_path, fname)):
 
-            if not pathlib.Path(
-                os.path.join(package_path, fname, "__init__.py")
-            ).exists():
+            if not Path(os.path.join(package_path, fname, "__init__.py")).exists():
                 continue
 
             versions[fname] = {}
@@ -141,7 +136,7 @@ def get_model_versions(root_path=None) -> dict:
             # the output of the get road
             metadata_file_name = ".metadata.json"
             metadata_file_path = os.path.join(package_path, fname, metadata_file_name)
-            if pathlib.Path(metadata_file_path).exists():
+            if Path(metadata_file_path).exists():
                 with open(metadata_file_path, "r") as metadata_file:
                     model_metadata = json.load(metadata_file)
                     versions[fname] = merge_dicts(versions[fname], model_metadata)
@@ -172,7 +167,7 @@ def get_task_metadata(rel_path):
     rel_path = get_task_dir_relpath_from_py_file(rel_path)
     metadata_file_name = ".metadata.json"
     metadata_file_path = os.path.join(rel_path, metadata_file_name)
-    if not pathlib.Path(metadata_file_path).exists():
+    if not Path(metadata_file_path).exists():
         metadata_file_path = os.path.join("apis", ".metadata_model_template.json")
     else:
         metadata_file_path = os.path.join(rel_path, metadata_file_name)
@@ -185,7 +180,7 @@ def exec_in_subprocess(
     env_name: str, module_path: str, model: str, output_tmp_result: str, **kwargs
 ):
 
-    HERE = pathlib.Path(__file__).parent
+    HERE = Path(__file__).parent
 
     cmd = f"""micromamba run -n {env_name} python {os.path.join(HERE, 'run_process.py')} {module_path} {model} {output_tmp_result} """
     cmd += f"{quote(urllib.parse.quote(json.dumps(kwargs)))}"
@@ -227,57 +222,41 @@ def get_module_env_name(module_path: str) -> str:
         return None
 
 
-def get_input_type(input):
+def get_endpoint_parameter_type(parameter):
     type_correspondence = {key: str for key in text_types}
     type_correspondence.update({key: int for key in number_types})
     type_correspondence.update({key: float for key in decimal_types})
     type_correspondence.update({key: bool for key in boolean_types})
-    type_correspondence.update({key: Union[UploadFile, None] for key in file_types})
+    type_correspondence.update({key: Optional[UploadFile] for key in file_types})
 
-    input_type = type_correspondence.get(input["type"], None)
-    if input_type == None:
-        raise TypeError(f"'{input['type']}' is an unknown type")
-    return input_type
-
-
-def get_default_value_for_input(input):
-    if input["type"] in file_types:
-        default_value = File(None)
-    else:
-        default_value = Body(input["default"])
-    return default_value
+    parameter_type = type_correspondence.get(parameter["type"], None)
+    if parameter_type == None:
+        raise TypeError(f"'{parameter['type']}' is an unknown type")
+    return parameter_type
 
 
-def add_model_to_input_list(input_list, default_model, models):
-    input_list.append(
-        forge.arg(
-            "model",
-            type=str,
-            default=Query(default_model, enum=models),
-        )
-    )
+def create_description_for_the_endpoit_parameter(endpoint_param):
 
+    parameters_to_add = {}
 
-def add_url_file_input_to_input_list(input_list, input):
-    input_list.append(
-        forge.arg(
-            f"{input['name']}_url",
-            type=str,
-            default=Body(
-                default=input["default"],
-                description=url_input_description,
-            ),
-        )
-    )
+    parameters_to_add[endpoint_param["name"]] = {
+        "type": get_endpoint_parameter_type(endpoint_param),  # i.e UploadFile
+        "data_type": endpoint_param["type"],  # i.e image
+        "example": endpoint_param["default"],
+        "examples": [endpoint_param["default"]],
+        "description": "TODO",
+    }
 
+    if endpoint_param["type"] in file_types:
+        parameters_to_add[f"{endpoint_param['name']}_url"] = {
+            "type": Optional[str],
+            "data_type": "url",
+            "example": endpoint_param["default"],
+            "examples": [endpoint_param["default"]],
+            "description": "TODO",
+        }
 
-def add_input_to_input_list(input_list, input):
-    item_type = get_input_type(input)
-    item_default = get_default_value_for_input(input)
-    input_list.append(forge.arg(input["name"], type=item_type, default=item_default))
-    # Add an url input for each file
-    if input["type"] in file_types:
-        add_url_file_input_to_input_list(input_list, input)
+    return parameters_to_add
 
 
 def get_error_reponse(code: int, message: str):
@@ -306,13 +285,6 @@ class TaskRouter:
 
         if not self.__check_if_model_exist(self.root_package_path, default_model):
             return
-
-        input_list = list()
-        add_model_to_input_list(
-            input_list, self.default_model, models=set(self.versions.keys())
-        )
-        for input_item in input:
-            add_input_to_input_list(input_list, input_item)
 
         # Define the get routes implemented by fastapi
         # The @router.get() content define the informations
@@ -347,6 +319,42 @@ class TaskRouter:
                 }
             }
 
+        endpoint_parameters_description = dict()
+        for parameter in input:
+            endpoint_parameters_description.update(
+                create_description_for_the_endpoit_parameter(parameter)
+            )
+
+        form_parameters = []
+        for key, value in endpoint_parameters_description.items():
+            form_parameters.append(
+                forge.arg(
+                    key,
+                    type=value["type"],
+                    default=Form(
+                        title=key,
+                        default=None,
+                        description=value["description"],
+                        example=value[
+                            "example"
+                        ],  # NOTE: FastAPI does not use this value
+                        examples=value[
+                            "examples"
+                        ],  # NOTE: FastAPI does not use this value
+                        _examples=value[
+                            "examples"
+                        ],  # NOTE: without the '_' character, FastAPI does not display this in the openapi.json
+                        data_type=value.get("data_type", ""),
+                    ),
+                )
+            )
+
+        query_for_model_name = forge.arg(
+            "model",
+            type=str,
+            default=Query(self.default_model, enum=set(self.versions.keys())),
+        )
+
         # Define the post routes implemented by fastapi
         # The @router.post() content define the informations
         # displayed in /docs and /openapi.json for the post routes
@@ -357,8 +365,20 @@ class TaskRouter:
             response_class=response_class,
             responses=responses,
         )
-        @forge.sign(*input_list)
+        @forge.sign(*[*form_parameters, query_for_model_name])
         async def apply(*args, **kwargs):
+
+            # cast BaseModel pydantic models into python type
+            parameters_in_body = {}
+
+            for key, value in kwargs.items():
+                if isinstance(value, BaseModel):
+                    parameters_in_body.update(value.dict())
+                else:
+                    parameters_in_body[key] = value
+
+            kwargs = parameters_in_body
+
             routeur = singularize(self.root_package_path)
             this_routeur = importlib.import_module(routeur.replace("/", "."))
             inputs = this_routeur.inputs

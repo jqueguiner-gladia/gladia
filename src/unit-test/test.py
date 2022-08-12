@@ -5,24 +5,19 @@ from time import sleep
 
 import click
 import requests
-from gladia_api_utils.submodules import url_input_description
 
 global nb_total_tests
 global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
 global test_final_status
-global status_passed, status_failed, status_skipped
 global endpoints
 
-status_passed = "🟢"
-status_skipped = "🟡"
-status_failed = "🔴"
+STATUS_PASSED = "🟢"
+STATUS_SKIPPED = "🟡"
+STATUS_FAILED = "🔴"
 
-
-ExitStatus_failure = 1
-ExitStatus_success = 0
-
-current_directory = os.path.dirname(os.path.abspath(__file__))
-current_files = os.listdir(current_directory)
+EXIT_STATUS_SUCCESS = 0
+EXIT_STATUS_FAILURE = 1
+CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 
 def get_nb_tests(
@@ -34,7 +29,7 @@ def get_nb_tests(
     default_models_only=False,
 ):
     nb_total_tests = 0
-    for path, details in endpoints["paths"].items():
+    for path, _ in endpoints["paths"].items():
         models = get_endpoints_models(url, path, header)
         if specific_endpoints:
             if path in specific_endpoints:
@@ -79,46 +74,29 @@ def reorder_endpoints(endpoints):
     return endpoints
 
 
-def request_endpoint(
-    url, path, header, contain_file, params={}, data={}, files={}, max_retry=3
-):
-    headers = header.copy()
-    # If data is simple singular input (str/int/float/bool),
-    # special header and parsing need to be applied
-    if len(data) > 1:
-        headers["Content-Type"] = "application/json"
-        data_for_request = json.dumps(data)
-    elif len(data) == 1 and not contain_file:
-        # Plain text
-        data_for_request = list(data.values())[0]
-    else:
-        data_for_request = data.copy()
+def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
 
-    files_for_request = {
-        key: (value[0], open(value[1], "rb")) for key, value in files.items()
-    }
-
-    response = type("", (), {})()
-    response.status_code = 500
     tries = 1
+    response = type("", (object,), {"status_code": 500})()
+
     while tries <= max_retry and response.status_code != 200:
 
         response = requests.post(
             f"{url}{path}",
-            headers=headers,
             params=params,
-            data=data_for_request,
-            files=files_for_request,
+            data=data,
+            files={key: open(value[1], "rb") for key, value in files.items()},
         )
 
-        uploaded_files = [value[0] for key, value in files.items()]
-        url_files = [key for key, value in data.items() if key.endswith("_url")]
+        uploaded_files = [value[0] for value in files.values()]
+        url_files = [key for key in data.keys() if key.endswith("_url")]
         used_files = uploaded_files + url_files
         files_message = f" ({', '.join(used_files)})"
 
         print(f"|  |       ___ Try : {tries}/{max_retry}{files_message}")
         print(f"|  |      |    |_ Response : {response.status_code} ")
         tries += 1
+
     print(f"|  |      |")
 
     return response
@@ -136,7 +114,7 @@ def perform_test(
 ):
     global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
-    global status_passed, status_failed, status_skipped
+    global STATUS_PASSED, STATUS_FAILED, STATUS_SKIPPED
     global nb_total_tests
     global IS_CI
     global endpoints
@@ -153,15 +131,19 @@ def perform_test(
     def get_requests_inputs():
         requests_inputs = []
 
-        if "application/json" in details["post"]["requestBody"]["content"]:
+        if (
+            "application/x-www-form-urlencoded"
+            in details["post"]["requestBody"]["content"]
+        ):
             request_body_info = details["post"]["requestBody"]["content"][
-                "application/json"
+                "application/x-www-form-urlencoded"
             ]["schema"]
         else:
             request_body_info = details["post"]["requestBody"]["content"][
                 "multipart/form-data"
             ]["schema"]
 
+        # NOTE: never happen
         if "title" in request_body_info:
             # Simple singular input (str/int/float/bool)
             data = {request_body_info["title"]: request_body_info["default"]}
@@ -178,32 +160,29 @@ def perform_test(
             videos = []
             images = []
             for key, value in properties.items():
-                if "format" not in value:
-                    if "description" in value:
-                        if value["description"] == url_input_description:
-                            # URL
-                            if "audio" in key or "audio" in value["title"].lower():
-                                # URL audio
-                                urls_files.append(
-                                    {key: "https://anshe.org/audio/3Weeks-080715.mp3"}
-                                )
-                            elif "video" in key or "video" in value["title"].lower():
-                                # URL Video
-                                urls_files.append(
-                                    {
-                                        key: "https://upload.wikimedia.org/wikipedia/commons/8/80/Expedition_50-51_Crew_Docks_to_the_Space_Station.webm"
-                                    }
-                                )
-                            else:
-                                # URL Image
-                                urls_files.append(
-                                    {
-                                        key: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png"
-                                    }
-                                )
+                if value.get("format", None) != "binary":
+                    if value.get("data_type", None) == "url":
+                        if "audio" in key or "audio" in value["title"].lower():
+                            # URL audio
+                            urls_files.append(
+                                {key: "https://anshe.org/audio/3Weeks-080715.mp3"}
+                            )
+                        elif "video" in key or "video" in value["title"].lower():
+                            # URL Video
+                            urls_files.append(
+                                {
+                                    key: "https://upload.wikimedia.org/wikipedia/commons/8/80/Expedition_50-51_Crew_Docks_to_the_Space_Station.webm"
+                                }
+                            )
+                        else:
+                            # URL Image
+                            urls_files.append(
+                                {
+                                    key: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png"
+                                }
+                            )
                     else:
-                        # Text
-                        texts.append({key: ("text", value["default"])})
+                        texts.append({key: ("text", value["_examples"][0])})
                 else:
                     if "audio" in key or "audio" in value["title"].lower():
                         # Audio
@@ -248,9 +227,11 @@ def perform_test(
                         for type_file in types_files[1]:
                             # Retieve the test file in current directory with the good format ...
                             file = [
-                                file for file in current_files if file.endswith(format)
+                                file
+                                for file in os.listdir(CURRENT_DIRECTORY)
+                                if file.endswith(format)
                             ][0]
-                            file_path = os.path.join(current_directory, file)
+                            file_path = os.path.join(CURRENT_DIRECTORY, file)
                             # ... and add it to the request files
                             for key, value in type_file.items():
                                 request_files.update({value[0]: (file, file_path)})
@@ -311,13 +292,10 @@ def perform_test(
 
         valid = True
         output_type_ok = True
-        contain_file = is_file_in_inputs(requests_inputs)
         for request in requests_inputs:
             response = request_endpoint(
                 url=url,
                 path=path,
-                header=header,
-                contain_file=contain_file,
                 params=params,
                 data=request["data"],
                 files=request["files"],
@@ -334,11 +312,11 @@ def perform_test(
 
         if valid:
             nb_test_passed += 1
-            status = status_passed
+            status = STATUS_PASSED
         else:
             nb_test_failed += 1
-            status = status_failed
-            test_final_status = ExitStatus_failure
+            status = STATUS_FAILED
+            test_final_status = EXIT_STATUS_FAILURE
             if IS_CI and not is_file_in_inputs(requests_inputs):
                 sleep(2)
 
@@ -358,8 +336,8 @@ def perform_test(
         )
         print(f"|  |")
         if skip_when_failed:
-            if status == status_failed:
-                sys.exit(status_failed)
+            if status == STATUS_FAILED:
+                sys.exit(STATUS_FAILED)
 
     print("|")
 
@@ -507,7 +485,7 @@ def main(
     global formats_to_test
 
     formats_to_test = {}
-    config_path = os.path.join(current_directory, "config.json")
+    config_path = os.path.join(CURRENT_DIRECTORY, "config.json")
     with open(config_path, "r") as config_file:
         config = json.load(config_file)
 
@@ -591,7 +569,7 @@ def main(
     )
 
     after_endpoint_continue = False
-    test_final_status = ExitStatus_success
+    test_final_status = EXIT_STATUS_SUCCESS
 
     for path, details in endpoints["paths"].items():
         print(f"|__ {path}")
@@ -625,12 +603,12 @@ def main(
                         default_models,
                     )
                 else:
-                    print(f"|  |__ {status_skipped}  <Skipped>")
+                    print(f"|  |__ {STATUS_SKIPPED}  <Skipped>")
                     print(f"|")
                     nb_test_skipped += 1
 
             else:
-                print(f"|  |__ {status_skipped}  <Skipped>")
+                print(f"|  |__ {STATUS_SKIPPED}  <Skipped>")
                 print(f"|")
                 nb_test_skipped += 1
 
@@ -650,7 +628,7 @@ def main(
                     default_models,
                 )
             else:
-                print(f"|  |__ {status_skipped}  <Skipped>")
+                print(f"|  |__ {STATUS_SKIPPED}  <Skipped>")
                 print(f"|")
                 nb_test_skipped += 1
         else:
@@ -665,7 +643,7 @@ def main(
                 default_models,
             )
 
-    if test_final_status == ExitStatus_success:
+    if test_final_status == EXIT_STATUS_SUCCESS:
         str_final_status = "Success"
     else:
         str_final_status = "Failure"

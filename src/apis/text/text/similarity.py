@@ -7,14 +7,14 @@ inputs = [
     {
         "type": "text",
         "name": "sentence_1",
-        "default": "",
-        "placeholder": "",
+        "default": "I like banana",
+        "placeholder": "Insert the first text to compare here",
     },
     {
         "type": "text",
         "name": "sentence_2",
-        "default": "",
-        "placeholder": "",
+        "default": "I hate banana",
+        "placeholder": "Insert the second text to compare here",
     },
 ]
 
