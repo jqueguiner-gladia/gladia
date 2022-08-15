@@ -18,9 +18,9 @@ jobs:
     needs: lint
     if: |-
       ${{ 
-        ( !contains(github.event.pull_request.labels.*.name, fromJson('["docs","ci"]')) ||
-          !github.event.pull_request.draft ) &&
-        always()
+        ! contains(github.event.pull_request.labels.*.name, 'ci') ||
+        ! contains(github.event.pull_request.labels.*.name, 'doc') || 
+        ! github.event.pull_request.draft
       }}
     runs-on: [self-hosted, linux, STD]
     steps:
@@ -44,7 +44,17 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
         working-directory: ./src
-        run: docker build -t gladiaio/gladia:ci-${{ github.sha }} -f gpu.Dockerfile .
+        run: docker build -t docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }} -f gpu.Dockerfile .
+
+      - name: Login to Docker Gladia
+        uses: docker/login-action@v1
+        with:
+          registry: docker.gladia.io
+          username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
+          password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
+
+      - name: Push build PR ${{ github.event.pull_request.number }} to gladia registry
+        run: docker push docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }}
 
   test:
     needs: build
@@ -68,7 +78,7 @@ jobs:
           -e IS_CI="True" -e NVIDIA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}} -e CUDA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}} \
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000 \
           -v /data/volumes/models:/tmp/gladia/models \
-          --name jlmagouille-${{ github.sha	}} gladiaio/gladia:ci-${{ github.sha }}
+          --name jlmagouille-${{ github.event.pull_request.number	}} docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }}
 
       - name: Gladia container readiness
         uses: nick-fields/retry@v2
@@ -86,17 +96,17 @@ jobs:
         run: | 
           docker exec -i \
           -e PR=${{ github.event.pull_request.number }} -e GHT=${{ secrets.GITHUB_TOKEN }} \
-          jlmagouille-${{ github.sha }} \
+          jlmagouille-${{ github.event.pull_request.number }} \
           /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py'
 
       - name: Logs
         if: always()
         run: |
-           docker logs jlmagouille-${{ github.sha }}
+           docker logs jlmagouille-${{ github.event.pull_request.number }}
 
       - name: Clean Docker Test Env
         if: always()
         continue-on-error: True
         run: |
-          docker stop jlmagouille-${{ github.sha }}
-          docker rm jlmagouille-${{ github.sha }}
+          docker stop jlmagouille-${{ github.event.pull_request.number }}
+          docker rm jlmagouille-${{ github.event.pull_request.number }}
