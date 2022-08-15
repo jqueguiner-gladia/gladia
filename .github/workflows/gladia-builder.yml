@@ -82,8 +82,7 @@ jobs:
         run: sleep 5s
         
       - name: Test
-        id: test1
-        continue-on-error: True
+        id: test
         run: | 
           docker exec -i \
           -e PR=${{ github.event.pull_request.number }} -e GHT=${{ secrets.GITHUB_TOKEN }} \
@@ -91,7 +90,7 @@ jobs:
           /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py'
 
       - name: Logs
-        if: ${{ steps.test1.outcome != 'success' }}
+        if: always()
         run: |
            docker logs jlmagouille-${{ github.sha }}
 
