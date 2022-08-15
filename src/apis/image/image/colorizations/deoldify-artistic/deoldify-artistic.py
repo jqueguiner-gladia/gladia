@@ -32,9 +32,11 @@ def predict(image: bytes) -> Image:
 
     gpu_id = get_random_available_gpu_id()
 
-    device = getattr(DeviceId, f"GPU{gpu_id}") if gpu_id is not None else DeviceId.CPU
+    device_to_use = (
+        getattr(DeviceId, f"GPU{gpu_id}") if gpu_id is not None else DeviceId.CPU
+    )
 
-    device.set(device=device)
+    device.set(device=device_to_use)
 
     render_factor = 30
 

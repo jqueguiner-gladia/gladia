@@ -83,19 +83,20 @@ def get_first_available_gpu_id() -> int:
 
 
 def get_random_available_gpu_id() -> int:
-    gpu_id = None
     available_gpu_ids = get_available_gpu_ids()
-    if get_available_gpu_ids:
-        gpu_id = random.choice(get_available_gpu_ids)
 
-    return gpu_id
+    if available_gpu_ids:
+        return random.choice(available_gpu_ids)
+
+    return None
 
 
 def get_available_gpu_ids() -> list:
     gpu_ids = list()
-    if cuda_is_available():
-        cuda_visible_devices = getenv("CUDA_VISIBLE_DEVICES", None)
 
-        if cuda_visible_devices:
-            gpu_ids = [int(x) for x in gpu_id.split(",")]
+    if cuda_is_available() and (
+        cuda_visible_devices := os.getenv("CUDA_VISIBLE_DEVICES", None)
+    ):
+        gpu_ids = [int(x) for x in cuda_visible_devices.split(",")]
+
     return gpu_ids
