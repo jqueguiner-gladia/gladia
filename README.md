@@ -38,6 +38,9 @@
   <a href="https://github.com/psf/black" alt="code-style">
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg" />
   </a>
+  <a href="https://sonarcloud.io/project/overview?id=gladiaio_gladia" alt="code-quality">
+    <img src="https://sonarcloud.io/api/project_badges/measure?project=gladiaio_gladia&metric=alert_status" />
+  </a>
 </p>
 
 <p align="left">
