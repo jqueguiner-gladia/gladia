@@ -1,5 +1,6 @@
 import distutils.dir_util
 import os
+import random
 import shutil
 import subprocess
 import sys
@@ -7,6 +8,7 @@ from pathlib import Path
 from posixpath import isabs
 
 from genericpath import isdir
+from torch.cuda import is_available as cuda_is_available
 
 
 def copy(source, destination):
@@ -72,3 +74,28 @@ def remove(*paths):
                 shutil.rmtree(path)
             else:
                 os.remove(path)
+
+
+def get_first_available_gpu_id() -> int:
+    available_gpu_ids = get_available_gpu_ids()
+
+    return None if len(available_gpu_ids) == 0 else available_gpu_ids[0]
+
+
+def get_random_available_gpu_id() -> int:
+    gpu_id = None
+    available_gpu_ids = get_available_gpu_ids()
+    if get_available_gpu_ids:
+        gpu_id = random.choice(get_available_gpu_ids)
+
+    return gpu_id
+
+
+def get_available_gpu_ids() -> list:
+    gpu_ids = list()
+    if cuda_is_available():
+        cuda_visible_devices = getenv("CUDA_VISIBLE_DEVICES", None)
+
+        if cuda_visible_devices:
+            gpu_ids = [int(x) for x in gpu_id.split(",")]
+    return gpu_ids

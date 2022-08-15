@@ -1,20 +1,11 @@
-import os
+from os import path
 from pathlib import Path
 
 from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
+from gladia_api_utils.system import get_random_available_gpu_id
 from PIL import Image
-
-urls = {
-    "deoldify-stable": {
-        "url": "https://huggingface.co/databuzzword/deoldify-stable",
-        "output_path": "models",
-    }
-}
-
-models_path = download_models(urls)
-
-current_model_path = os.path.join(models_path["deoldify-stable"]["output_path"])
+from torch.cuda import is_available as cuda_is_available
 
 
 def predict(image: bytes) -> Image:
@@ -25,14 +16,25 @@ def predict(image: bytes) -> Image:
     :return: colorized image
     """
 
+    urls = {
+        "deoldify-stable": {
+            "url": "https://huggingface.co/databuzzword/deoldify-stable",
+            "output_path": "models",
+        }
+    }
+
+    models_path = download_models(urls)
+
+    current_model_path = path.join(models_path["deoldify-stable"]["output_path"])
+
     from deoldify import device, visualize
     from deoldify.device_id import DeviceId
 
-    try:
-        # TODO: check which GPU is available
-        device.set(device=DeviceId.GPU0)
-    except:
-        device.set(device=DeviceId.CPU)
+    gpu_id = get_random_available_gpu_id()
+
+    device = getattr(DeviceId, f"GPU{gpu_id}") if gpu_id is not None else DeviceId.CPU
+
+    device.set(device=device)
 
     render_factor = 30
 
