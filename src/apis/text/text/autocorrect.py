@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "sentence",
-        "default": "Text to corrcte",
+        "example": "Text to corrcte",
         "placeholder": "Insert the text to correct",
     }
 ]

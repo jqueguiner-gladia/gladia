@@ -5,13 +5,13 @@ inputs = [
     {
         "type": "image",
         "name": "image",
-        "default": "http://files.gladia.io/test/test.png",
+        "example": "http://files.gladia.io/test/test.png",
         "placeholder": "Image to classify",
     },
     {
         "type": "int",
         "name": "top_k",
-        "default": 1,
+        "example": 1,
         "placeholder": "Top K",
     },
 ]

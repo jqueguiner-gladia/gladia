@@ -7,13 +7,13 @@ inputs = [
     {
         "type": "text",
         "name": "text",
-        "default": "Лорем ипсум долор сит амет",
+        "example": "Лорем ипсум долор сит амет",
         "placeholder": "Insert the text to transliterate here",
     },
     {
         "type": "text",
         "name": "language",
-        "default": "ru",
+        "example": "ru",
         "placeholder": "Insert the language code here",
     },
 ]

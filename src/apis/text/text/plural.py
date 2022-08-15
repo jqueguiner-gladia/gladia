@@ -7,13 +7,13 @@ inputs = [
     {
         "type": "text",
         "name": "word",
-        "default": "cat",
+        "example": "cat",
         "placeholder": "Insert the word to pluralize here",
     },
     {
         "type": "int",
         "name": "count",
-        "default": 2,
+        "example": 2,
         "placeholder": "Insert the number associated to the word to pluralize",
     },
 ]

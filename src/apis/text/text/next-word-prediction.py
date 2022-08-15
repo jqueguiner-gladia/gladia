@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "sentence",
-        "default": "I think therefore I",
+        "example": "I think therefore I",
         "placeholder": "Insert the text to find the next word from.",
     }
 ]

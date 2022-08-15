@@ -7,19 +7,19 @@ inputs = [
     {
         "type": "text",
         "name": "input_string",
-        "default": "Text to translate",
+        "example": "Text to translate",
         "placeholder": "Insert the text to translate here",
     },
     {
         "type": "text",
         "name": "source_language",
-        "default": "en",
+        "example": "en",
         "placeholder": "Use the ISO 2 letters representation for source language",
     },
     {
         "type": "text",
         "name": "target_language",
-        "default": "fr",
+        "example": "fr",
         "placeholder": "Use the ISO 2 letters representation for target language",
     },
 ]

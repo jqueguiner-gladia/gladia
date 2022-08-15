@@ -251,8 +251,8 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
     parameters_to_add[endpoint_param["name"]] = {
         "type": get_endpoint_parameter_type(endpoint_param),  # i.e UploadFile
         "data_type": endpoint_param["type"],  # i.e image
-        "example": endpoint_param["default"],
-        "examples": [endpoint_param["default"]],
+        "example": endpoint_param["example"],
+        "examples": [endpoint_param["example"]],
         "description": "TODO",
     }
 
@@ -260,8 +260,8 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
         parameters_to_add[f"{endpoint_param['name']}_url"] = {
             "type": Optional[str],
             "data_type": "url",
-            "example": endpoint_param["default"],
-            "examples": [endpoint_param["default"]],
+            "example": endpoint_param["example"],
+            "examples": [endpoint_param["example"]],
             "description": "TODO",
         }
 

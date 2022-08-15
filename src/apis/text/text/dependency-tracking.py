@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "input_string",
-        "default": "Text to analyzed",
+        "example": "Text to analyzed",
         "placeholder": "Insert the text to analyze here",
     }
 ]
