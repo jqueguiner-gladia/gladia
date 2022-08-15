@@ -195,7 +195,15 @@ def exec_in_subprocess(
             executable="/bin/bash",
         )
 
-        proc.communicate()
+        _, error_message = proc.communicate()
+
+        error_message = f"Subprocess encountered the following error : {error_message}\nCommand executed: {cmd}"
+
+        # if the subprocess has failed (return code of shell != 0)
+        # raise an exception and log to the console the error message
+        if proc.returncode != 0:
+            logger.error(error_message)
+            raise RuntimeError(error_message)
 
     except subprocess.CalledProcessError as error:
         error_message = f"Could not run in subprocess command {cmd}: {error}"
@@ -260,10 +268,7 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
 
 
 def get_error_reponse(code: int, message: str):
-    JSONResponse(
-        status_code=code,
-        content={"message": message},
-    )
+    JSONResponse(status_code=code, content={"message": message})
 
 
 class TaskRouter:
