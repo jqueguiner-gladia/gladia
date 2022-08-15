@@ -49,6 +49,7 @@ jobs:
       - name: Login to Docker Gladia
         uses: docker/login-action@v1
         with:
+          registry: docker.gladia.io
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
 
