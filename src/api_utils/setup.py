@@ -42,7 +42,6 @@ setup(
         "googledrivedownloader",
         "opencv-python",
         "python-forge",
-        "inflect",
         "python-multipart",
         "tritonclient",
         "tritonclient[http]",

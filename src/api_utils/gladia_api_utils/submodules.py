@@ -13,7 +13,6 @@ from typing import Optional
 from urllib.request import urlopen
 
 import forge
-import inflect
 import starlette
 from fastapi import APIRouter, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
@@ -29,6 +28,8 @@ logger = getLogger(__name__)
 
 PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
 PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
+
+models_folder_suffix = "models"
 
 file_types = ["image", "audio", "video"]
 text_types = ["text", "str", "string"]
@@ -53,28 +54,28 @@ def is_valid_path(string: str):
 
 
 # take several dictionaries in input and return a merged one
-def merge_dicts(*args: dict):
+def merge_dicts(*args: dict) -> dict:
     sum_items = list()
     for dictionary in args:
         sum_items += list(dictionary.items())
     return dict(sum_items)
 
 
-def singularize(word):
-    if inflect.engine().singular_noun(word):
-        if word == "apis/text/text/sentiment-analyses":
-            return "apis/text/text/sentiment-analysis"
-        else:
-            return inflect.engine().singular_noun(word)
-    else:
-        return word
+def to_task_name(word) -> str:
+    # remove the models suffix
+    # remove 1 more character to remove the "-"
+    return word[: -(len(models_folder_suffix) + 1)]
 
 
-def pluralize(word):
-    if inflect.engine().plural_noun(word):
-        return inflect.engine().plural_noun(word)
-    else:
-        return word
+def to_models_folder_name(word) -> str:
+    """
+    This function is used to find the folder containing all
+    related models for a given task.
+    We use the -{models_folder_suffix} in order to
+    avoid fastapi to be confused with the routing layer
+    defined by the task.py
+    """
+    return f"{word}-{models_folder_suffix}"
 
 
 def dict_model(name: str, dict_def: dict):
@@ -119,7 +120,7 @@ def get_model_versions(root_path=None) -> dict:
         rel_path = os.path.join(cwd, rel_path)
 
     sub_dir_to_crawl = f"{os.path.splitext(os.path.basename(rel_path))[0]}"
-    sub_dir_to_crawl = pluralize(sub_dir_to_crawl)
+    sub_dir_to_crawl = to_models_folder_name(sub_dir_to_crawl)
 
     versions = dict()
     package_path = str(Path(rel_path).parent.joinpath(sub_dir_to_crawl))
@@ -154,9 +155,9 @@ def get_model_versions(root_path=None) -> dict:
 def get_task_dir_relpath_from_py_file(py_rel_path):
     # Remove extension
     rel_path = py_rel_path.replace(".py", "")
-    # Pluralize last part corresponding to the task
+    # get the last part corresponding to the task
     rel_path = rel_path.split("/")
-    rel_path[-1] = pluralize(rel_path[-1])
+    rel_path[-1] = to_models_folder_name(rel_path[-1])
     rel_path = "/".join(rel_path)
     return rel_path
 
@@ -384,7 +385,7 @@ class TaskRouter:
 
             kwargs = parameters_in_body
 
-            routeur = singularize(self.root_package_path)
+            routeur = to_task_name(self.root_package_path)
             this_routeur = importlib.import_module(routeur.replace("/", "."))
             inputs = this_routeur.inputs
 
