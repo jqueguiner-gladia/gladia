@@ -14,7 +14,7 @@ from urllib.request import urlopen
 
 import forge
 import starlette
-from fastapi import APIRouter, Form, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
 
@@ -251,18 +251,25 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
     parameters_to_add[endpoint_param["name"]] = {
         "type": get_endpoint_parameter_type(endpoint_param),  # i.e UploadFile
         "data_type": endpoint_param["type"],  # i.e image
+        "default": None
+        if endpoint_param["type"] in file_types
+        else ...,  # TODO: retrieve from {task}.py
+        "constructor": File if endpoint_param["type"] in file_types else Form,
         "example": endpoint_param["default"],
         "examples": [endpoint_param["default"]],
-        "description": "TODO",
+        "description": "",  # TODO: retrieve from {task}.py
     }
 
+    # TODO: add validator checking that file and file_url can both be empty
     if endpoint_param["type"] in file_types:
         parameters_to_add[f"{endpoint_param['name']}_url"] = {
             "type": Optional[str],
             "data_type": "url",
+            "default": None,
+            "constructor": Form,
             "example": endpoint_param["default"],
             "examples": [endpoint_param["default"]],
-            "description": "TODO",
+            "description": "",  # TODO: copy description from above param
         }
 
     return parameters_to_add
@@ -337,9 +344,9 @@ class TaskRouter:
                 forge.arg(
                     key,
                     type=value["type"],
-                    default=Form(
+                    default=value["constructor"](
                         title=key,
-                        default=None,
+                        default=value["default"],
                         description=value["description"],
                         example=value[
                             "example"
