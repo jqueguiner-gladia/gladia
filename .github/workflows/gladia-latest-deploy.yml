@@ -67,7 +67,8 @@ jobs:
             -p 80:8080 \
             -v /tmp/gladia:/tmp/gladia \
             -e TRITON_SERVER_PORT_HTTP=8000 -e TRITON_SERVER_URL=0.0.0.0:8000 -e TRITON_LAZY_DOWNLOAD=false -e TRITON_MODELS_PATH=/tmp/gladia/triton \
-            docker.gladia.io/gladia:latest ../src/run_fastapi_server.sh
+            -e MODE=server \
+            docker.gladia.io/gladia:latest
 
       # todo : healthcheck, notify failure
 
@@ -95,6 +96,7 @@ jobs:
             -p 80:8080 \
             -v /tmp/gladia:/tmp/gladia \
             -e TRITON_SERVER_PORT_HTTP=8000 -e TRITON_SERVER_URL=0.0.0.0:8000 -e TRITON_LAZY_DOWNLOAD=false -e TRITON_MODELS_PATH=/tmp/gladia/triton \
-            docker.gladia.io/gladia:latest ../src/run_fastapi_server.sh
+            -e MODE=server \
+            docker.gladia.io/gladia:latest
 
       # todo : healthcheck, notify failure
