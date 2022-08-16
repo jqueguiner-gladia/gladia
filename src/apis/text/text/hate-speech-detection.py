@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "text",
-        "default": "I hate you piece of shit",
+        "example": "I hate you piece of shit",
         "placeholder": "Insert the text to classify as hate or not",
     }
 ]

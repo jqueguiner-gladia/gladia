@@ -5,7 +5,7 @@ inputs = [
     {
         "type": "video",
         "name": "video",
-        "default": "video to interpolate",
+        "example": "video to interpolate",
         "placeholder": "File to the video to interpolate from",
     }
 ]

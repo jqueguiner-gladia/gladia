@@ -131,116 +131,98 @@ def perform_test(
     def get_requests_inputs():
         requests_inputs = []
 
-        if (
-            "application/x-www-form-urlencoded"
-            in details["post"]["requestBody"]["content"]
-        ):
-            request_body_info = details["post"]["requestBody"]["content"][
-                "application/x-www-form-urlencoded"
-            ]["schema"]
-        else:
-            request_body_info = details["post"]["requestBody"]["content"][
-                "multipart/form-data"
-            ]["schema"]
+        media_type = list(details["post"]["requestBody"]["content"].keys())[0]
+        request_body_info = details["post"]["requestBody"]["content"][media_type][
+            "schema"
+        ]
 
-        # NOTE: never happen
-        if "title" in request_body_info:
-            # Simple singular input (str/int/float/bool)
-            data = {request_body_info["title"]: request_body_info["default"]}
-            requests_inputs.append({"data": data, "files": {}})
-        else:
-            # Not simple input (json of length >2, image, audio, video)
-            schema = request_body_info["$ref"].split("/")[-1]
-            properties = endpoints["components"]["schemas"][schema]["properties"]
+        schema = request_body_info["$ref"].split("/")[-1]
+        properties = endpoints["components"]["schemas"][schema]["properties"]
 
-            # List all kinds of inputs
-            urls_files = []
-            texts = []
-            audios = []
-            videos = []
-            images = []
-            for key, value in properties.items():
-                if value.get("format", None) != "binary":
-                    if value.get("data_type", None) == "url":
-                        if "audio" in key or "audio" in value["title"].lower():
-                            # URL audio
-                            urls_files.append(
-                                {key: "https://anshe.org/audio/3Weeks-080715.mp3"}
-                            )
-                        elif "video" in key or "video" in value["title"].lower():
-                            # URL Video
-                            urls_files.append(
-                                {
-                                    key: "https://upload.wikimedia.org/wikipedia/commons/8/80/Expedition_50-51_Crew_Docks_to_the_Space_Station.webm"
-                                }
-                            )
-                        else:
-                            # URL Image
-                            urls_files.append(
-                                {
-                                    key: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png"
-                                }
-                            )
-                    else:
-                        texts.append({key: ("text", value["_examples"][0])})
-                else:
+        # List all kinds of inputs
+        urls_files = []
+        texts = []
+        audios = []
+        videos = []
+        images = []
+        for key, value in properties.items():
+            if value.get("format", None) != "binary":
+                if value.get("data_type", None) == "url":
                     if "audio" in key or "audio" in value["title"].lower():
-                        # Audio
-                        audios.append({key: ("audio", formats_to_test["audio"])})
-                    elif "video" in key or "video" in value["title"].lower():
-                        # Video
-                        videos.append({key: ("video", formats_to_test["video"])})
-                    else:
-                        # Image
-                        images.append({key: ("image", formats_to_test["image"])})
-
-            # Create all requests to send for good testing of the model
-            data = {key: value[1] for text in texts for key, value in text.items()}
-
-            if urls_files:
-                # Create a first request testing url version of files
-                url_data = data.copy()
-                for url_file in urls_files:
-                    url_data.update(url_file)
-                requests_inputs.append({"data": url_data, "files": {}})
-
-                # Then, for each input type (audio, video, image),
-                # create requests testing each file format,
-                # using first one by default for the other input type
-                # ex: .mp3 audio format will be tested using .jpg format for images
-                all_files = [("audio", audios), ("image", images), ("video", videos)]
-                for types_files in all_files:
-                    # Keep only other types files (ex: 'audio' and 'video' if 'image')
-                    other_types_file = [
-                        item for item in all_files if item != types_files
-                    ]
-                    other_input_files = {}
-                    # Add a file with default type format (fist one) for each other file to send
-                    for other_type_file in other_types_file:
-                        other_input_files = add_default_files(
-                            other_input_files, other_type_file[1]
+                        # URL audio
+                        urls_files.append(
+                            {key: "https://anshe.org/audio/3Weeks-080715.mp3"}
                         )
-                    # Add a new set of request files for each format to test
-                    for format in formats_to_test[types_files[0]]:
-                        request_files = other_input_files.copy()
-                        # Use the same type of format for each file of this type (ex: jpg for all images)
-                        for type_file in types_files[1]:
-                            # Retieve the test file in current directory with the good format ...
-                            file = [
-                                file
-                                for file in os.listdir(CURRENT_DIRECTORY)
-                                if file.endswith(format)
-                            ][0]
-                            file_path = os.path.join(CURRENT_DIRECTORY, file)
-                            # ... and add it to the request files
-                            for key, value in type_file.items():
-                                request_files.update({value[0]: (file, file_path)})
-                            requests_inputs.append(
-                                {"data": data, "files": request_files}
-                            )
-
+                    elif "video" in key or "video" in value["title"].lower():
+                        # URL Video
+                        urls_files.append(
+                            {
+                                key: "https://upload.wikimedia.org/wikipedia/commons/8/80/Expedition_50-51_Crew_Docks_to_the_Space_Station.webm"
+                            }
+                        )
+                    else:
+                        # URL Image
+                        urls_files.append(
+                            {
+                                key: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png"
+                            }
+                        )
+                else:
+                    texts.append({key: ("text", value["_examples"][0])})
             else:
-                requests_inputs.append({"data": data, "files": {}})
+                if "audio" in key or "audio" in value["title"].lower():
+                    # Audio
+                    audios.append({key: ("audio", formats_to_test["audio"])})
+                elif "video" in key or "video" in value["title"].lower():
+                    # Video
+                    videos.append({key: ("video", formats_to_test["video"])})
+                else:
+                    # Image
+                    images.append({key: ("image", formats_to_test["image"])})
+
+        # Create all requests to send for good testing of the model
+        data = {key: value[1] for text in texts for key, value in text.items()}
+
+        if urls_files:
+            # Create a first request testing url version of files
+            url_data = data.copy()
+            for url_file in urls_files:
+                url_data.update(url_file)
+            requests_inputs.append({"data": url_data, "files": {}})
+
+            # Then, for each input type (audio, video, image),
+            # create requests testing each file format,
+            # using first one by default for the other input type
+            # ex: .mp3 audio format will be tested using .jpg format for images
+            all_files = [("audio", audios), ("image", images), ("video", videos)]
+            for types_files in all_files:
+                # Keep only other types files (ex: 'audio' and 'video' if 'image')
+                other_types_file = [item for item in all_files if item != types_files]
+                other_input_files = {}
+                # Add a file with default type format (fist one) for each other file to send
+                for other_type_file in other_types_file:
+                    other_input_files = add_default_files(
+                        other_input_files, other_type_file[1]
+                    )
+                # Add a new set of request files for each format to test
+                for format in formats_to_test[types_files[0]]:
+                    request_files = other_input_files.copy()
+                    # Use the same type of format for each file of this type (ex: jpg for all images)
+                    for type_file in types_files[1]:
+                        # Retieve the test file in current directory with the good format ...
+                        file = [
+                            file
+                            for file in os.listdir(CURRENT_DIRECTORY)
+                            if file.endswith(format)
+                        ][0]
+                        file_path = os.path.join(CURRENT_DIRECTORY, file)
+                        # ... and add it to the request files
+                        for key, value in type_file.items():
+                            request_files.update({value[0]: (file, file_path)})
+                        requests_inputs.append({"data": data, "files": request_files})
+
+        else:
+            requests_inputs.append({"data": data, "files": {}})
 
         return requests_inputs
 

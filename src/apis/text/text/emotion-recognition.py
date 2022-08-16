@@ -8,7 +8,7 @@ inputs = [
     {
         "type": "text",
         "name": "text",
-        "default": "I like you. I love you",
+        "example": "I like you. I love you",
         "placeholder": "Insert the text to anlayse sentiment from",
     }
 ]

@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "text",
-        "default": "Hugging Face Inc. is a company based in New York City. Its headquarters are in DUMBO, therefore very close to the Manhattan Bridge.",
+        "example": "Hugging Face Inc. is a company based in New York City. Its headquarters are in DUMBO, therefore very close to the Manhattan Bridge.",
         "placeholder": "Insert the text to anlayse sentiment from",
     }
 ]

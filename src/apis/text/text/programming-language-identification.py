@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "text",
-        "default": "def is_palendrome(s):",
+        "example": "def is_palendrome(s):",
         "placeholder": "Input code to get programing language from",
     }
 ]

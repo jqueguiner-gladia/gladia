@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "text",
-        "default": "i would like to find a flight from charlotte to las vegas that makes a stop in st. louis",
+        "example": "i would like to find a flight from charlotte to las vegas that makes a stop in st. louis",
         "placeholder": "Insert the text to extract intent and slot from",
     }
 ]

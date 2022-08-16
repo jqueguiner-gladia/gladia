@@ -5,13 +5,13 @@ inputs = [
     {
         "type": "image",
         "name": "image",
-        "default": "http://files.gladia.io/test/test.png",
+        "example": "http://files.gladia.io/test/test.png",
         "placeholder": "Image to extract text from",
     },
     {
         "type": "text",
         "name": "source_language",
-        "default": "en",
+        "example": "en",
         "placeholder": "Source language",
     },
 ]

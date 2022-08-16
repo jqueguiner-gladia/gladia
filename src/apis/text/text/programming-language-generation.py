@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "code_snippet",
-        "default": "def is_palendrome(s):",
+        "example": "def is_palendrome(s):",
         "placeholder": "Insert the code to generate from",
     }
 ]

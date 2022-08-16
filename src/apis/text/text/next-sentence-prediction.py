@@ -7,13 +7,13 @@ inputs = [
     {
         "type": "text",
         "name": "sentence_1",
-        "default": "I like you.",
+        "example": "I like you.",
         "placeholder": "Insert the first sentence",
     },
     {
         "type": "text",
         "name": "sentence_2",
-        "default": "But it's not about you.",
+        "example": "But it's not about you.",
         "placeholder": "Insert the second sentence to estimate the probability from",
     },
 ]
