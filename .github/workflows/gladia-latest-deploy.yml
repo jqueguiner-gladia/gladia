@@ -62,7 +62,7 @@ jobs:
 
       - name: start docker gladia
         run: | 
-            docker run --name gladia-aipi \
+            docker run -d --name gladia-aipi \
             --gpus all --shm-size=5g \
             -p 80:8080 \
             -v /tmp/gladia:/tmp/gladia \
@@ -90,7 +90,7 @@ jobs:
 
       - name: start docker gladia
         run: | 
-            docker run --name gladia-aipi \
+            docker run -d --name gladia-aipi \
             --gpus all --shm-size=5g \
             -p 80:8080 \
             -v /tmp/gladia:/tmp/gladia \
