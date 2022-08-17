@@ -18,9 +18,8 @@ jobs:
     needs: lint
     if: |-
       ${{ 
-        ! contains(github.event.pull_request.labels.*.name, 'ci') ||
-        ! contains(github.event.pull_request.labels.*.name, 'doc') || 
-        ! github.event.pull_request.draft
+        !contains(github.event.pull_request.labels.*.name, 'ci') ||
+        !contains(github.event.pull_request.labels.*.name, 'doc')
       }}
     runs-on: [self-hosted, linux, STD]
     steps:
