@@ -7,13 +7,13 @@ inputs = [
     {
         "type": "text",
         "name": "context",
-        "default": "My name is Clara and I live in Berkeley.",
+        "example": "My name is Clara and I live in Berkeley.",
         "placeholder": "Insert the text to extract answer from",
     },
     {
         "type": "text",
         "name": "question",
-        "default": "What's my name?",
+        "example": "What's my name?",
         "placeholder": "Insert the question to be answered",
     },
 ]

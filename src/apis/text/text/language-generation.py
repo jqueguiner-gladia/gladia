@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "text",
-        "default": "Input text to start generation from",
+        "example": "Input text to start generation from",
         "placeholder": "Insert the text to generate from",
     }
 ]

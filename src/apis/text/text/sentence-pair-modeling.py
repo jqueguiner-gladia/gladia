@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "sentence",
-        "default": "Once, a group of frogs was roaming around the forest in search of water.",
+        "example": "Once, a group of frogs was roaming around the forest in search of water.",
         "placeholder": "Insert the sentence to perform the Pairwise Sentence Scoring Tasks",
     }
 ]

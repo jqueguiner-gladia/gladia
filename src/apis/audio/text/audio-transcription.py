@@ -5,13 +5,13 @@ inputs = [
     {
         "type": "audio",
         "name": "audio",
-        "default": "https://anshe.org/audio/3Weeks-080715.mp3",
+        "example": "https://anshe.org/audio/3Weeks-080715.mp3",
         "placeholder": "Audio to transcribe",
     },
     {
         "type": "text",
         "name": "language",
-        "default": "en",
+        "example": "en",
         "placeholder": "Language of the audio",
     },
 ]

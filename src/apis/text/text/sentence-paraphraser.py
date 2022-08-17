@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "context",
-        "default": "Once, a group of frogs was roaming around the forest in search of water.",
+        "example": "Once, a group of frogs was roaming around the forest in search of water.",
         "placeholder": "Insert the text to paraphrase here",
     }
 ]

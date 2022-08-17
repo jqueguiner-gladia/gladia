@@ -7,7 +7,7 @@ inputs = [
     {
         "type": "text",
         "name": "text",
-        "default": "Input text to perform language detection on",
+        "example": "Input text to perform language detection on",
         "placeholder": "Insert the text to perform language detection on",
     }
 ]
