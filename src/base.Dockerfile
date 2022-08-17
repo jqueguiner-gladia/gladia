@@ -95,6 +95,9 @@ RUN mkdir -p $TRITON_MODELS_PATH && \
         libtesseract-dev \
         python3-pil \
         tesseract-ocr-all && \
+    echo "== ADJUSTING binaries ==" && \ 
+    mv /usr/bin/python3 /usr/bin/python38 && \
+    ln -sf /usr/bin/python /usr/bin/python3 && \
     echo "== INSTALLING GITLFS ==" && \
     cd /tmp && \
     wget https://github.com/git-lfs/git-lfs/releases/download/v3.0.1/git-lfs-linux-386-v3.0.1.tar.gz && \
@@ -107,69 +110,3 @@ RUN mkdir -p $TRITON_MODELS_PATH && \
     micromamba shell init -s bash && \
     micromamba config set always_softlink $MAMBA_ALWAYS_SOFTLINK && \
     $CLEAN_LAYER_SCRIPT
-
-COPY . $PATH_TO_GLADIA_SRC
-
-# Automatically activate micromaba for every bash shell
-RUN mv $PATH_TO_GLADIA_SRC/tools/docker/_activate_current_env.sh /usr/local/bin/ && \
-    echo "source /usr/local/bin/_activate_current_env.sh" >> ~/.bashrc && \
-    echo "source /usr/local/bin/_activate_current_env.sh" >> /etc/skel/.bashrc && \
-    echo "micromamba activate server" >> ~/.bashrc
-
-WORKDIR $PATH_TO_GLADIA_SRC
-
-RUN micromamba create -f env.yaml && \
-    $PATH_TO_GLADIA_SRC/tools/docker/clean-layer.sh
-
-RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then \
-        micromamba run -n server /bin/bash -c "cd $VENV_BUILDER_PATH && python3 create_custom_envs.py --modality '.*/apis/text/[a-zA-Z ]+/[a-rA-R].*'"; \
-    fi  && \
-    $CLEAN_LAYER_SCRIPT
-
-RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then \
-        micromamba run -n server /bin/bash -c "cd $VENV_BUILDER_PATH && python3 create_custom_envs.py --modality '.*/apis/text/[a-zA-Z ]+/[s-zS-Z].*'"; \
-    fi  && \
-    $CLEAN_LAYER_SCRIPT
-
-RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then \
-        micromamba run -n server /bin/bash -c "cd $VENV_BUILDER_PATH && python3 create_custom_envs.py --modality '.*/apis/video/.*'"; \
-    fi  && \
-    $CLEAN_LAYER_SCRIPT
-
-RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then \
-        micromamba run -n server /bin/bash -c "cd $VENV_BUILDER_PATH && python3 create_custom_envs.py --modality '.*/apis/image/[a-zA-Z ]+/[a-hA-H].*'"; \
-    fi && \
-    $CLEAN_LAYER_SCRIPT
-
-RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then \
-        micromamba run -n server /bin/bash -c "cd $VENV_BUILDER_PATH && python3 create_custom_envs.py --modality '.*/apis/image/[a-zA-Z ]+/[i-zI-Z].*'"; \
-    fi && \
-    $CLEAN_LAYER_SCRIPT
-
-RUN if [ "$SKIP_CUSTOM_ENV_BUILD" = "false" ]; then \
-        micromamba run -n server /bin/bash -c "cd $VENV_BUILDER_PATH && python3 create_custom_envs.py --modality '.*/apis/audio/.*'"; \ 
-    fi && \
-    $CLEAN_LAYER_SCRIPT
-
-ENV LD_PRELOAD="/opt/tritonserver/backends/pytorch/libmkl_rt.so" \
-    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$MAMBA_ROOT_PREFIX/envs/server/lib/"
-
-RUN echo "== ADJUSTING binaries ==" && \ 
-    mv /usr/bin/python3 /usr/bin/python38 && \
-    ln -sf /usr/bin/python /usr/bin/python3 && \
-    echo "== ADJUSTING entrypoint ==" && \ 
-    mv $PATH_TO_GLADIA_SRC/tools/docker/entrypoint.sh /opt/nvidia/nvidia_entrypoint.sh && \
-    echo "== ADJUSTING path rights ==" && \ 
-    chown -R $DOCKER_USER:$DOCKER_GROUP $PATH_TO_GLADIA_SRC && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $GLADIA_TMP_PATH && \
-    echo "== FIXING libcurl references ==" && \ 
-    rm $MAMBA_ROOT_PREFIX/envs/server/lib/libcurl.so.4 && \
-    ln -s /usr/lib/x86_64-linux-gnu/libcurl.so.4.6.0 $MAMBA_ROOT_PREFIX/envs/server/lib/libcurl.so.4 && \
-    $CLEAN_LAYER_SCRIPT
-
-EXPOSE $API_SERVER_PORT_HTTP
-
-ENTRYPOINT ["micromamba", "run", "-n", "server"]
-
-CMD ["/app/run_server.sh"]
-
