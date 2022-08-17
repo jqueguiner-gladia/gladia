@@ -3,12 +3,15 @@ queue_rules:
     conditions: []  # no extra conditions needed to get merged
 
 pull_request_rules:
-  - name: merge using the merge queue
+  - name: merge
     conditions:
       - base=main
       - "#approved-reviews-by>=1"
-      - check-success=test
       - "label=ci: ready-to-merge"
+      - or:
+        - check-success=test
+        - "label=type: ci"
+        - "label=type: documentation"
     actions:
       queue:
         name: default
