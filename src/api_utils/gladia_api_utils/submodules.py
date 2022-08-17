@@ -11,10 +11,8 @@ from pathlib import Path
 from shlex import quote
 from typing import Optional
 from urllib.request import urlopen
-from time import sleep
 
 import forge
-from .triton_helper.TritonManager import TritonManager
 import starlette
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
@@ -298,10 +296,6 @@ class TaskRouter:
         self.output = output
         self.default_model = default_model
 
-        self.__triton_manager = TritonManager()
-
-        MAX_VRAM_USAGE = 0.8
-
         namespace = sys._getframe(1).f_globals
 
         # concate the package name (i.e apis.text.text) with the model filename (i.e word-alignment.py) to obtain the relative path
@@ -388,68 +382,6 @@ class TaskRouter:
         # Define the post routes implemented by fastapi
         # The @router.post() content define the informations
         # displayed in /docs and /openapi.json for the post routes
-        def triton_manager_pre_hook(self, model):
-            if any(vram_usage >= MAX_VRAM_USAGE for vram_usage in get_vram_usage()) is False:
-                self.__triton_manager.add_model_to_memory_queue(model)
-
-            memory_queue = self.__triton_manager.get_memory_queue()
-
-            another_model_ask_for_memory = False
-            if any(model != model_in_queue for model_in_queue in memory_queue):
-                another_model_ask_for_memory = True
-
-            if another_model_ask_for_memory:
-                if self.__triton_manager.is_model_ready(model) is True:
-                    self.__triton_manager.unload_model(model)
-
-                else:
-                    # TODO: check that the model is not a "preload" model
-                    models_loaded = [model_in_registery["name"] for model_in_registery in self.__triton_manager.get_models_in_registery() if model_in_registery["state"] == "READY"]
-
-                    if len(models_loaded) == 0:
-                        logger.error("Requesting to unload a triton model but there is no triton model to unload, this could result in a infinit loop")
-                    else:
-                        self.__triton_manager.unload_model(model)
-
-            while True:
-                sleep(0.25)
-
-                # There is no model requesting for memory
-                # TODO: if there is another model requesting for memory chech its timestamp
-                memory_queue = self.__triton_manager.get_memory_queue()
-                if any(model != model_in_queue for model_in_queue in memory_queue) is False:
-                    break
-                else:
-                    model_index_in_memory_queue = memory_queue.index(model)
-
-                    if model_index_in_memory_queue == 0:
-                        break
-
-            if model not in memory_queue:
-                self.__triton_manager.add_model_to_memory_queue(model, first_in_queue=True)
-
-            while any(vram_usage >= MAX_VRAM_USAGE for vram_usage in get_vram_usage()) is False:
-                sleep(0.25)
-
-            self.__triton_manager.load_model(model)
-            self.__triton_manager.remove_model_from_memory_queue(model)
-
-            # FIXME: Dans cet interval précis, le model peut être unload par un autre triton_manager_pre_hook d'un autre TaskRouter
-            # Il trouver un moyen de savoir pour chaque modèle s'il est en cours d'utilisation ou pas
-
-            return
-
-        def triton_manager_post_hook(self, model):
-
-            # TODO: check if model is not a "preload" model
-            # I could use config.txt as described here : https://github.com/triton-inference-server/server/issues/4139
-            # The issue is that it make it hard to customize wich model to preload or not
-            # Another option would be to store it in the redis
-
-            if self.__triton_manager.get_memory_queue():
-                self.__triton_manager.unload_model(model)
-
-
         @router.post(
             "/",
             summary=f"Apply model for the {self.task} task for a given models",
@@ -459,9 +391,6 @@ class TaskRouter:
         )
         @forge.sign(*[*form_parameters, query_for_model_name])
         async def apply(*args, **kwargs):
-
-            if kwargs["model"] in self.__triton_manager.get_models_in_registery():
-                triton_manager_pre_hook()
 
             # cast BaseModel pydantic models into python type
             parameters_in_body = {}
@@ -591,9 +520,6 @@ class TaskRouter:
                     detail=error_message,
                 )
             finally:
-
-                if model in self.__triton_manager.get_models_in_registery():
-                    triton_manager_post_hook()
 
                 if isinstance(result, str):
                     try:

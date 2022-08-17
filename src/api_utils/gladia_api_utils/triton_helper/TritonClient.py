@@ -1,21 +1,26 @@
 import os
 import pathlib
 import sys
-from logging import getLogger
-from time import sleep
-from typing import Any
-from warnings import warn
-
 import requests
 import tritonclient.http as tritonclient
 
+from typing import Any
+from time import sleep
+from warnings import warn
+from logging import getLogger
+from pynvml.smi import nvidia_smi
+
+from .TritonManager import TritonManager
 from .download_active_models import download_triton_model
+
 
 logger = getLogger(__name__)
 
 
 class TritonClient:
     """Wrapper suggaring triton'client usage"""
+
+    MAX_VRAM_USAGE: float = 0.2
 
     def __init__(
         self,
@@ -28,6 +33,9 @@ class TritonClient:
             model_name (str): name of the model to communicate with
             current_path (str, optional): current path (allows to download model if needed). Defaults to "".
         """
+
+
+        self.__triton_manager = TritonManager()
 
         self.__triton_server_url = kwargs.get(
             "triton_server_url",
@@ -42,6 +50,8 @@ class TritonClient:
                 .absolute()
             ),
         )
+
+        self.SLEEP_TIME = 0.01
 
         self.__model_name = model_name
         self.__model_sub_parts = kwargs.get("sub_parts", [])
@@ -160,6 +170,8 @@ class TritonClient:
             [Any]: List of outputs from the model
         """
 
+        self.triton_manager_pre_hook(self.__model_name)
+
         for arg, registered_input in zip(args, self.__registered_inputs.values()):
             registered_input.set_data_from_numpy(arg)
 
@@ -182,7 +194,90 @@ class TritonClient:
             outputs=self.__registered_outputs,
         )
 
+        self.triton_manager_post_hook(self.__model_name)
+
         return [
             model_response.as_numpy(output.name()).tolist()
             for output in self.__registered_outputs
         ]
+
+    @staticmethod
+    def get_vram_usage():
+        nvsmi = nvidia_smi.getInstance()
+
+        vram_informations = nvsmi.DeviceQuery('memory.free, memory.total')['gpu']
+
+        return [1 - vram_information["fb_memory_usage"]["free"] / vram_information["fb_memory_usage"]["total"] for vram_information in vram_informations]
+
+    def _there_is_not_enought_vram_available(self) -> bool:
+        return all(vram_usage >= self.MAX_VRAM_USAGE for vram_usage in self.get_vram_usage())
+
+    def triton_manager_pre_hook(self, model):
+        if self._there_is_not_enought_vram_available():
+            print("JOINING THE QUEUE!")
+            self.__triton_manager.add_model_to_memory_queue(model)
+
+        memory_queue = self.__triton_manager.get_memory_queue()
+
+        another_model_ask_for_memory = False
+        if any(model != model_in_queue for model_in_queue in memory_queue):
+            another_model_ask_for_memory = True
+
+        if another_model_ask_for_memory:
+            if self.__triton_manager.is_model_ready(model) is True:
+                self.__triton_manager.unload_model(model)
+
+            else:
+                models_loaded = [model_in_registery["name"] for model_in_registery in self.__triton_manager.get_models_in_registery() if model_in_registery["state"] == "READY"]
+
+                # TODO: check that the model is not a "preload" model
+                models_than_can_be_unloaded = [model_loaded for model_loaded in models_loaded if self.__triton_manager.is_model_running(model) is False]
+
+                if len(models_than_can_be_unloaded) == 0:
+                    logger.error("Requesting to unload a triton model but there is no triton model to unload, this could result in a infinit loop")
+
+                else:
+                    self.__triton_manager.unload_model(models_than_can_be_unloaded[0])
+
+        while True:
+
+            # There is no model requesting for memory
+            # TODO: if there is another model requesting for memory chech its timestamp
+            memory_queue = self.__triton_manager.get_memory_queue()
+            if any(model != model_in_queue for model_in_queue in memory_queue) is False:
+                break
+            else:
+                model_index_in_memory_queue = memory_queue.index(model)
+
+                if model_index_in_memory_queue == 0:
+                    break
+
+            sleep(self.SLEEP_TIME)
+
+
+        if model not in memory_queue:
+            self.__triton_manager.add_model_to_memory_queue(model, first_in_queue=True)
+
+        while self._there_is_not_enought_vram_available():
+            print("WAITING FOR MORE MEMORY!")
+            sleep(0.25)
+
+        self.__triton_manager.load_model(model)
+        self.__triton_manager.remove_model_from_memory_queue(model)
+
+        # FIXME: Dans cet interval précis, le model peut être unload par un autre triton_manager_pre_hook d'un autre TaskRouter
+
+        self.__triton_manager.update_model_running_status(model, is_running=True)
+
+        return
+
+    def triton_manager_post_hook(self, model):
+        self.__triton_manager.update_model_running_status(model, is_running=False)
+
+        # TODO: check if model is not a "preload" model
+        # I could use config.txt as described here : https://github.com/triton-inference-server/server/issues/4139
+        # The issue is that it make it hard to customize wich model to preload or not
+        # Another option would be to store it in the redis
+        if self.__triton_manager.get_memory_queue() and self.__preload_model is False:
+            print("UNLOADING MODEL")
+            self.__triton_manager.unload_model(model)
