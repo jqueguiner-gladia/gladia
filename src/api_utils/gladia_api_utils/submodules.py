@@ -426,9 +426,7 @@ class TaskRouter:
 
                     # if not, file is missing
                     else:
-                        error_message = (
-                            f"One field among '{input_name}' and '{input_name}_url' is required."
-                        )
+                        error_message = f"One field among '{input_name}' and '{input_name}_url' is required."
                         return get_error_reponse(400, error_message)
 
                     # remove the url arg to avoid it to be passed in predict
