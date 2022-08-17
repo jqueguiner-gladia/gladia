@@ -72,7 +72,7 @@ Few comments :
 The above command will directly open a bash session for you on the newly created container. Within the bash session of your newly created container, you can start Gladia server by running :
 
 ```bash
-> ./run_server_prod.sh
+> ./run_server.sh
 ```
 
 Back to the `-v $PWD:/app`. Mounting a volume means that all `gladia/src` folder content from your hosting server is “mounted”/mapped dynamically within the container under the `/app` directory. Doing so, prevents us to have to restart (or even worst rebuild) each time we modify something in our `gladia/src/` directory from the hosting server. 
@@ -82,7 +82,7 @@ Let say you modified something in the `gladia/src/`, then depending on which par
 * Either you do not have anything to do in order to take those modifications into account,
 * Or,
     1. You only have to stop the Gladia Server within the container (just `ctrl + C` in the terminal where you started your container)
-    2. Restart `./run_server_prod.sh` to take into account your modifications
+    2. Restart `./run_server.sh` to take into account your modifications
 
 # Make our first API call to your running container
 
