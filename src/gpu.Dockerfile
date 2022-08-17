@@ -171,5 +171,5 @@ EXPOSE $API_SERVER_PORT_HTTP
 
 ENTRYPOINT ["micromamba", "run", "-n", "server"]
 
-CMD ["/app/run_server_prod.sh"]
+CMD ["/app/run_server.sh"]
 
