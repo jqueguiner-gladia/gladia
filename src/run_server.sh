@@ -27,4 +27,5 @@ then
   --timeout ${API_SERVER_TIMEOUT}
 else
   echo "Error: "$MODE" in an unknown mode"
+  exit 1
 fi
