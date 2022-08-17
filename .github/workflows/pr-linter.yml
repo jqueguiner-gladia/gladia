@@ -2,8 +2,8 @@ name: PR Linter
 
 on:
   pull_request:
-    types: [edited]
-  workflow_call:
+    branches: [ main ]
+    types: [opened, synchronize, edited, reopened]
 
 jobs:
   main:
