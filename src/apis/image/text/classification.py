@@ -11,6 +11,7 @@ inputs = [
     {
         "type": "int",
         "name": "top_k",
+        "default": 1,
         "example": 1,
         "placeholder": "Top K",
     },
