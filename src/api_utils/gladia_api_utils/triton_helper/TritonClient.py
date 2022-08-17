@@ -25,7 +25,6 @@ class TritonClient:
         """TritonClient's initializer
 
         Args:
-            triton_server_url (str): URL to the triton server
             model_name (str): name of the model to communicate with
             current_path (str, optional): current path (allows to download model if needed). Defaults to "".
         """
@@ -99,33 +98,6 @@ class TritonClient:
         )
 
         return response.status_code == 200
-
-    def unload_model(self) -> bool:
-        """Requests triton to unload the model
-
-        Returns:
-            bool: whether the model has been successfully unloaded or not
-        """
-
-        successfully_unload_model: bool = True
-
-        response = requests.post(
-            url=f"http://{self.__triton_server_url}/v2/repository/models/{self.__model_name}/unload",
-            data={"unload_dependents": False},
-        )
-
-        if response.status_code != 200:
-            successfully_unload_model = False
-
-        for model_sub_part in self.__model_sub_parts:
-            response = requests.post(
-                url=f"http://{self.__triton_server_url}/v2/repository/models/{model_sub_part}/unload",
-            )
-
-            if response.status_code != 200:
-                successfully_unload_model = False
-
-        return successfully_unload_model
 
     def set_input(self, shape, datatype: str, **kwargs) -> None:
         """Add a new input to the triton inferer. Each input has to be registered before usage.
@@ -209,14 +181,6 @@ class TritonClient:
             inputs=self.__registered_inputs.values(),
             outputs=self.__registered_outputs,
         )
-
-        need_to_unload_model = True
-
-        if self.__preload_model or str(kwds.get("unload_model", "")).lower() == "false":
-            need_to_unload_model = False
-
-        if need_to_unload_model and not self.unload_model():
-            logger.error(f"{self.__model_name} has not been properly unloaded.")
 
         return [
             model_response.as_numpy(output.name()).tolist()
