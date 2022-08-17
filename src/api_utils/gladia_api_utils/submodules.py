@@ -334,10 +334,6 @@ class TaskRouter:
 
         endpoint_parameters_description = dict()
         for parameter in input:
-<<<<<<< HEAD
-=======
-            print("parameter:", parameter, file=sys.stderr)
->>>>>>> 919686a1e2b74dae2a0d0a5c06d34b87562a217b
             endpoint_parameters_description.update(
                 create_description_for_the_endpoit_parameter(parameter)
             )
@@ -431,7 +427,7 @@ class TaskRouter:
                     # if not, file is missing
                     else:
                         error_message = (
-                            f"File '{input_name}' or '{input_name}_url' is missing."
+                            f"One field among '{input_name}' and '{input_name}_url' is required."
                         )
                         return get_error_reponse(400, error_message)
 
