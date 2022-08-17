@@ -2,7 +2,7 @@ name: Gladia Builder
 
 on:
   workflow_run:
-    workflows: [PR Linter]
+    workflows: ["PR Linter"]
     types:
       - completed
 
