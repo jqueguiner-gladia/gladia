@@ -253,7 +253,7 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
         "data_type": endpoint_param["type"],  # i.e image
         "default": None
         if endpoint_param["type"] in file_types
-        else ...,  # TODO: retrieve from {task}.py
+        else endpoint_param.get("default", ...),
         "constructor": File if endpoint_param["type"] in file_types else Form,
         "example": endpoint_param["example"],
         "examples": [endpoint_param["example"]],
@@ -426,9 +426,7 @@ class TaskRouter:
 
                     # if not, file is missing
                     else:
-                        error_message = (
-                            f"File '{input_name}' or '{input_name}_url' is missing."
-                        )
+                        error_message = f"One field among '{input_name}' and '{input_name}_url' is required."
                         return get_error_reponse(400, error_message)
 
                     # remove the url arg to avoid it to be passed in predict

@@ -11,6 +11,7 @@ inputs = [
     {
         "type": "text",
         "name": "language",
+        "default": "en",
         "example": "en",
         "placeholder": "Language of the audio",
     },
