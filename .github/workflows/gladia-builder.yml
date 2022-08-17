@@ -1,23 +1,24 @@
 name: Gladia Builder
 
 on:
-  workflow_run:
-    workflows: [PR Linter]
-    types:
-      - completed
+  pull_request:
+    branches: [ main ]
 
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.head_ref || github.ref }}'
   cancel-in-progress: true
 
 jobs:
+  lint:
+    if: github.event_name == 'pull_request'
+    uses: gladiaio/gladia/.github/workflows/pr-linter.yml@main
 
   build:
+    needs: lint
     if: |-
       ${{ 
-        ( !contains(github.event.pull_request.labels.*.name, 'ci') ||
-          !contains(github.event.pull_request.labels.*.name, 'doc') ) &&
-        github.event.workflow_run.conclusion == 'success'
+        !contains(github.event.pull_request.labels.*.name, 'ci') &&
+        !contains(github.event.pull_request.labels.*.name, 'doc')
       }}
     runs-on: [self-hosted, linux, STD]
     steps:
