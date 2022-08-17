@@ -13,6 +13,7 @@ inputs = [
     {
         "type": "int",
         "name": "count",
+        "default": 2,
         "example": 2,
         "placeholder": "Insert the number associated to the word to pluralize",
     },

@@ -11,6 +11,7 @@ inputs = [
     {
         "type": "text",
         "name": "source_language",
+        "default": "en",
         "example": "en",
         "placeholder": "Source language",
     },
