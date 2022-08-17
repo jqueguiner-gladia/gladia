@@ -334,6 +334,10 @@ class TaskRouter:
 
         endpoint_parameters_description = dict()
         for parameter in input:
+<<<<<<< HEAD
+=======
+            print("parameter:", parameter, file=sys.stderr)
+>>>>>>> 919686a1e2b74dae2a0d0a5c06d34b87562a217b
             endpoint_parameters_description.update(
                 create_description_for_the_endpoit_parameter(parameter)
             )
