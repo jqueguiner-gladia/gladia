@@ -2,7 +2,7 @@ name: Gladia Builder
 
 on:
   workflow_run:
-    workflows: ["PR Linter"]
+    workflows: [PR Linter]
     types:
       - completed
 
@@ -12,12 +12,7 @@ concurrency:
 
 jobs:
 
-  lint:
-    if: github.event_name == 'pull_request'
-    uses: gladiaio/gladia/.github/workflows/pr-linter.yml@main
-
   build:
-
     if: |-
       ${{ 
         ( !contains(github.event.pull_request.labels.*.name, 'ci') ||
