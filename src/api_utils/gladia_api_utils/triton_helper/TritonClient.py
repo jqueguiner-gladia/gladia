@@ -20,7 +20,7 @@ logger = getLogger(__name__)
 class TritonClient:
     """Wrapper suggaring triton'client usage"""
 
-    MAX_VRAM_USAGE: float = 0.2
+    MAX_VRAM_USAGE: float = 0.1
 
     def __init__(
         self,
@@ -212,62 +212,64 @@ class TritonClient:
     def _there_is_not_enought_vram_available(self) -> bool:
         return all(vram_usage >= self.MAX_VRAM_USAGE for vram_usage in self.get_vram_usage())
 
-    def triton_manager_pre_hook(self, model):
-        if self._there_is_not_enought_vram_available():
-            print("JOINING THE QUEUE!")
-            self.__triton_manager.add_model_to_memory_queue(model)
-
+    def __another_model_if_first_in_queue(self, model):
         memory_queue = self.__triton_manager.get_memory_queue()
 
-        another_model_ask_for_memory = False
-        if any(model != model_in_queue for model_in_queue in memory_queue):
-            another_model_ask_for_memory = True
+        if len(memory_queue) == 0:
+            return False
 
-        if another_model_ask_for_memory:
-            if self.__triton_manager.is_model_ready(model) is True:
+        if memory_queue[0] != model:
+            return True
+
+        return False
+
+    def triton_manager_pre_hook(self, model):
+
+        if self._there_is_not_enought_vram_available() or self.__another_model_if_first_in_queue(model):
+            print(model, "JOINING THE QUEUE!")
+
+            self.__triton_manager.add_model_to_memory_queue(model)
+
+        if self.__another_model_if_first_in_queue(model) and self.__triton_manager.is_model_ready(model) is True and self.__preload_model == False:
                 self.__triton_manager.unload_model(model)
 
-            else:
-                models_loaded = [model_in_registery["name"] for model_in_registery in self.__triton_manager.get_models_in_registery() if model_in_registery["state"] == "READY"]
-
-                # TODO: check that the model is not a "preload" model
-                models_than_can_be_unloaded = [model_loaded for model_loaded in models_loaded if self.__triton_manager.is_model_running(model) is False]
-
-                if len(models_than_can_be_unloaded) == 0:
-                    logger.error("Requesting to unload a triton model but there is no triton model to unload, this could result in a infinit loop")
-
-                else:
-                    self.__triton_manager.unload_model(models_than_can_be_unloaded[0])
-
-        while True:
-
-            # There is no model requesting for memory
-            # TODO: if there is another model requesting for memory chech its timestamp
-            memory_queue = self.__triton_manager.get_memory_queue()
-            if any(model != model_in_queue for model_in_queue in memory_queue) is False:
-                break
-            else:
-                model_index_in_memory_queue = memory_queue.index(model)
-
-                if model_index_in_memory_queue == 0:
-                    break
+        while self.__another_model_if_first_in_queue(model):
+            print(model, "I'M WAITING IN THE QUEUE:", self.__triton_manager.get_memory_queue())
 
             sleep(self.SLEEP_TIME)
 
+        memory_queue = self.__triton_manager.get_memory_queue()
 
-        if model not in memory_queue:
+        if len(memory_queue) > 0 and model not in memory_queue or self._there_is_not_enought_vram_available():
             self.__triton_manager.add_model_to_memory_queue(model, first_in_queue=True)
 
         while self._there_is_not_enought_vram_available():
-            print("WAITING FOR MORE MEMORY!")
-            sleep(0.25)
+            print(model, "WAITING FOR MORE MEMORY!:",
+                self.get_vram_usage(),
+                self.__triton_manager.get_models_in_registery(),
+            )
+
+            models_loaded = [model_in_registery["name"] for model_in_registery in self.__triton_manager.get_models_in_registery() if model_in_registery["state"] == "READY"]
+            models_than_can_be_unloaded = [model_loaded for model_loaded in models_loaded if self.__triton_manager.is_model_running(model) is False and self.__triton_manager.is_model_releasable(model) is True]
+
+            if len(models_than_can_be_unloaded) == 0:
+                logger.error("Requesting to unload a triton model but there is no triton model to unload, this could result in a infinit loop\n" + 
+                f"models_loaded: {models_loaded}\n" +
+                f"models_than_can_be_unloaded: {models_than_can_be_unloaded}"
+                )
+
+            else:
+                print("Unloading:", models_than_can_be_unloaded[0])
+
+                self.__triton_manager.unload_model(models_than_can_be_unloaded[0])
+
+            sleep(1) # TODO: remove
 
         self.__triton_manager.load_model(model)
+        self.__triton_manager.update_model_running_status(model, is_running=True)
         self.__triton_manager.remove_model_from_memory_queue(model)
 
-        # FIXME: Dans cet interval précis, le model peut être unload par un autre triton_manager_pre_hook d'un autre TaskRouter
-
-        self.__triton_manager.update_model_running_status(model, is_running=True)
+        print(self.__triton_manager.get_models_in_registery())
 
         return
 

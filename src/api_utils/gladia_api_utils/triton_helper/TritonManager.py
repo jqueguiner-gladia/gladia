@@ -79,14 +79,16 @@ class TritonManager(metaclass=SingletonMeta):
         return self.__triton_client.load_model(model)
 
     def unload_model(self, model: str) -> None:
-        # return self.__triton_client.unload_model(model)
-        pass
+        return self.__triton_client.unload_model(model)
 
     def is_model_ready(self, model: str) -> bool:
         return self.__triton_client.is_model_ready(model)
 
     def is_model_running(self, model: str) -> bool:
         return self.__get_model_informations(model)["running"]
+
+    def is_model_releasable(self, model: str) -> bool:
+        return self.__get_model_informations(model)["locked_in_memory"] == False
 
     def get_model_metadata(self, model: str, **kwargs) -> bool:
         return self.__triton_client.get_model_metadata(
@@ -106,6 +108,7 @@ class TritonManager(metaclass=SingletonMeta):
     def __create_default_memory_information(self, **kwargs):
         return {
             "running": kwargs.get("default_value_running", False),
+            "locked_in_memory": kwargs.get("default_value_locked_in_memory", False),
             "last_call": kwargs.get("default_value_last_call", 0),
             "place_in_memory_queue": kwargs.get("default_value_place_in_memory_queue", -1),
         }
@@ -159,6 +162,19 @@ class TritonManager(metaclass=SingletonMeta):
 
         return list(models_informations.keys()).sort(key=lambda model : models_informations[model])
 
+    def update_model_locked_in_memory_value(self, model: str, is_locked: bool) -> None:
+        if not isinstance(is_locked, bool):
+            raise RuntimeError("is_running parameter must be of type bool")
+
+        model_informations = self.__get_model_informations(model)
+
+        model_informations["locked_in_memory"] = is_locked
+
+        self.__redis_client.set(
+            name=f"{self.__TRITON_MODELS_PREFIX}:{model}",
+            value=json.dumps(model_informations)
+        )
+
     def update_model_running_status(self, model: str, is_running: bool) -> None:
         if not isinstance(is_running, bool):
             raise RuntimeError("is_running parameter must be of type bool")
@@ -167,17 +183,8 @@ class TritonManager(metaclass=SingletonMeta):
 
         model_informations["running"] = is_running
 
-        print("update_model_running_status:", model_informations)
-
         if is_running:
             model_informations["last_call"] = time()
-
-        self.__redis_client.set(
-            name=f"{self.__TRITON_MODELS_PREFIX}:{model}",
-            value=json.dumps(model_informations)
-        )
-
-        model_informations["last_call"] = time()
 
         self.__redis_client.set(
             name=f"{self.__TRITON_MODELS_PREFIX}:{model}",
@@ -204,12 +211,10 @@ triton-models:model = {
 }
 
 Steps:
-1. Changer la valeur de triton-models:model pour suivre le dict décrit au-dessus                                                STATUS : DONE
-2. Faire que les variables "last_call" et "running" soient updated à chaque run                                                 STATUS : DONE
-3. Prendre en compte que certains modèles soient de type "preloaded"                                                            STATUS : TODO
-4. Faire en sorte que si un modèle est composé de sub-modèle alors ne pas unload les sub-modèles si celui-ci est running        STATUS : TODO
-4. Passer en full synch au-lieu de plusieurs TritonManager travaillant en async en mm temps                                     STATUS : TODO
-5. Remplacer le redis pas un shared object -> Je ne sais pas si c'est possible vu que l'on aura plusieurs workers (gunicorn)    STATUS : TODO
-
-submodules
+1. Changer la valeur de triton-models:model pour suivre le dict décrit au-dessus                                                                                        STATUS : DONE
+2. Faire que les variables "last_call" et "running" soient updated à chaque run                                                                                         STATUS : DONE
+3. Prendre en compte que certains modèles soient de type "preloaded"                                                                                                    STATUS : DONE
+4. Faire en sorte que si un modèle est composé de sub-modèle alors ne pas unload les sub-modèles si celui-ci est running (faudra problabement revoir toute la logique)  STATUS : TODO
+5. Handle le fais qu'en prod je ne peux pas faire nvdia-smi pour savoir la VRAM libre sur l'instance Triton (/metrics ?)                                                STATUS : TODO
+6. Passer en full synch au-lieu de plusieurs TritonManager travaillant en async en mm temps                                                                             STATUS : TODO
 """
