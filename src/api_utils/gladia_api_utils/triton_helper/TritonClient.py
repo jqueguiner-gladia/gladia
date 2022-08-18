@@ -175,7 +175,8 @@ class TritonClient:
             [Any]: List of outputs from the model
         """
 
-        self.triton_manager_pre_hook(self.__model_name)
+        if kwds.get("run_triton_manager_pre_hook", True):
+            self.triton_manager_pre_hook(self.__model_name)
 
         for arg, registered_input in zip(args, self.__registered_inputs.values()):
             registered_input.set_data_from_numpy(arg)
@@ -199,7 +200,8 @@ class TritonClient:
             outputs=self.__registered_outputs,
         )
 
-        self.triton_manager_post_hook(self.__model_name)
+        if kwds.get("run_triton_manager_post_hook", True):
+            self.triton_manager_post_hook(self.__model_name)
 
         return [
             model_response.as_numpy(output.name()).tolist()

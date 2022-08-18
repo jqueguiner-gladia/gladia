@@ -41,7 +41,12 @@ def predict(text: str) -> [(str, float)]:
     text_preprocessed = data_processing.text_to_numpy(text)
     client.set_input(name="TEXT", shape=text_preprocessed.shape, datatype="BYTES")
     text_embeddings = nparray(
-        client(text_preprocessed, load_model=True, unload_model=False)[0]
+        client(
+            text_preprocessed,
+            load_model=True,
+            unload_model=False,
+            run_triton_manager_post_hook=False,
+        )[0]
     )
 
     count_vectorizer = CountVectorizer(
@@ -59,7 +64,7 @@ def predict(text: str) -> [(str, float)]:
             client(
                 word_preprocessed,
                 load_model="false",
-                unload_model=idx == len(vocabulary) - 1,
+                run_triton_manager_post_hook=idx == len(vocabulary) - 1,
             )[0][0]
         )
     vocabulary_embeddings = nparray(vocabulary_embeddings)
