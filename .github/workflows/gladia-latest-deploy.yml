@@ -1,6 +1,7 @@
 name: Gladia Docker Hub Push
 
 on:
+  workflow_dispatch:
   pull_request:
     types:
       - closed
@@ -66,7 +67,7 @@ jobs:
             --gpus all --shm-size=5g \
             -p 80:8080 \
             -v /tmp/gladia:/tmp/gladia \
-            -e TRITON_SERVER_PORT_HTTP=8000 -e TRITON_SERVER_URL=0.0.0.0:8000 -e TRITON_LAZY_DOWNLOAD=false -e TRITON_MODELS_PATH=/tmp/gladia/triton \
+            -e TRITON_SERVER_PORT_HTTP=8000 -e TRITON_SERVER_URL=57.128.19.222:8000 -e TRITON_LAZY_DOWNLOAD=false -e TRITON_MODELS_PATH=/tmp/gladia/triton \
             -e MODE=server \
             docker.gladia.io/gladia:latest
 
@@ -95,7 +96,7 @@ jobs:
             --gpus all --shm-size=5g \
             -p 80:8080 \
             -v /tmp/gladia:/tmp/gladia \
-            -e TRITON_SERVER_PORT_HTTP=8000 -e TRITON_SERVER_URL=0.0.0.0:8000 -e TRITON_LAZY_DOWNLOAD=false -e TRITON_MODELS_PATH=/tmp/gladia/triton \
+            -e TRITON_SERVER_PORT_HTTP=8000 -e TRITON_SERVER_URL=57.128.19.222:8000 -e TRITON_LAZY_DOWNLOAD=false -e TRITON_MODELS_PATH=/tmp/gladia/triton \
             -e MODE=server \
             docker.gladia.io/gladia:latest
 
