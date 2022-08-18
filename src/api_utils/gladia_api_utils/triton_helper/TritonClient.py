@@ -265,6 +265,7 @@ class TritonClient:
             sleep(self.SLEEP_TIME_NO_MEMORY)
 
         self.__triton_manager.load_model(model)
+        self.__triton_manager.update_model_running_status(model, is_running=True)
 
         for sub_part in self.__model_sub_parts:
             self.__triton_manager.add_manager_who_is_using_model(model_using=self.__model_name, model_used=sub_part)
