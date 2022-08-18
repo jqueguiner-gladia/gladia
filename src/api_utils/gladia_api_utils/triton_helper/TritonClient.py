@@ -8,7 +8,6 @@ from typing import Any
 from time import sleep
 from warnings import warn
 from logging import getLogger
-from pynvml.smi import nvidia_smi
 
 from .TritonManager import TritonManager
 from .download_active_models import download_triton_model
@@ -20,7 +19,7 @@ logger = getLogger(__name__)
 class TritonClient:
     """Wrapper suggaring triton'client usage"""
 
-    MAX_VRAM_USAGE: float = 0.1
+    MAX_VRAM_USAGE: float = 0.5
 
     def __init__(
         self,
@@ -58,6 +57,11 @@ class TritonClient:
         self.__model_sub_parts = kwargs.get("sub_parts", [])
 
         self.__preload_model: bool = kwargs.get("preload_model", False)
+
+        self.__triton_manager.update_model_locked_in_memory_value(self.__model_name, is_locked=True)
+
+        for sub_part in self.__model_sub_parts:
+            self.__triton_manager.update_model_locked_in_memory_value(sub_part, is_locked=True)
 
         if os.getenv("TRITON_MODELS_PATH") == "":
             warn(
@@ -202,16 +206,8 @@ class TritonClient:
             for output in self.__registered_outputs
         ]
 
-    @staticmethod
-    def get_vram_usage():
-        nvsmi = nvidia_smi.getInstance()
-
-        vram_informations = nvsmi.DeviceQuery('memory.free, memory.total')['gpu']
-
-        return [1 - vram_information["fb_memory_usage"]["free"] / vram_information["fb_memory_usage"]["total"] for vram_information in vram_informations]
-
     def _there_is_not_enought_vram_available(self) -> bool:
-        return all(vram_usage >= self.MAX_VRAM_USAGE for vram_usage in self.get_vram_usage())
+        return all(vram_usage >= self.MAX_VRAM_USAGE for vram_usage in list(self.__triton_manager.get_gpus_usage().values()))
 
     def __another_model_if_first_in_queue(self, model):
         memory_queue = self.__triton_manager.get_memory_queue()
@@ -246,12 +242,12 @@ class TritonClient:
 
         while self._there_is_not_enought_vram_available():
             print(model, "WAITING FOR MORE MEMORY!:",
-                self.get_vram_usage(),
+                self.__triton_manager.get_gpus_usage(),
                 self.__triton_manager.get_models_in_registery(),
             )
 
-            models_loaded = [model_in_registery["name"] for model_in_registery in self.__triton_manager.get_models_in_registery() if model_in_registery["state"] == "READY"]
-            models_than_can_be_unloaded = [model_loaded for model_loaded in models_loaded if self.__triton_manager.is_model_running(model) is False and self.__triton_manager.is_model_releasable(model) is True and len(self.__triton_manager.get_model_managers(model_loaded) == 0)]
+            models_loaded = [model_in_registery["name"] for model_in_registery in self.__triton_manager.get_models_in_registery() if ("state" in model_in_registery.keys() and model_in_registery["state"] == "READY")]
+            models_than_can_be_unloaded = [model_loaded for model_loaded in models_loaded if (self.__triton_manager.is_model_running(model) is False and self.__triton_manager.is_model_releasable(model) is True and len(self.__triton_manager.get_model_managers(model_loaded)) == 0)]
 
             if len(models_than_can_be_unloaded) == 0:
                 logger.error("Requesting to unload a triton model but there is no triton model to unload, this could result in a infinit loop\n" + 
@@ -272,9 +268,8 @@ class TritonClient:
             self.__triton_manager.add_manager_who_is_using_model(model_using=self.__model_name, model_used=sub_part)
             self.__triton_manager.update_model_running_status(sub_part, is_running=True)
 
-        self.__triton_manager.remove_model_from_memory_queue(model)
-
-        print(self.__triton_manager.get_models_in_registery())
+        if model in self.__triton_manager.get_memory_queue():
+            self.__triton_manager.remove_model_from_memory_queue(model)
 
         return
 

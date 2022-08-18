@@ -7,9 +7,11 @@ le triton manager ne le trouvera pas et ça sera au TritonClient de le load (ce 
 import os
 import json
 import redis
+import requests
 import tritonclient.http as httptritonclient
 
 from time import time
+from typing import Dict
 from logging import getLogger
 
 
@@ -125,8 +127,6 @@ class TritonManager(metaclass=SingletonMeta):
     def add_model_to_memory_queue(self, model, first_in_queue=False):
         model_informations = self.__get_model_informations(model)
 
-        print(model_informations)
-
         model_informations["place_in_memory_queue"] = 0 if first_in_queue else time()
 
         self.__redis_client.set(
@@ -189,7 +189,7 @@ class TritonManager(metaclass=SingletonMeta):
     def remove_manager_who_is_no_longer_using_model(self, model_using: str, model_used: str) -> None:
         model_informations = self.__get_model_informations(model_used)
 
-        model_informations["use_by"].pop(model_using)
+        model_informations["use_by"].remove(model_using)
 
         self.__redis_client.set(
             name=f"{self.__TRITON_MODELS_PREFIX}:{model_used}",
@@ -228,6 +228,83 @@ class TritonManager(metaclass=SingletonMeta):
 
         return dict(zip(models_in_redis, pipe.execute()))
 
+    def __get_total_gpus_memory(self) -> Dict[str, float]:
+        gpus = {}
+
+        response = requests.get(f"http://{self.__triton_server_url.split(':')[0]}:8002/metrics")
+
+        if response.status_code != 200:
+            logger.error("Couldn't access metrics for the triton server, is '--allow-gpu-metrics' set to `true`?")
+
+            return {}
+
+        response_content = str(response.text)
+
+        for line in response_content.split("\n"):
+
+            if "nv_gpu_memory_total_bytes" not in line:
+                continue
+
+            if "gpu_uuid=" not in line:
+                continue
+
+            gpu_uuid = line.split("gpu_uuid=")[1] # "GPU-SOME-RANDOM-ID"} 48008.672000
+            gpu_uuid = gpu_uuid.split("\"}")[0] # "GPU-SOME-RANDOM-ID
+            gpu_uuid = gpu_uuid[1:] # GPU-SOME-RANDOM-ID
+
+            gpus[gpu_uuid] = float(line.split(" ")[1])
+
+        if len(gpus) == 0:
+            logger.error("Couldn't found nv_gpu_memory_total_bytes in metrics, response_content: ", response_content)
+
+        return gpus
+
+    def __get_used_gpus_memory(self) -> Dict[str, float]:
+        gpus = {}
+
+        response = requests.get(f"http://{self.__triton_server_url.split(':')[0]}:8002/metrics")
+
+        if response.status_code != 200:
+            logger.error("Couldn't access metrics for the triton server, is '--allow-gpu-metrics' set to `true`?")
+
+            return {}
+
+        response_content = str(response.text)
+
+        for line in response_content.split("\n"):
+            if "nv_gpu_memory_used_bytes" not in line:
+                continue
+
+            if "gpu_uuid=" not in line:
+                continue
+
+            gpu_uuid = line.split("gpu_uuid=")[1] # "GPU-SOME-RANDOM-ID"} 48008.672000
+            gpu_uuid = gpu_uuid.split("\"}")[0] # "GPU-SOME-RANDOM-ID
+            gpu_uuid = gpu_uuid[1:] # GPU-SOME-RANDOM-ID
+
+            gpus[gpu_uuid] = float(line.split(" ")[1])
+
+        if len(gpus) == 0:
+            logger.error("Couldn't found nv_gpu_memory_used_bytes in metrics, response_content: ", response_content)
+
+        return gpus
+
+    def get_gpus_usage(self):
+        total_gpus_memory = self.__get_total_gpus_memory()
+        used_gpus_memory = self.__get_used_gpus_memory()
+
+        if total_gpus_memory.keys() != used_gpus_memory.keys():
+            logger.error(f"total_gpus_memory and used_gpus_memory have different keys.\ntotal_gpus_memory.keys():{total_gpus_memory.keys()}\nused_gpus_memory.keys():{used_gpus_memory.keys()}")
+
+            return {}
+
+        gpus_usage = {}
+
+        for gpu_uuid, total_memory in total_gpus_memory.items():
+            gpus_usage[gpu_uuid] = used_gpus_memory[gpu_uuid] / total_memory
+
+        return gpus_usage
+
 """
 
 triton-models:model = {
@@ -243,6 +320,6 @@ Steps:
 2. Faire que les variables "last_call" et "running" soient updated à chaque run                                                                                         STATUS : DONE
 3. Prendre en compte que certains modèles soient de type "preloaded"                                                                                                    STATUS : DONE
 4. Faire en sorte que si un modèle est composé de sub-modèle alors ne pas unload les sub-modèles si celui-ci est running                                                STATUS : DONE
-5. Handle le fais qu'en prod je ne peux pas faire nvdia-smi pour savoir la VRAM libre sur l'instance Triton (/metrics ?)                                                STATUS : TODO
+5. Handle le fais qu'en prod je ne peux pas faire nvdia-smi pour savoir la VRAM libre sur l'instance Triton (/metrics ?)                                                STATUS : DONE
 6. Passer en full synch au-lieu de plusieurs TritonManager travaillant en async en mm temps                                                                             STATUS : TODO
 """
