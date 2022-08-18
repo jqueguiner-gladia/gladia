@@ -284,8 +284,8 @@ class TritonClient:
         for sub_part in self.__model_sub_parts:
             self.__triton_manager.remove_manager_who_is_no_longer_using_model(model_using=self.__model_name, model_used=sub_part)
 
-        if len(self.__triton_manager.get_model_managers(model)) == 0:
-            self.__triton_manager.update_model_running_status(model, is_running=False)
+            if len(self.__triton_manager.get_model_managers(sub_part)) == 0:
+                self.__triton_manager.update_model_running_status(sub_part, is_running=False)
 
         # NOTE: on ne fait pas d'unload ici pour limiter les call asynch en //
 
