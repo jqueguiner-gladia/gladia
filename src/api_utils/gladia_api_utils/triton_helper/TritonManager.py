@@ -110,6 +110,7 @@ class TritonManager(metaclass=SingletonMeta):
             "running": kwargs.get("default_value_running", False),
             "locked_in_memory": kwargs.get("default_value_locked_in_memory", False),
             "last_call": kwargs.get("default_value_last_call", 0),
+            "use_by": kwargs.get("default_value_use_by", []),
             "place_in_memory_queue": kwargs.get("default_value_place_in_memory_queue", -1),
         }
 
@@ -130,7 +131,6 @@ class TritonManager(metaclass=SingletonMeta):
 
         self.__redis_client.set(
             name=f"{self.__TRITON_MODELS_PREFIX}:{model}",
-            # value=model_informations
             value=json.dumps(model_informations)
         )
 
@@ -175,6 +175,32 @@ class TritonManager(metaclass=SingletonMeta):
             value=json.dumps(model_informations)
         )
 
+    def add_manager_who_is_using_model(self, model_using: str, model_used: str) -> None:
+        model_informations = self.__get_model_informations(model_used)
+
+        model_informations["use_by"].append(model_using)
+        model_informations["use_by"] = list(set(model_informations["use_by"]))
+
+        self.__redis_client.set(
+            name=f"{self.__TRITON_MODELS_PREFIX}:{model_used}",
+            value=json.dumps(model_informations)
+        )
+
+    def remove_manager_who_is_no_longer_using_model(self, model_using: str, model_used: str) -> None:
+        model_informations = self.__get_model_informations(model_used)
+
+        model_informations["use_by"].pop(model_using)
+
+        self.__redis_client.set(
+            name=f"{self.__TRITON_MODELS_PREFIX}:{model_used}",
+            value=json.dumps(model_informations)
+        )
+
+    def get_model_managers(self, model: str) -> None:
+        model_informations = self.__get_model_informations(model)
+
+        return model_informations["use_by"]
+
     def update_model_running_status(self, model: str, is_running: bool) -> None:
         if not isinstance(is_running, bool):
             raise RuntimeError("is_running parameter must be of type bool")
@@ -207,6 +233,8 @@ class TritonManager(metaclass=SingletonMeta):
 triton-models:model = {
     "running": bool,
     "last_call": time,
+    "use_by": [str],
+    "locked_in_memory": bool,
     "place_in_memory_queue": time,
 }
 
@@ -214,7 +242,7 @@ Steps:
 1. Changer la valeur de triton-models:model pour suivre le dict décrit au-dessus                                                                                        STATUS : DONE
 2. Faire que les variables "last_call" et "running" soient updated à chaque run                                                                                         STATUS : DONE
 3. Prendre en compte que certains modèles soient de type "preloaded"                                                                                                    STATUS : DONE
-4. Faire en sorte que si un modèle est composé de sub-modèle alors ne pas unload les sub-modèles si celui-ci est running (faudra problabement revoir toute la logique)  STATUS : TODO
+4. Faire en sorte que si un modèle est composé de sub-modèle alors ne pas unload les sub-modèles si celui-ci est running                                                STATUS : DONE
 5. Handle le fais qu'en prod je ne peux pas faire nvdia-smi pour savoir la VRAM libre sur l'instance Triton (/metrics ?)                                                STATUS : TODO
 6. Passer en full synch au-lieu de plusieurs TritonManager travaillant en async en mm temps                                                                             STATUS : TODO
 """

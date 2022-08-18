@@ -51,7 +51,8 @@ class TritonClient:
             ),
         )
 
-        self.SLEEP_TIME = 0.01
+        self.SLEEP_TIME_IN_QUEUE = 0.02
+        self.SLEEP_TIME_NO_MEMORY = 0.01
 
         self.__model_name = model_name
         self.__model_sub_parts = kwargs.get("sub_parts", [])
@@ -236,7 +237,7 @@ class TritonClient:
         while self.__another_model_if_first_in_queue(model):
             print(model, "I'M WAITING IN THE QUEUE:", self.__triton_manager.get_memory_queue())
 
-            sleep(self.SLEEP_TIME)
+            sleep(self.SLEEP_TIME_IN_QUEUE)
 
         memory_queue = self.__triton_manager.get_memory_queue()
 
@@ -250,7 +251,7 @@ class TritonClient:
             )
 
             models_loaded = [model_in_registery["name"] for model_in_registery in self.__triton_manager.get_models_in_registery() if model_in_registery["state"] == "READY"]
-            models_than_can_be_unloaded = [model_loaded for model_loaded in models_loaded if self.__triton_manager.is_model_running(model) is False and self.__triton_manager.is_model_releasable(model) is True]
+            models_than_can_be_unloaded = [model_loaded for model_loaded in models_loaded if self.__triton_manager.is_model_running(model) is False and self.__triton_manager.is_model_releasable(model) is True and len(self.__triton_manager.get_model_managers(model_loaded) == 0)]
 
             if len(models_than_can_be_unloaded) == 0:
                 logger.error("Requesting to unload a triton model but there is no triton model to unload, this could result in a infinit loop\n" + 
@@ -263,10 +264,14 @@ class TritonClient:
 
                 self.__triton_manager.unload_model(models_than_can_be_unloaded[0])
 
-            sleep(1) # TODO: remove
+            sleep(self.SLEEP_TIME_NO_MEMORY)
 
         self.__triton_manager.load_model(model)
-        self.__triton_manager.update_model_running_status(model, is_running=True)
+
+        for sub_part in self.__model_sub_parts:
+            self.__triton_manager.add_manager_who_is_using_model(model_using=self.__model_name, model_used=sub_part)
+            self.__triton_manager.update_model_running_status(sub_part, is_running=True)
+
         self.__triton_manager.remove_model_from_memory_queue(model)
 
         print(self.__triton_manager.get_models_in_registery())
@@ -276,10 +281,11 @@ class TritonClient:
     def triton_manager_post_hook(self, model):
         self.__triton_manager.update_model_running_status(model, is_running=False)
 
-        # TODO: check if model is not a "preload" model
-        # I could use config.txt as described here : https://github.com/triton-inference-server/server/issues/4139
-        # The issue is that it make it hard to customize wich model to preload or not
-        # Another option would be to store it in the redis
-        if self.__triton_manager.get_memory_queue() and self.__preload_model is False:
-            print("UNLOADING MODEL")
-            self.__triton_manager.unload_model(model)
+        for sub_part in self.__model_sub_parts:
+            self.__triton_manager.remove_manager_who_is_no_longer_using_model(model_using=self.__model_name, model_used=sub_part)
+
+        if len(self.__triton_manager.get_model_managers(model)) == 0:
+            self.__triton_manager.update_model_running_status(model, is_running=False)
+
+        # NOTE: on ne fait pas d'unload ici pour limiter les call asynch en //
+
