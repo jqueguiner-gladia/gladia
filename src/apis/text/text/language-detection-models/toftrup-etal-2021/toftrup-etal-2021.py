@@ -11,9 +11,12 @@ def predict(text: str) -> str:
 
     from LanguageIdentifier import rank
 
-    output = []
+    prediction_raw = []
 
     for lang, score in rank(text):
-        output.append({"language": lang, "score": score})
+        prediction_raw.append({lang: score})
 
-    return json.dumps(output)
+    prediction = prediction_raw[prediction_raw.keys().index(max(prediction_raw.values()))]
+
+    return { "prediction": prediction, "prediction_raw": prediction_raw}
+

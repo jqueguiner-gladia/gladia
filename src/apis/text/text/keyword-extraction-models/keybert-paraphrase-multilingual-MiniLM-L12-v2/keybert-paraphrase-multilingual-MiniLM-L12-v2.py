@@ -1,4 +1,4 @@
-def predict(text: str) -> [(str, float)]:
+def predict(text: str) -> dict:
     """
     Extract keywords from a given sentence
 
@@ -16,4 +16,4 @@ def predict(text: str) -> [(str, float)]:
 
     del model
 
-    return out
+    return { "prediction": out, "prediction_raw": out}
