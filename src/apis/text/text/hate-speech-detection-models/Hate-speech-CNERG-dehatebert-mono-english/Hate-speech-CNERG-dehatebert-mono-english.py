@@ -6,7 +6,7 @@ from gladia_api_utils.triton_helper import (
 from transformers import BertTokenizer
 
 
-def predict(text: str) -> str:
+def predict(text: str) -> dict:
     """
     Detect hate from a given text
 
@@ -36,4 +36,4 @@ def predict(text: str) -> str:
 
     del tokenizer
 
-    return out
+    return {"prediction": out, "prediction_raw": dict(zip(LABELS, output[0]))}

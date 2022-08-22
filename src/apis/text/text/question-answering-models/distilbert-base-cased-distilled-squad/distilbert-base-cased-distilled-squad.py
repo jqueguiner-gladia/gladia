@@ -1,7 +1,7 @@
 import json
 
 
-def predict(context: str, question: str) -> str:
+def predict(context: str, question: str) -> dict:
     """
     Using the given `context`, answer the provided `question`.
 
@@ -18,5 +18,5 @@ def predict(context: str, question: str) -> str:
     result = happy_qa.answer_question(context, question)
 
     del happy_qa
-
-    return json.dumps({"answer": result[0].answer, "score": result[0].score})
+    
+    return {"prediction": result[0].answer, "prediction_raw": result}

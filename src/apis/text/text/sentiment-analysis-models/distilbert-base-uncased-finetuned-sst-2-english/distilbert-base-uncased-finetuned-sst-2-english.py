@@ -14,4 +14,5 @@ def predict(text: str) -> dict:
     )
     result = happy_tc.classify_text(text)
 
-    return {"label": result.label, "score": result.score}
+    return {"prediction": result.label, "prediction_raw": result}
+

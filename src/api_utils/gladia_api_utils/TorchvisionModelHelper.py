@@ -69,4 +69,6 @@ class TorchvisionModel:
                 }
             )
 
-        return output
+        all_scored_categories = dict(zip(self.__weights.meta["categories"], prediction.tolist()))
+
+        return { "prediction": output, "prediction_raw": all_scored_categories }

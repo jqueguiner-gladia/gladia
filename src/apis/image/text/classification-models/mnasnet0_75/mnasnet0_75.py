@@ -3,7 +3,7 @@ from torchvision.io import read_image
 from torchvision.models import Inception_V3_Weights, inception_v3
 
 
-def predict(image: bytes, top_k: int = 1) -> [str]:
+def predict(image: bytes, top_k: int = 1) -> dict:
     img = _open(image)
 
     output = list()
@@ -24,4 +24,4 @@ def predict(image: bytes, top_k: int = 1) -> [str]:
     category_name = weights.meta["categories"][class_id]
 
     output.append({"class": category_name, "score": score})
-    return output
+    return { "prediction": output["prediction"], "prediction_raw": output["prediction_raw"] }

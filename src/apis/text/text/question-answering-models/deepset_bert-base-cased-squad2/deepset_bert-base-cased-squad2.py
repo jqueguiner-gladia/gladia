@@ -22,7 +22,7 @@ def load_model() -> (PreTrainedTokenizer, PreTrainedModel):
     return tokenizer, model
 
 
-def predict(context: str, question: str) -> str:
+def predict(context: str, question: str) -> dict:
     """
     Using the given `context`, answer the provided `question`.
 
@@ -45,8 +45,8 @@ def predict(context: str, question: str) -> str:
     answer_start = torch.argmax(answer_start_scores)
     answer_end = torch.argmax(answer_end_scores) + 1
 
-    answer = tokenizer.convert_tokens_to_string(
+    result = tokenizer.convert_tokens_to_string(
         tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end])
     )
 
-    return answer
+    return {"prediction": result, "prediction_raw": result}

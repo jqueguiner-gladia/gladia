@@ -52,7 +52,7 @@ def convert_image_to_ascii(
     return "\n".join(ascii_image)
 
 
-def predict(image: bytes) -> str:
+def predict(image: bytes) -> dict:
     """
     Transform an image to ascii characters
 
@@ -65,6 +65,7 @@ def predict(image: bytes) -> str:
     image = _open(image)
 
     image = resize_image(image, new_width=new_width)
-    new_image = convert_image_to_ascii(image.convert("L"))
+    result = convert_image_to_ascii(image.convert("L"))
 
-    return new_image
+    return {"prediction": result, "prediction_raw": result}
+

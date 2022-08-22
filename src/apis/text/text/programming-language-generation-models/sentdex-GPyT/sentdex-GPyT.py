@@ -40,7 +40,7 @@ def generate(
     return reformatted
 
 
-def predict(code_snippet: str) -> str:
+def predict(code_snippet: str) -> dict:
     """
     Generate the continuation of the provided `code_snippet`.
 
@@ -53,9 +53,9 @@ def predict(code_snippet: str) -> str:
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelWithLMHead.from_pretrained(model_name)
 
-    out = generate(code_snippet, tokenizer, model)
+    result = generate(code_snippet, tokenizer, model)
 
     del model
     del tokenizer
 
-    return out
+    return {"prediction": result, "prediction_raw": result}

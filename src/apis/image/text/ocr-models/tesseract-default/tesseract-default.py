@@ -5,7 +5,7 @@ import numpy as np
 from gladia_api_utils.io import _open
 
 
-def predict(image: bytes, source_language: str) -> [str]:
+def predict(image: bytes, source_language: str) -> dict:
     """
     Call the tesseract ocr and return the text detected in the image
 
@@ -32,4 +32,6 @@ def predict(image: bytes, source_language: str) -> [str]:
 
     out = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]", "", text)
 
-    return [out.strip()]
+    result = out.strip()
+
+    return {"prediction": result, "prediction_raw": text}

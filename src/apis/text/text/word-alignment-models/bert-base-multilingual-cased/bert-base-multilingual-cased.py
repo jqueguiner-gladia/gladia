@@ -89,7 +89,7 @@ def get_words_alignment(
     return output
 
 
-def predict(input_string_language_1: str, input_string_language_2: str) -> [dict]:
+def predict(input_string_language_1: str, input_string_language_2: str) -> dict:
     """
     Associated words from `input_string_language_1` to `input_string_language_2`.
 
@@ -132,10 +132,12 @@ def predict(input_string_language_1: str, input_string_language_2: str) -> [dict
         torch.nn.Softmax(dim=-2)(dot_prod) > threshold
     )
 
-    return get_words_alignment(
+    result = get_words_alignment(
         sentence_src=sentence_src,
         sentence_tgt=sentence_tgt,
         tok2word_map_src=tok2word_map_src,
         tok2word_map_tgt=tok2word_map_tgt,
         softmax_inter=softmax_inter,
     )
+
+    return {"prediction": result, "prediction_raw": result}

@@ -2,7 +2,7 @@ import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
-def predict(context: str) -> [str]:
+def predict(context: str) -> dict:
     """
     Generates paraphrases of the given sentence
 
@@ -51,4 +51,5 @@ def predict(context: str) -> [str]:
     del model
     del encoding
     del beam_outputs
-    return output
+
+    return {"prediction": output, "prediction_raw": output}

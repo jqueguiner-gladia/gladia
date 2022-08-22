@@ -14,6 +14,6 @@ def predict(text: str) -> dict:
     result = happy_tc.classify_text(text)
 
     return {
-        "label": "POSITIVE" if result.label == "LABEL_0" else "NEGATIVE",
-        "score": result.score,
+        "prediction": "POSITIVE" if result.label == "LABEL_0" else "NEGATIVE",
+        "prediction_raw": result
     }

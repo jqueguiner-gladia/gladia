@@ -3,6 +3,7 @@ import json
 import os
 import pathlib
 import re
+import ast
 from warnings import warn
 
 import numpy as np
@@ -175,6 +176,15 @@ def cast_response(response, expected_output: dict):
         )
 
     elif isinstance(response, str):
+        try:
+            response_eval = ast.literal_eval(response)
+            if isinstance(response_eval, dict):
+                if "prediction" in response_eval.keys():
+                    return response_eval
+                else:
+                    return {"prediction": response_eval}
+        except:
+            pass
         return __convert_string_response(response)
 
     elif isinstance(response, bool) or isinstance(response, float):

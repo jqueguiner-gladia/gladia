@@ -3,7 +3,7 @@ from gladia_api_utils.TorchvisionModelHelper import TorchvisionModel
 from importlib_metadata import version
 
 
-def predict(image: bytes, top_k: int = 1) -> [str]:
+def predict(image: bytes, top_k: int = 1) -> dict:
     img = _open(image)
 
     model = TorchvisionModel(
@@ -13,4 +13,4 @@ def predict(image: bytes, top_k: int = 1) -> [str]:
     )
     output = model(img, top_k)
 
-    return output
+    return { "prediction": output["prediction"], "prediction_raw": output["prediction_raw"] }

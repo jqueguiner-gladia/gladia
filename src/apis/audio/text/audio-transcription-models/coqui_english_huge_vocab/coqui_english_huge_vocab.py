@@ -1,7 +1,7 @@
 from gladia_api_utils.io import _open
 
 
-def predict(audio: bytes, language: str = "en") -> str:
+def predict(audio: bytes, language: str = "en") -> dict:
 
     from gladia_api_utils.CoquiEngineHelper import SpeechToTextEngine
 
@@ -16,4 +16,7 @@ def predict(audio: bytes, language: str = "en") -> str:
 
     text = engine.run(audio)
 
-    return text
+    return {
+        "prediction": text,
+        "prediction_raw": text
+    }

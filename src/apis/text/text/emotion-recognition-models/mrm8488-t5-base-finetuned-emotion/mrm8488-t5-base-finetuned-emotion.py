@@ -1,7 +1,7 @@
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
-def predict(text: str) -> str:
+def predict(text: str) -> dict:
     """
     From a given sentence, return the emotion detected in it
 
@@ -22,7 +22,9 @@ def predict(text: str) -> str:
         outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True
     )
 
+    decoded_raw = tokenizer.decode(outputs[0])
+
     del model
     del tokenizer
 
-    return decoded
+    return {"prediction": decoded, "prediction_raw": decoded_raw}

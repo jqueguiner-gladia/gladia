@@ -2,7 +2,7 @@ import numpy as np
 from gladia_api_utils.io import _open
 
 
-def predict(image: bytes, source_language: str) -> [str]:
+def predict(image: bytes, source_language: str) -> dict:
     """
     Call the EasyOcr package and return the text detected in the image by the ocr
 
@@ -18,4 +18,4 @@ def predict(image: bytes, source_language: str) -> [str]:
     reader = easyocr.Reader([source_language], gpu=True)
     text = reader.readtext(image, detail=False)
 
-    return text
+    return {"prediction": text, "prediction_raw": text}
