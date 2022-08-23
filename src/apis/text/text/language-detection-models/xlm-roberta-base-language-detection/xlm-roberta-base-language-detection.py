@@ -61,7 +61,6 @@ def predict(text: str) -> List[Dict[str, Any]]:
     client.set_input(name="TEXT", shape=np_output.shape, datatype="BYTES")
 
     output = list(softmax(client(np_output)[0][0]))
-    print(output)
 
     prediction = LANGUAGES[output.index(max(output))]
     prediction_raw = dict(zip(LANGUAGES, output))
