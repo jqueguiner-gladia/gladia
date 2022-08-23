@@ -67,7 +67,11 @@ jobs:
             --gpus all --shm-size=5g \
             -p 80:8080 \
             -v /tmp/gladia:/tmp/gladia \
-            -e TRITON_SERVER_PORT_HTTP=8000 -e TRITON_SERVER_URL=57.128.19.222:8000 -e TRITON_LAZY_DOWNLOAD=false -e TRITON_MODELS_PATH=/tmp/gladia/triton \
+            -e TRITON_SERVER_PORT_HTTP=8000 \
+            -e TRITON_SERVER_URL=${{ secrets.TRITON_SERVER_URL }}:8000 \
+            -e TRITON_LAZY_DOWNLOAD=false \
+            -e TRITON_MODELS_PATH=/tmp/gladia/triton \
+            -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }} \
             -e MODE=server \
             docker.gladia.io/gladia:latest
 
@@ -92,11 +96,17 @@ jobs:
 
       - name: start docker gladia
         run: | 
-            docker run -d --name gladia-aipi \
-            --gpus all --shm-size=5g \
+            docker run -d \
+            --name gladia-aipi \
+            --gpus all \
+            --shm-size=5g \
             -p 80:8080 \
             -v /tmp/gladia:/tmp/gladia \
-            -e TRITON_SERVER_PORT_HTTP=8000 -e TRITON_SERVER_URL=57.128.19.222:8000 -e TRITON_LAZY_DOWNLOAD=false -e TRITON_MODELS_PATH=/tmp/gladia/triton \
+            -e TRITON_SERVER_PORT_HTTP=8000 \
+            -e TRITON_SERVER_URL=${{ secrets.TRITON_SERVER_URL }}:8000 \
+            -e TRITON_LAZY_DOWNLOAD=false \
+            -e TRITON_MODELS_PATH=/tmp/gladia/triton \
+            -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }} \
             -e MODE=server \
             docker.gladia.io/gladia:latest
 

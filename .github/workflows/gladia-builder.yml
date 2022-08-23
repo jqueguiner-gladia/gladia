@@ -72,11 +72,18 @@ jobs:
       - name: Start Gladia Container
         run: | 
           docker run -d \
-          --cpus 14 --memory 32g --gpus all --shm-size=5g \
-          -e IS_CI="True" -e NVIDIA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}} -e CUDA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}} \
+          --cpus 14 \
+          --memory 32g \
+          --gpus all \
+          --shm-size=5g \
+          -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }} \
+          -e IS_CI="True" \
+          -e NVIDIA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}} \
+          -e CUDA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}} \
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000 \
           -v /data/volumes/models:/tmp/gladia/models \
-          --name jlmagouille-${{ github.event.pull_request.number	}} docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }}
+          --name jlmagouille-${{ github.event.pull_request.number	}} \
+          docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }}
 
       - name: Gladia container readiness
         uses: nick-fields/retry@v2
@@ -93,7 +100,8 @@ jobs:
         id: test
         run: | 
           docker exec -i \
-          -e PR=${{ github.event.pull_request.number }} -e GHT=${{ secrets.GITHUB_TOKEN }} \
+          -e PR=${{ github.event.pull_request.number }} \
+          -e GHT=${{ secrets.GITHUB_TOKEN }} \
           jlmagouille-${{ github.event.pull_request.number }} \
           /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py'
 
