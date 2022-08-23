@@ -26,7 +26,6 @@ def predict(
     )
     pipe = pipe.to(device)
 
-
     generator = torch.Generator(device=device).manual_seed(seed)
     with autocast("cuda"):
         images_list = pipe(
