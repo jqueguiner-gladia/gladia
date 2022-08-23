@@ -15,6 +15,14 @@ ARG MAMBA_ALWAYS_SOFTLINK="true"
 ARG CLEAN_LAYER_SCRIPT=$PATH_TO_GLADIA_SRC/tools/docker/clean-layer.sh
 ARG VENV_BUILDER_PATH=$PATH_TO_GLADIA_SRC/tools/venv-builder/
 
+ENV GLADIA_TMP_PATH=$GLADIA_TMP_PATH \
+    PATH_TO_GLADIA_SRC=$PATH_TO_GLADIA_SRC \
+    API_SERVER_PORT_HTTP=$API_SERVER_PORT_HTTP \
+    VENV_BUILDER_PATH=$VENV_BUILDER_PATH \
+    HUGGINGFACE_ACCESS_TOKEN="VISIT_HF_WEBSITE_TO_GET_YOUR_OWN_TOKEN"
+    # https://huggingface.co/docs/hub/security-tokens/
+    # https://huggingface.co/settings/tokens
+
 COPY . $PATH_TO_GLADIA_SRC
 
 # Automatically activate micromaba for every bash shell
