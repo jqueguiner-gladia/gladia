@@ -23,8 +23,7 @@ def predict(
         use_auth_token=os.getenv("HUGGINGFACE_ACCESS_TOKEN"),
         revision="fp16",
         torch_dtype=torch.float16,
-    )
-    pipe = pipe.to(device)
+    ).to(device)
 
     generator = torch.Generator(device=device).manual_seed(seed)
     with autocast("cuda"):
