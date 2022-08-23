@@ -18,6 +18,6 @@ inputs = [
     },
 ]
 
-output = {"name": "similarity", "type": "float", "example": "similarity"}
+output = {"name": "similarity", "type": "float", "example": "0.6724814772605896"}
 
 TaskRouter(router=router, input=inputs, output=output, default_model="all-MiniLM-L6-v2")

@@ -12,7 +12,7 @@ inputs = [
     }
 ]
 
-output = {"name": "results", "type": "list", "example": "results"}
+output = {"name": "results", "type": "str", "example": "POSITIVE"}
 
 TaskRouter(
     router=router,

@@ -9,18 +9,18 @@ import urllib.parse
 from logging import getLogger
 from pathlib import Path
 from shlex import quote
-from typing import Optional
 from urllib.request import urlopen
+from typing import Any, Optional
 
 import forge
 import starlette
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, create_model
 
 from .casting import cast_response
 from .file_management import write_tmp_file
-from .responses import AudioResponse, ImageResponse, JsonResponse, VideoResponse
+from .responses import AudioResponse, ImageResponse, VideoResponse
 
 versions = list()
 available_versions = list()
@@ -320,17 +320,22 @@ class TaskRouter:
             "audio": AudioResponse,
         }
 
+        json_schema = {
+            "type": "json",
+            "prediction": self.output["type"],
+            "prediction_raw": Any
+        }
+
         response_class = response_classes.get(self.output["type"], JSONResponse)
 
-        responses = {}
-        if response_class in response_classes.values():
-            responses = {
-                200: {
-                    "content": {
-                        response_class.media_type: {"schema": response_class.schema}
-                    }
+        response_schema = response_class.schema if response_class in response_classes else json_schema
+        responses = {
+            200: {
+                "content": {
+                    response_class.media_type: {"schema": response_schema}
                 }
             }
+        }
 
         endpoint_parameters_description = dict()
         for parameter in input:
@@ -376,7 +381,7 @@ class TaskRouter:
             summary=f"Apply model for the {self.task} task for a given models",
             tags=[self.tags],
             response_class=response_class,
-            responses=responses,
+            responses=responses
         )
         @forge.sign(*[*form_parameters, query_for_model_name])
         async def apply(*args, **kwargs):

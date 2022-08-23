@@ -1,5 +1,4 @@
 from fastapi.responses import Response
-from typing import Any, Optional
 
 
 class ImageResponse(Response):
@@ -19,11 +18,3 @@ class VideoResponse(Response):
 
     schema = {"type": "string", "format": "binary", "data_type": "video"}
 
-class JsonResponse(Response):
-    media_type = "application/json"
-
-    schema = {
-        "type": Any, 
-        "prediction": Any, 
-        "prediction_raw": Any
-    }

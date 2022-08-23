@@ -65,7 +65,6 @@ def predict(image: bytes) -> dict:
     image = _open(image)
 
     image = resize_image(image, new_width=new_width)
-    result = convert_image_to_ascii(image.convert("L"))
+    new_image = convert_image_to_ascii(image.convert("L"))
 
-    return {"prediction": result, "prediction_raw": result}
-
+    return {"prediction": new_image, "prediction_raw": new_image}

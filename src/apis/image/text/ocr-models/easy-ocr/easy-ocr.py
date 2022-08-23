@@ -17,5 +17,6 @@ def predict(image: bytes, source_language: str) -> dict:
     image = np.array(image)
     reader = easyocr.Reader([source_language], gpu=True)
     text = reader.readtext(image, detail=False)
+    plain_text = '\n'.join(text)
 
-    return {"prediction": text, "prediction_raw": text}
+    return {"prediction": plain_text, "prediction_raw": text}
