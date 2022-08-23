@@ -31,7 +31,7 @@ inputs = [
         "name": "scale",
         "example": 7.5,
         "placeholder": "Scale for predictions",
-    }
+    },
 ]
 
 output = {"name": "generatedimage", "type": "image", "example": ""}
