@@ -10,8 +10,11 @@ def predict(sentence: str) -> dict:
 
     happy_wp = HappyWordPrediction("BERT", "bert-base-uncased")
 
-    result = happy_wp.predict_mask(f"{sentence} [MASK]")
+    result = happy_wp.predict_mask(f"{sentence} [MASK]", top_k=25)
+
+    prediction_raw = {word.token : word.score for word in result}
+    prediction = result[0].token
 
     del happy_wp
 
-    return {"prediction": result[0].token, "prediction_raw": result}
+    return {"prediction": prediction, "prediction_raw": prediction_raw}

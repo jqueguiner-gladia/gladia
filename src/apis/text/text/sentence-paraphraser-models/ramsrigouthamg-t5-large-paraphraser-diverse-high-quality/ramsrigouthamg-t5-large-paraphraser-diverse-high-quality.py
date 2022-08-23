@@ -52,4 +52,4 @@ def predict(context: str) -> dict:
     del encoding
     del beam_outputs
 
-    return {"prediction": output, "prediction_raw": output}
+    return {"prediction": output[0], "prediction_raw": output}

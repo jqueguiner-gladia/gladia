@@ -37,7 +37,7 @@ def generate(
     decoded = tokenizer.decode(resp[0])
     reformatted = decoded.replace(new_line_token, "\n")
 
-    return reformatted
+    return reformatted, decoded
 
 
 def predict(code_snippet: str) -> dict:
@@ -53,9 +53,9 @@ def predict(code_snippet: str) -> dict:
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelWithLMHead.from_pretrained(model_name)
 
-    result = generate(code_snippet, tokenizer, model)
+    result, result_raw = generate(code_snippet, tokenizer, model)
 
     del model
     del tokenizer
 
-    return {"prediction": result, "prediction_raw": result}
+    return {"prediction": result, "prediction_raw": result_raw}

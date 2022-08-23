@@ -15,8 +15,19 @@ def predict(context: str, question: str) -> dict:
     happy_qa = HappyQuestionAnswering(
         "DISTILBERT", "distilbert-base-cased-distilled-squad"
     )
-    result = happy_qa.answer_question(context, question)
+    result = happy_qa.answer_question(context, question, top_k=25)
+
+    prediction_raw = [
+        {
+            "answer": answer.answer, 
+            "score": answer.score, 
+            "start":answer.start, 
+            "end": answer.end
+        } for answer in result
+    ]
+    prediction = result[0].answer
 
     del happy_qa
+
+    return {"prediction": prediction, "prediction_raw": prediction_raw}
     
-    return {"prediction": result[0].answer, "prediction_raw": result}

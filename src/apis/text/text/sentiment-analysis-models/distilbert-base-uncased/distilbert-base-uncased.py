@@ -12,8 +12,7 @@ def predict(text: str) -> dict:
         "DISTILBERT", "distilbert-base-uncased", num_labels=2
     )
     result = happy_tc.classify_text(text)
+    prediction = "POSITIVE" if result.label == "LABEL_0" else "NEGATIVE"
+    prediction_raw = {"label": result.label, "score": result.score}
 
-    return {
-        "prediction": "POSITIVE" if result.label == "LABEL_0" else "NEGATIVE",
-        "prediction_raw": result
-    }
+    return {"prediction": prediction, "prediction_raw": prediction_raw}

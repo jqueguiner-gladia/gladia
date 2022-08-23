@@ -49,4 +49,7 @@ def predict(context: str, question: str) -> dict:
         tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end])
     )
 
+    del tokenizer
+    del model
+
     return {"prediction": result, "prediction_raw": result}

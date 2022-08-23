@@ -54,4 +54,4 @@ def predict(sentence_1: str, sentence_2: str) -> dict:
 
     cosine_scores = cos_sim(sentence_1_embeddings, sentence_2_embeddings)
 
-    return {"prediction": cosine_scores.item(), "prediction_raw": cosine_scores}
+    return {"prediction": cosine_scores.item(), "prediction_raw": cosine_scores.item()}

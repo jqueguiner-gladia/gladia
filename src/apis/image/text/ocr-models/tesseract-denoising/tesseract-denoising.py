@@ -30,6 +30,6 @@ def predict(image: bytes, source_language: str) -> dict:
 
     out = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]", "", text)
 
-    result = [out.strip()]
+    result = out.strip()
 
     return {"prediction": result, "prediction_raw": text}

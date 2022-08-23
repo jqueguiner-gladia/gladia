@@ -13,6 +13,7 @@ def predict(text: str) -> dict:
         model_name="distilbert-base-uncased-finetuned-sst-2-english",
     )
     result = happy_tc.classify_text(text)
+    prediction_raw = {"label": result.label, "score": result.score}
 
-    return {"prediction": result.label, "prediction_raw": result}
+    return {"prediction": result.label, "prediction_raw": prediction_raw}
 
