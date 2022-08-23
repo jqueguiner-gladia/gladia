@@ -26,12 +26,6 @@ def predict(
     )
     pipe = pipe.to(device)
 
-    # word_list_dataset = load_dataset("stabilityai/word-list", data_files="list.txt", use_auth_token=os.getenv('HUGGINGFACE_ACCESS_TOKEN'))
-    # word_list = word_list_dataset["train"]['text']
-
-    # for filter in word_list:
-    #    if re.search(rf"\b{filter}\b", prompt):
-    #        raise Exception("Unsafe content found. Please try again with different prompts.")
 
     generator = torch.Generator(device=device).manual_seed(seed)
     with autocast("cuda"):
