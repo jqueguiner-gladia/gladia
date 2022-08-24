@@ -279,9 +279,6 @@ def get_error_reponse(code: int, message: str):
     JSONResponse(status_code=code, content={"message": message})
 
 
-from pynvml.smi import nvidia_smi
-
-
 def get_vram_usage():
     nvsmi = nvidia_smi.getInstance()
 
