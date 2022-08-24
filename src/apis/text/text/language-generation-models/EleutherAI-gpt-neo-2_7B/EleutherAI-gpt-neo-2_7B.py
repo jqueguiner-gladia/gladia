@@ -1,5 +1,6 @@
-from transformers import pipeline
 from typing import Dict, Union
+
+from transformers import pipeline
 
 
 def predict(text: str) -> Dict[str, Union[str, Dict[str, str]]]:

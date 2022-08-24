@@ -11,12 +11,17 @@ inputs = [
     {
         "type": "int",
         "name": "top_k",
+        "default": 1,
         "example": 1,
         "placeholder": "Top K",
     },
 ]
 
-output = {"name": "classified_image", "type": "list", "example": '[{"class": "bow tie","score": 0.293981671333313}]'}
+output = {
+    "name": "classified_image",
+    "type": "list",
+    "example": '[{"class": "bow tie","score": 0.293981671333313}]',
+}
 
 router = APIRouter()
 

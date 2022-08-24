@@ -12,7 +12,11 @@ inputs = [
     }
 ]
 
-output = {"name": "results", "type": "list", "example": '{"prediction":[{"entity_group": "ORG", "score": 0.5587025284767151, "word": "Gladia", "start": 26, "end": 32}]'}
+output = {
+    "name": "results",
+    "type": "list",
+    "example": '{"prediction":[{"entity_group": "ORG", "score": 0.5587025284767151, "word": "Gladia", "start": 26, "end": 32}]',
+}
 
 TaskRouter(
     router=router,

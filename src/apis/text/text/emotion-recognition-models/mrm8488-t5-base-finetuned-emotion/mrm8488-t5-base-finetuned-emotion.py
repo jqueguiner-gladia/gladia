@@ -1,5 +1,6 @@
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from typing import Dict
+
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
 def predict(text: str) -> Dict[str, str]:

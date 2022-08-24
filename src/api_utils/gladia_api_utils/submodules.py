@@ -9,8 +9,8 @@ import urllib.parse
 from logging import getLogger
 from pathlib import Path
 from shlex import quote
-from urllib.request import urlopen
 from typing import Any, Optional
+from urllib.request import urlopen
 
 import forge
 import starlette
@@ -253,7 +253,7 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
         "data_type": endpoint_param["type"],  # i.e image
         "default": None
         if endpoint_param["type"] in file_types
-        else ...,  # TODO: retrieve from {task}.py
+        else endpoint_param.get("default", ...),
         "constructor": File if endpoint_param["type"] in file_types else Form,
         "example": endpoint_param["example"],
         "examples": [endpoint_param["example"]],
@@ -323,18 +323,16 @@ class TaskRouter:
         json_schema = {
             "type": "json",
             "prediction": self.output["type"],
-            "prediction_raw": Any
+            "prediction_raw": Any,
         }
 
         response_class = response_classes.get(self.output["type"], JSONResponse)
 
-        response_schema = response_class.schema if response_class in response_classes else json_schema
+        response_schema = (
+            response_class.schema if response_class in response_classes else json_schema
+        )
         responses = {
-            200: {
-                "content": {
-                    response_class.media_type: {"schema": response_schema}
-                }
-            }
+            200: {"content": {response_class.media_type: {"schema": response_schema}}}
         }
 
         endpoint_parameters_description = dict()
@@ -381,7 +379,7 @@ class TaskRouter:
             summary=f"Apply model for the {self.task} task for a given models",
             tags=[self.tags],
             response_class=response_class,
-            responses=responses
+            responses=responses,
         )
         @forge.sign(*[*form_parameters, query_for_model_name])
         async def apply(*args, **kwargs):
@@ -431,9 +429,7 @@ class TaskRouter:
 
                     # if not, file is missing
                     else:
-                        error_message = (
-                            f"File '{input_name}' or '{input_name}_url' is missing."
-                        )
+                        error_message = f"One field among '{input_name}' and '{input_name}_url' is required."
                         return get_error_reponse(400, error_message)
 
                     # remove the url arg to avoid it to be passed in predict

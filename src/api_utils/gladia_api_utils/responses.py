@@ -17,4 +17,3 @@ class VideoResponse(Response):
     media_type = "video"
 
     schema = {"type": "string", "format": "binary", "data_type": "video"}
-

@@ -1,4 +1,5 @@
-from typing import Dict, Union, List
+from typing import Dict, List, Union
+
 import torch
 from transformers import (
     AutoModelForQuestionAnswering,
@@ -23,7 +24,9 @@ def load_model() -> (PreTrainedTokenizer, PreTrainedModel):
     return tokenizer, model
 
 
-def predict(context: str, question: str) -> Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]:
+def predict(
+    context: str, question: str
+) -> Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]:
     """
     Using the given `context`, answer the provided `question`.
 

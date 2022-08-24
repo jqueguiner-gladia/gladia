@@ -65,4 +65,4 @@ def predict(text: str) -> List[Dict[str, Any]]:
     prediction = LANGUAGES[output.index(max(output))]
     prediction_raw = dict(zip(LANGUAGES, output))
 
-    return { "prediction": prediction, "prediction_raw": prediction_raw}
+    return {"prediction": prediction, "prediction_raw": prediction_raw}

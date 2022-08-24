@@ -14,8 +14,7 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     prediction_raw = {}
     for lang, score in rank(text):
         prediction_raw[lang] = score
-        
+
     prediction = max(zip(prediction_raw.values(), prediction_raw.keys()))[1]
 
-    return { "prediction": prediction, "prediction_raw": prediction_raw}
-
+    return {"prediction": prediction, "prediction_raw": prediction_raw}

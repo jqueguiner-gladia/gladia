@@ -1,5 +1,6 @@
-import inflect
 from typing import Dict
+
+import inflect
 
 
 def predict(word: str, count: int) -> Dict[str, str]:
@@ -21,4 +22,3 @@ def predict(word: str, count: int) -> Dict[str, str]:
     result = p.plural(word, count)
 
     return {"prediction": result, "prediction_raw": result}
-

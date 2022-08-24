@@ -1,10 +1,11 @@
+from typing import Dict, Union
+
 import numpy as np
 from gladia_api_utils.triton_helper import (
     TritonClient,
     check_if_model_needs_to_be_preloaded,
 )
 from transformers import BertTokenizer
-from typing import Dict, Union
 
 
 def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:

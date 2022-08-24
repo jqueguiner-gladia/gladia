@@ -1,7 +1,9 @@
-from typing import Dict, Union, List
+from typing import Dict, List, Union
 
 
-def predict(text: str) -> Dict[str, Union[str, Dict[str, Union[str, List[str], List[float]]]]]:
+def predict(
+    text: str,
+) -> Dict[str, Union[str, Dict[str, Union[str, List[str], List[float]]]]]:
     """
     For a given text, predict if it's POSITIVE or NEGATIVE
 

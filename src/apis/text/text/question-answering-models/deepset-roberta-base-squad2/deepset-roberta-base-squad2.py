@@ -1,7 +1,9 @@
-from typing import Dict, Union, List
+from typing import Dict, List, Union
 
 
-def predict(context: str, question: str) -> Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]:
+def predict(
+    context: str, question: str
+) -> Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]:
     """
     Using the given `context`, answer the provided `question`.
 
@@ -19,11 +21,12 @@ def predict(context: str, question: str) -> Dict[str, Union[str, List[Dict[str, 
 
     prediction_raw = [
         {
-            "answer": answer.answer, 
-            "score": answer.score, 
-            "start":answer.start, 
-            "end": answer.end
-        } for answer in result
+            "answer": answer.answer,
+            "score": answer.score,
+            "start": answer.start,
+            "end": answer.end,
+        }
+        for answer in result
     ]
     prediction = result[0].answer
 

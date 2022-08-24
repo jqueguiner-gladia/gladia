@@ -1,4 +1,4 @@
-# `./run_server_prod.sh` 
+# `./run_server.sh` 
 
 This script start the Gladia server. It does mainly three things :
 
