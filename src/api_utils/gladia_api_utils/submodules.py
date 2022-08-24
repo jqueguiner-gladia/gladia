@@ -197,7 +197,7 @@ def exec_in_subprocess(
         )
 
         std_outputs, error_message = proc.communicate()
-        logger.debug(std_outputs)
+        logger.debug(f"subprocess stdout: {std_outputs}")
 
         error_message = f"Subprocess encountered the following error : {error_message}\nCommand executed: {cmd}"
 
