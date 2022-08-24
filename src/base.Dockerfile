@@ -77,6 +77,7 @@ RUN mkdir -p $TRITON_MODELS_PATH && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update --allow-insecure-repositories -y && \
     apt install -y \
+        unzip \
         libssl-dev \
         libpng-dev \
         libjpeg-dev \
