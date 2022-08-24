@@ -13,7 +13,7 @@ inputs = [
 ]
 
 output = {
-    "name": "results",
+    "name": "recognized_entities",
     "type": "list",
     "example": '{"prediction":[{"entity_group": "ORG", "score": 0.5587025284767151, "word": "Gladia", "start": 26, "end": 32}]',
 }

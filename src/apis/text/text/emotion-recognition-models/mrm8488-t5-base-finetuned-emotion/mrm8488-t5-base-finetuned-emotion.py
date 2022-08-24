@@ -24,9 +24,7 @@ def predict(text: str) -> Dict[str, str]:
         outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True
     )
 
-    decoded_raw = tokenizer.decode(outputs[0])
-
     del model
     del tokenizer
 
-    return {"prediction": decoded, "prediction_raw": decoded_raw}
+    return {"prediction": decoded, "prediction_raw": decoded}
