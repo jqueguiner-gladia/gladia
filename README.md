@@ -43,11 +43,15 @@
   </a>
 </p>
 
-<p align="left">
-  <a href="https://hub.docker.com/repository/docker/gladiaio/gladia" alt="Dockerhub">
-    <img src="https://dockeri.co/image/gladiaio/gladia" />
-  </a>
-</p>
+
+
+[![Gladia Docker pulls](https://img.shields.io/docker/pulls/gladiaio/gladia.svg)](https://hub.docker.com/repository/docker/gladiaio/gladia)
+
+[![Gladia Base Builder](https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml)
+
+[![Gladia Builder](https://github.com/gladiaio/gladia/actions/workflows/gladia-builder.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-builder.yml)
+
+[![Gladia Docker Hub Push](https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml)
 
 
 Follow Gladia Twitter account to get the latest update
