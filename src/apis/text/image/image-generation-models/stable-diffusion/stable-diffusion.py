@@ -1,6 +1,5 @@
-import os
-
 from PIL import Image
+from gladia_api_utils import SECRETS
 
 
 def predict(
@@ -10,22 +9,24 @@ def predict(
     scale=7.5,
     seed=396916372,
 ) -> Image:
+
     import torch
-    from datasets import load_dataset
-    from diffusers import StableDiffusionPipeline
+
     from torch import autocast
+    from diffusers import StableDiffusionPipeline
 
     model_id = "CompVis/stable-diffusion-v1-4"
     device = "cuda"
 
     pipe = StableDiffusionPipeline.from_pretrained(
         model_id,
-        use_auth_token=os.getenv("HUGGINGFACE_ACCESS_TOKEN"),
+        use_auth_token=SECRETS["HUGGINGFACE_ACCESS_TOKEN"],
         revision="fp16",
         torch_dtype=torch.float16,
     ).to(device)
 
     generator = torch.Generator(device=device).manual_seed(seed)
+
     with autocast("cuda"):
         images_list = pipe(
             [prompt] * samples,
