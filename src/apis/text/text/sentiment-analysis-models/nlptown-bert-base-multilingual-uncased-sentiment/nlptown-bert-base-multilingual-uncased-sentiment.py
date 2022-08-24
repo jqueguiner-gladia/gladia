@@ -1,3 +1,4 @@
+from typing import Dict, Union, List
 import os
 
 from gladia_api_utils.triton_helper import (
@@ -7,7 +8,7 @@ from gladia_api_utils.triton_helper import (
 )
 
 
-def predict(text: str) -> dict:
+def predict(text: str) -> Dict[str, Union[str, List[float]]]:
     """
     From a given, classify it between 1 (hate) and 5 (love).
 

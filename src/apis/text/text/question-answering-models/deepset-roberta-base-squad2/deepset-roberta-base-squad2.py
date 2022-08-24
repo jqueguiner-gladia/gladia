@@ -1,7 +1,7 @@
-import json
+from typing import Dict, Union, List
 
 
-def predict(context: str, question: str) -> dict:
+def predict(context: str, question: str) -> Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]:
     """
     Using the given `context`, answer the provided `question`.
 
@@ -12,8 +12,10 @@ def predict(context: str, question: str) -> dict:
 
     from happytransformer import HappyQuestionAnswering
 
+    NB_RESULTS = 25
+
     happy_qa = HappyQuestionAnswering("ROBERTA", "deepset/roberta-base-squad2")
-    result = happy_qa.answer_question(context, question, top_k=25)
+    result = happy_qa.answer_question(context, question, top_k=NB_RESULTS)
 
     prediction_raw = [
         {

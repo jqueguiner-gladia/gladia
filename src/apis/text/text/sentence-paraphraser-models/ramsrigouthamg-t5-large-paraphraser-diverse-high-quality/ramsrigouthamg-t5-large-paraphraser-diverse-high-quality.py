@@ -1,8 +1,9 @@
+from typing import Dict
 import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
-def predict(context: str) -> dict:
+def predict(context: str) -> Dict[str, str]:
     """
     Generates paraphrases of the given sentence
 

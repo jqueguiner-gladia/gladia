@@ -1,7 +1,8 @@
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from typing import Dict
 
 
-def predict(text: str) -> dict:
+def predict(text: str) -> Dict[str, str]:
     """
     From a given sentence, return the emotion detected in it
 

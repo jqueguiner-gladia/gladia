@@ -1,7 +1,8 @@
 from transformers import AutoModelWithLMHead, AutoTokenizer
+from typing import Dict
 
 
-def predict(sentence: str) -> dict:
+def predict(sentence: str) -> Dict[str, str]:
     """
     Remove typos from the given string.
 

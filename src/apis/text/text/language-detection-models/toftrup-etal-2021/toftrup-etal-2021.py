@@ -1,7 +1,7 @@
-import json
+from typing import Dict, Union
 
 
-def predict(text: str) -> str:
+def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     From a given text, return a json scoring the probability of the given text to be of a certain language
 

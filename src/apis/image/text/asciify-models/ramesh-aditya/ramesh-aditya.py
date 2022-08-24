@@ -1,5 +1,6 @@
 from gladia_api_utils.io import _open
 from PIL import Image
+from typing import Dict
 
 ASCII_CHARS = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."]
 
@@ -52,7 +53,7 @@ def convert_image_to_ascii(
     return "\n".join(ascii_image)
 
 
-def predict(image: bytes) -> dict:
+def predict(image: bytes) -> Dict[str, str]:
     """
     Transform an image to ascii characters
 

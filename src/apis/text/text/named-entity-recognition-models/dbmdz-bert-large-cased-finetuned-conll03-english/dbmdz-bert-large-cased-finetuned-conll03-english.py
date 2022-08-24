@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List
+from typing import Dict, List, Union
 
 from gladia_api_utils.triton_helper import (
     TritonClient,
@@ -9,7 +9,7 @@ from gladia_api_utils.triton_helper import (
 )
 
 
-def predict(text: str) -> dict:
+def predict(text: str) -> Dict[str, Union[List[Dict[str, Union[str, float]]], str]]:
     """
     Apply NER on the given task and return each token within the sentence associated to its label.
 

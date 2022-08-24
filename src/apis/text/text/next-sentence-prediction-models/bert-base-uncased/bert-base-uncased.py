@@ -1,4 +1,6 @@
-def predict(sentence_1: str, sentence_2: str) -> float:
+from typing import Dict
+
+def predict(sentence_1: str, sentence_2: str) -> Dict[str, float]:
     """
     Tell for a given sencence_2, whether or not it follows sentence_1
 

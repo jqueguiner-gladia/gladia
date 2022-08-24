@@ -4,9 +4,10 @@ from gladia_api_utils.triton_helper import (
     check_if_model_needs_to_be_preloaded,
 )
 from transformers import BertTokenizer
+from typing import Dict, Union
 
 
-def predict(text: str) -> dict:
+def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     Detect hate from a given text
 

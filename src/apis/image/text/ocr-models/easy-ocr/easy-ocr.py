@@ -1,8 +1,9 @@
 import numpy as np
 from gladia_api_utils.io import _open
+from typing import Dict, List, Union
 
 
-def predict(image: bytes, source_language: str) -> dict:
+def predict(image: bytes, source_language: str) -> Dict[str, Union[str, List[str]]]:
     """
     Call the EasyOcr package and return the text detected in the image by the ocr
 

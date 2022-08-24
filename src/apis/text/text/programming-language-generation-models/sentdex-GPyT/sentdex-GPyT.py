@@ -1,3 +1,4 @@
+from typing import Dict
 import torch
 from transformers import (
     AutoModelWithLMHead,
@@ -40,7 +41,7 @@ def generate(
     return reformatted, decoded
 
 
-def predict(code_snippet: str) -> dict:
+def predict(code_snippet: str) -> Dict[str, str]:
     """
     Generate the continuation of the provided `code_snippet`.
 

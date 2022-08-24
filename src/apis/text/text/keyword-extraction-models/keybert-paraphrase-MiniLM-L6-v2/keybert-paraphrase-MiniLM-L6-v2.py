@@ -4,6 +4,7 @@ from gladia_api_utils.triton_helper import (
     data_processing,
 )
 from numpy import array as nparray
+from typing import Dict, Union
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -21,7 +22,7 @@ def select_key_words(text_embeddings, vocabulary_embeddings, vocabulary, top_n=1
 
 
 # TODO : check if num_seq > 128 and raise error if this is the case
-def predict(text: str) -> dict:
+def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     Extract keywords from a given sentence
 

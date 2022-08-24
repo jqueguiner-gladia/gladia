@@ -1,3 +1,4 @@
+from typing import Dict
 from gladia_api_utils.triton_helper import (
     TritonClient,
     check_if_model_needs_to_be_preloaded,
@@ -21,7 +22,7 @@ def cos_sim(a: list, b: list):
     )
 
 
-def predict(sentence_1: str, sentence_2: str) -> dict:
+def predict(sentence_1: str, sentence_2: str) -> Dict[str, float]:
     """
     For two given sentences, say whether they are similar or not.
 

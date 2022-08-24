@@ -3,9 +3,9 @@ import re
 import cv2
 import numpy as np
 from gladia_api_utils.io import _open
+from typing import Dict
 
-
-def predict(image: bytes, source_language: str) -> dict:
+def predict(image: bytes, source_language: str) -> Dict[str, str]:
     """
     Call the tesseract ocr and return the text detected in the image
 
