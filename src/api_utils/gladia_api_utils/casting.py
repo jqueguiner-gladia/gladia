@@ -1,4 +1,3 @@
-import ast
 import io
 import json
 import os
@@ -109,11 +108,7 @@ def __convert_string_response(response: str):
             # which I found very risky
             # J.L
             p = re.compile("(?<!\\\\)'")
-            replace_map = [
-                ("\n", "\\n"), 
-                ("\\\n", "\\n"), 
-                ("\\x0c", "")
-            ]
+            replace_map = [("\n", "\\n"), ("\\\n", "\\n"), ("\\x0c", "")]
             this_response = p.sub('"', response)
             for replacement in replace_map:
                 this_response.replace(replacement[0], replacement[1])
