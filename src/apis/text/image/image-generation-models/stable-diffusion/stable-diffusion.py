@@ -1,5 +1,5 @@
-from PIL import Image
 from gladia_api_utils import SECRETS
+from PIL import Image
 
 
 def predict(
@@ -11,9 +11,8 @@ def predict(
 ) -> Image:
 
     import torch
-
-    from torch import autocast
     from diffusers import StableDiffusionPipeline
+    from torch import autocast
 
     model_id = "CompVis/stable-diffusion-v1-4"
     device = "cuda"
