@@ -59,7 +59,7 @@ jobs:
         run: docker pull docker.gladia.io/gladia:latest
 
       - name: stop docker gladia
-        run: docker stop gladia-aipi && docker rm gladia-aipi
+        run: docker kill gladia-aipi && docker rm gladia-aipi
 
       - name: start docker gladia
         run: | 
@@ -92,7 +92,7 @@ jobs:
         run: docker pull docker.gladia.io/gladia:latest
 
       - name: stop docker gladia
-        run: docker stop gladia-aipi && docker rm gladia-aipi
+        run: docker kill gladia-aipi && docker rm gladia-aipi
 
       - name: start docker gladia
         run: | 
