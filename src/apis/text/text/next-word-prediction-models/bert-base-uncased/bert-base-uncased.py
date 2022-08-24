@@ -17,7 +17,7 @@ def predict(sentence: str) -> Dict[str, Union[str, Dict[str, float]]]:
 
     result = happy_wp.predict_mask(f"{sentence} [MASK]", top_k=NB_RESULTS)
 
-    prediction_raw = {word.token : word.score for word in result}
+    prediction_raw = {word.token: word.score for word in result}
     prediction = result[0].token
 
     del happy_wp

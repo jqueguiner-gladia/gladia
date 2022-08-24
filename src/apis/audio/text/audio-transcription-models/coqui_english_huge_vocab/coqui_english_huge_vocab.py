@@ -1,5 +1,6 @@
-from gladia_api_utils.io import _open
 from typing import Dict
+
+from gladia_api_utils.io import _open
 
 
 def predict(audio: bytes, language: str = "en") -> Dict[str, str]:
@@ -17,7 +18,4 @@ def predict(audio: bytes, language: str = "en") -> Dict[str, str]:
 
     text = engine.run(audio)
 
-    return {
-        "prediction": text,
-        "prediction_raw": text
-    }
+    return {"prediction": text, "prediction_raw": text}

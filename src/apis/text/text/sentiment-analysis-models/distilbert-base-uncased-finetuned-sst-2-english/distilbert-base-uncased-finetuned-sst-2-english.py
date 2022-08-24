@@ -19,4 +19,3 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, Union[str, float]]]]:
     prediction_raw = {"label": result.label, "score": result.score}
 
     return {"prediction": result.label, "prediction_raw": prediction_raw}
-

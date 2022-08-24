@@ -1,5 +1,5 @@
-from typing import Dict, Union, List
 import os
+from typing import Dict, List, Union
 
 from gladia_api_utils.triton_helper import (
     TritonClient,

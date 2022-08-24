@@ -90,7 +90,9 @@ def get_words_alignment(
     return output
 
 
-def predict(input_string_language_1: str, input_string_language_2: str) -> Dict[str, List[Dict[str, str]]]:
+def predict(
+    input_string_language_1: str, input_string_language_2: str
+) -> Dict[str, List[Dict[str, str]]]:
     """
     Associated words from `input_string_language_1` to `input_string_language_2`.
 

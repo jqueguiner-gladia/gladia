@@ -1,5 +1,6 @@
-from transformers import AutoModelWithLMHead, AutoTokenizer
 from typing import Dict
+
+from transformers import AutoModelWithLMHead, AutoTokenizer
 
 
 def predict(sentence: str) -> Dict[str, str]:

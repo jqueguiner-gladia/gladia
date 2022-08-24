@@ -1,8 +1,9 @@
 import re
+from typing import Dict
+
 import cv2
 import numpy as np
 from gladia_api_utils.io import _open
-from typing import Dict
 
 
 def predict(image: bytes, source_language: str) -> Dict[str, str]:

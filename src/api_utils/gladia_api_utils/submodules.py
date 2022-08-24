@@ -9,8 +9,8 @@ import urllib.parse
 from logging import getLogger
 from pathlib import Path
 from shlex import quote
-from urllib.request import urlopen
 from typing import Any, Optional
+from urllib.request import urlopen
 
 import forge
 import starlette
@@ -323,18 +323,16 @@ class TaskRouter:
         json_schema = {
             "type": "json",
             "prediction": self.output["type"],
-            "prediction_raw": Any
+            "prediction_raw": Any,
         }
 
         response_class = response_classes.get(self.output["type"], JSONResponse)
 
-        response_schema = response_class.schema if response_class in response_classes else json_schema
+        response_schema = (
+            response_class.schema if response_class in response_classes else json_schema
+        )
         responses = {
-            200: {
-                "content": {
-                    response_class.media_type: {"schema": response_schema}
-                }
-            }
+            200: {"content": {response_class.media_type: {"schema": response_schema}}}
         }
 
         endpoint_parameters_description = dict()
@@ -381,7 +379,7 @@ class TaskRouter:
             summary=f"Apply model for the {self.task} task for a given models",
             tags=[self.tags],
             response_class=response_class,
-            responses=responses
+            responses=responses,
         )
         @forge.sign(*[*form_parameters, query_for_model_name])
         async def apply(*args, **kwargs):

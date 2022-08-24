@@ -1,6 +1,7 @@
+from typing import Dict, List, Union
+
 import numpy as np
 from gladia_api_utils.io import _open
-from typing import Dict, List, Union
 
 
 def predict(image: bytes, source_language: str) -> Dict[str, Union[str, List[str]]]:
@@ -18,6 +19,6 @@ def predict(image: bytes, source_language: str) -> Dict[str, Union[str, List[str
     image = np.array(image)
     reader = easyocr.Reader([source_language], gpu=True)
     text = reader.readtext(image, detail=False)
-    plain_text = '\n'.join(text)
+    plain_text = "\n".join(text)
 
     return {"prediction": plain_text, "prediction_raw": text}
