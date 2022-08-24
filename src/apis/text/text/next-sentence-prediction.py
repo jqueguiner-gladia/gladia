@@ -18,7 +18,11 @@ inputs = [
     },
 ]
 
-output = {"name": "next_sentence_probability", "type": "float", "example": "0.999984622001648"}
+output = {
+    "name": "next_sentence_probability",
+    "type": "float",
+    "example": "0.999984622001648",
+}
 
 TaskRouter(
     router=router, input=inputs, output=output, default_model="bert-base-uncased"
