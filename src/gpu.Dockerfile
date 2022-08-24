@@ -94,6 +94,7 @@ RUN mkdir -p $TRITON_MODELS_PATH && \
         tesseract-ocr  \
         libtesseract-dev \
         python3-pil \
+        redis \
         tesseract-ocr-all && \
     echo "== INSTALLING GITLFS ==" && \
     cd /tmp && \
