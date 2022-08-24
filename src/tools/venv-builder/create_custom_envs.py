@@ -123,7 +123,7 @@ def create_custom_env(env_name: str, path_to_env_file: str) -> None:
         os.remove(temporary_file.name)
         os.remove(temporary_file.name + ".yaml")
 
-        logger.info("Env {env_name} has been successfully created")
+        logger.info(f"Env {env_name} has been successfully created")
 
 
 def build_specific_envs(paths: List[str]) -> None:

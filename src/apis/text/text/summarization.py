@@ -19,12 +19,14 @@ inputs = [
     {
         "type": "integer",
         "name": "max_length",
+        "default": 512,
         "example": 512,
         "placeholder": "Maximum lenght of the summary",
     },
     {
         "type": "integer",
         "name": "min_length",
+        "default": 40,
         "example": 40,
         "placeholder": "Minimum lenght of the summary",
     },
