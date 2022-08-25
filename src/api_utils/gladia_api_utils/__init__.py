@@ -4,6 +4,7 @@ from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
 
 from .get_activated_task_path import get_activated_task_path
+from .secret_management import SECRETS
 
 logging_format = os.getenv(
     "API_UTILS_LOGGING_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -43,4 +44,4 @@ stream_handler.setLevel(logging_level)
 logger.addHandler(rotating_file_handler)
 logger.addHandler(stream_handler)
 
-__all__ = ["get_activated_task_path"]
+__all__ = ["get_activated_task_path", "SECRETS"]

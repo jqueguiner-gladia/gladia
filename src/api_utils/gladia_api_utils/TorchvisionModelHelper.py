@@ -60,7 +60,12 @@ class TorchvisionModel:
 
         top_class_ids = get_top_k(model_prediction, int(top_k)).indices
 
-        prediction_raw = { self.__weights.meta["categories"][class_id]: model_prediction[class_id].item() for class_id in top_class_ids}
+        prediction_raw = {
+            self.__weights.meta["categories"][class_id]: model_prediction[
+                class_id
+            ].item()
+            for class_id in top_class_ids
+        }
         prediction = list(prediction_raw.keys())[0]
 
         return {"prediction": prediction, "prediction_raw": prediction_raw}

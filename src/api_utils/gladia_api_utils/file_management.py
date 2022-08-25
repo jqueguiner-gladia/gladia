@@ -192,7 +192,16 @@ def compress_directory(
     return output
 
 
-def is_archive(file_path: str) -> bool:
+def is_uncompressable(file_path: str) -> bool:
+    """
+    Returns True if the file is an uncompressable file.
+
+            Parameters:
+                    file_path (str): path of the file to be analyzed.
+
+            Returns:
+                    is_uncompressable (bool): Boolean True if file is an archive filetype.
+    """
 
     # used for relative paths
     namespace = sys._getframe(1).f_globals
@@ -203,9 +212,36 @@ def is_archive(file_path: str) -> bool:
     if not os.path.isabs(file_path):
         file_path = os.path.join(root_path, file_path)
 
-    file_mime_type = get_file_category(file_path)
+    # exclude archive files that are not supported
+    if file_path.endswith(
+        (".ckpt", ".pt", ".pth", ".pkl", ".pth", ".pkl", ".ckpt.meta")
+    ):
+        return False
+    else:
+        return is_archive(file_path)
 
-    return file_mime_type == "archive"
+
+def is_archive(file_path: str) -> bool:
+    """
+    Returns True if the file is an archive file.
+
+            Parameters:
+                    file_path (str): path of the file to be analyzed.
+
+            Returns:
+                    is_archived (bool): Boolean True if file is an archive filetype.
+    """
+
+    # used for relative paths
+    namespace = sys._getframe(1).f_globals
+    cwd = os.getcwd()
+    rel_path = namespace["__file__"]
+    root_path = os.path.dirname(os.path.join(cwd, rel_path))
+
+    if not os.path.isabs(file_path):
+        file_path = os.path.join(root_path, file_path)
+
+    return get_file_category(file_path) == "archive"
 
 
 def is_image(file_path: str) -> bool:
