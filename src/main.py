@@ -198,6 +198,12 @@ def __module_is_a_model(split_module_path: [str]):
     return len(split_module_path) == 4
 
 
+def __module_is_subprocess(module_path: str) -> bool:
+    # check if a env.yaml file exist in the module path
+    # if so it is a subprocess : return True
+    return os.path.exists(os.path.join(module_path, "env.yaml"))
+
+
 def import_submodules(package: "module", recursive: bool = True) -> None:
     """
     Import every task presents in the API by loading each submodule (recursively by default)
@@ -212,11 +218,18 @@ def import_submodules(package: "module", recursive: bool = True) -> None:
     for _, name, is_pkg in pkgutil.walk_packages(package.__path__):
 
         module_path = f"{package.__name__}.{name}"
-        module = importlib.import_module(module_path)
+
+        # get back the module file path from name
+        # replacing the . with /
+        # also make the path absolute
+        module_file_path = os.path.abspath(module_path.replace(".", "/"))
+
+        if not __module_is_subprocess(module_file_path):
+            module = importlib.import_module(module_path)
 
         module_relative_path = module_path.replace("apis", "")[1:]
 
-        if "router" in dir(module):
+        if "module" in vars() and "router" in dir(module):
             __add_router(module, module_path)
 
         if not recursive or not is_pkg:
@@ -234,7 +247,7 @@ def import_submodules(package: "module", recursive: bool = True) -> None:
             or __module_is_a_modality(module_split, module_config)
             or __module_is_a_task(module_split, module_config)
             or __module_is_a_model(module_split)
-        ):
+        ) and (not __module_is_subprocess(module_file_path)):
             import_submodules(module_path)
         else:
             logger.debug(f"skipping {module_relative_path}")
