@@ -72,6 +72,7 @@ jobs:
             -e TRITON_LAZY_DOWNLOAD=false \
             -e TRITON_MODELS_PATH=/tmp/gladia/triton \
             -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }} \
+            -e STABILITY_KEY=${{ secrets.STABILITY_KEY }} \
             -e MODE=server \
             docker.gladia.io/gladia:latest
 
@@ -107,6 +108,7 @@ jobs:
             -e TRITON_LAZY_DOWNLOAD=false \
             -e TRITON_MODELS_PATH=/tmp/gladia/triton \
             -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }} \
+            -e STABILITY_KEY=${{ secrets.STABILITY_KEY }} \
             -e MODE=server \
             docker.gladia.io/gladia:latest
 
