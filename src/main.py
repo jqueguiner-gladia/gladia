@@ -63,6 +63,10 @@ def __init_logging(api_config: dict) -> logging.Logger:
         maxBytes=100_000,
         backupCount=10,
     )
+    
+    # set consistent log_path for api utils
+    os.environ["API_UTILS_LOGGING_PATH"] = api_config["logs"]["log_path"]
+    
     rotating_file_handler.setFormatter(
         logging.Formatter(api_config["logs"]["log_format"])
     )
