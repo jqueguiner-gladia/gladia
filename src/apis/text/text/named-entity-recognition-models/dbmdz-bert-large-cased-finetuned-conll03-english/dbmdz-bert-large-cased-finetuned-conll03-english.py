@@ -1,5 +1,4 @@
 import json
-import os
 from typing import List
 
 from gladia_api_utils.triton_helper import (
