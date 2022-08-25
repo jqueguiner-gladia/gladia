@@ -19,8 +19,8 @@ inputs = [
 
 output = {
     "name": "classified_image",
-    "type": "list",
-    "example": '[{"class": "bow tie","score": 0.293981671333313}]',
+    "type": "str",
+    "example": "bow tie",
 }
 
 router = APIRouter()
