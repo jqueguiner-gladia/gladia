@@ -322,11 +322,15 @@ class TaskRouter:
 
         response_class = response_classes.get(self.output["type"], JSONResponse)
 
-        response_schema = response_class.schema if response_class in response_classes else {
-            "type": "json",
-            "prediction": self.output["type"],
-            "prediction_raw": Any,
-        }
+        response_schema = (
+            response_class.schema
+            if response_class in response_classes
+            else {
+                "type": "json",
+                "prediction": self.output["type"],
+                "prediction_raw": Any,
+            }
+        )
 
         responses = {
             200: {"content": {response_class.media_type: {"schema": response_schema}}}
