@@ -15,7 +15,7 @@ from urllib.request import urlopen
 import forge
 import starlette
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
 
 from .casting import cast_response
