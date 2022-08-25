@@ -15,11 +15,11 @@ def manage_metadata_files(argv):
     task_paths = []
 
     # /apis/
-    path = os.path.join(root_path, "apis")
-    input_dir_list = os.listdir(path)
+    apis_path = os.path.join(root_path, "apis")
+    input_dir_list = os.listdir(apis_path)
     # /apis/<input>/
     for input_dir in input_dir_list:
-        input_dir_path = os.path.join(path, input_dir)
+        input_dir_path = os.path.join(apis_path, input_dir)
         if os.path.isdir(input_dir_path) and input_dir not in dir_ignore:
             output_dir_list = os.listdir(input_dir_path)
             # /apis/<input>/<output>/
@@ -32,8 +32,6 @@ def manage_metadata_files(argv):
                         task_dir_path = os.path.join(output_dir_path, task_dir)
                         if os.path.isdir(task_dir_path) and task_dir not in dir_ignore:
                             model_dir_list = os.listdir(task_dir_path)
-                            if model_dir_list != [".empty"]:
-                                task_paths.append(task_dir_path)
                             # /apis/<input>/<output>/<task>/<model>/
                             for model in model_dir_list:
                                 model_path = os.path.join(task_dir_path, model)
@@ -41,7 +39,24 @@ def manage_metadata_files(argv):
                                     os.path.isdir(model_path)
                                     and model not in dir_ignore
                                 ):
-                                    model_paths.append(model_path)
+                                    dir_list = os.listdir(model_path)
+                                    is_model_dir = False
+                                    for dir in dir_list:
+                                        if (
+                                            dir.endswith(".py")
+                                            and not dir == "__init__.py"
+                                        ):
+                                            is_model_dir = True
+                                            model_paths.append(model_path)
+                                    if is_model_dir:
+                                        task_paths.append(task_dir_path)
+                                    else:
+                                        in_dir_list = os.listdir(task_dir_path)
+                                        if ".metadata.json" in in_dir_list:
+                                            to_delete_path = os.path.join(
+                                                model_path, ".metadata.json"
+                                            )
+                                            os.remove(to_delete_path)
 
     source_task_metadata_path = os.path.join(
         root_path, "apis/.metadata_task_template.json"
@@ -61,7 +76,7 @@ def manage_metadata_files(argv):
             if pathlib.Path(to_delete_file_path).exists():
                 os.remove(to_delete_file_path)
 
-    # Create or delete modele metadata files
+    # Create or delete model metadata files
     for model_path in model_paths:
         destination_file = os.path.join(model_path, destination_file_name)
         if not delete:
