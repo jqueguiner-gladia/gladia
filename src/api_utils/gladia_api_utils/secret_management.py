@@ -11,7 +11,11 @@ class SecretManager:
         "HUGGINGFACE_ACCESS_TOKEN": {
             "value": os.getenv("HUGGINGFACE_ACCESS_TOKEN"),
             "error_message": "HUGGINGFACE_ACCESS_TOKEN environement variable was not set, please visite hugging-face's web site to retrieve your access token : (https://huggingface.co/settings/tokens) (https://huggingface.co/docs/hub/security-tokens/)",
-        }
+        },
+        "STABILITY_KEY": {
+            "value": os.getenv("STABILITY_KEY"),
+            "error_message": "STABILITY_KEY environement variable was not set, please visite dream studio's web site to retrieve your access token : (https://beta.dreamstudio.ai/membership)",
+        },
     }
 
     def __getitem__(self, item):
