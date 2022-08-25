@@ -1,4 +1,5 @@
 import json
+from LanguageIdentifier import rank
 
 
 def predict(text: str) -> str:
@@ -8,8 +9,6 @@ def predict(text: str) -> str:
     :param text: text to analyze
     :return: json scoring the chance of the text to be in each language
     """
-
-    from LanguageIdentifier import rank
 
     output = []
 

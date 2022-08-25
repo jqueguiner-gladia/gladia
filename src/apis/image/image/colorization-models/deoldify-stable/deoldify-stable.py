@@ -7,6 +7,9 @@ from gladia_api_utils.system import get_random_available_gpu_id
 from PIL import Image
 from torch.cuda import is_available as cuda_is_available
 
+from deoldify import device, visualize
+from deoldify.device_id import DeviceId
+
 
 def predict(image: bytes) -> Image:
     """
@@ -26,9 +29,6 @@ def predict(image: bytes) -> Image:
     models_path = download_models(urls)
 
     current_model_path = path.join(models_path["deoldify-stable"]["output_path"])
-
-    from deoldify import device, visualize
-    from deoldify.device_id import DeviceId
 
     gpu_id = get_random_available_gpu_id()
 

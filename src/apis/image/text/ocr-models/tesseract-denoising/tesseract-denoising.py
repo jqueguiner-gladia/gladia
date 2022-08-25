@@ -3,6 +3,7 @@ import re
 import cv2
 import numpy as np
 from gladia_api_utils.io import _open
+import pytesseract
 
 
 def predict(image: bytes, source_language: str) -> [str]:
@@ -14,7 +15,6 @@ def predict(image: bytes, source_language: str) -> [str]:
     :return: characters found in the image
     """
 
-    import pytesseract
 
     del source_language
 
