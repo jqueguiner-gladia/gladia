@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 from git import Repo
 
-from .file_management import download_file, is_archive, uncompress
+from .file_management import download_file, is_uncompressable, uncompress
 
 logger = getLogger(__name__)
 
@@ -65,7 +65,7 @@ def download_model(
         logger.debug(f"Downloading {url}")
         download_file(url, output_path)
 
-        if is_archive(output_path) and uncompress_after_download:
+        if is_uncompressable(output_path) and uncompress_after_download:
             logger.debug("Uncompressing {output_path}")
             uncompress(output_path)
 
