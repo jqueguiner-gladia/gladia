@@ -11,26 +11,23 @@ inputs = [
     {
         "type": "int",
         "name": "samples",
+        "default": 1,
         "example": 1,
         "placeholder": "Number of predictions",
     },
     {
         "type": "int",
         "name": "steps",
+        "default": 40,
         "example": 40,
         "placeholder": "Number of steps",
     },
     {
         "type": "int",
         "name": "seed",
+        "default": 396916372,
         "example": 396916372,
         "placeholder": "Seed for predictions",
-    },
-    {
-        "type": "float",
-        "name": "scale",
-        "example": 7.5,
-        "placeholder": "Scale for predictions",
     },
 ]
 
