@@ -49,8 +49,6 @@
 
 [![Gladia Base Builder](https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml)
 
-[![Gladia Builder](https://github.com/gladiaio/gladia/actions/workflows/gladia-builder.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-builder.yml)
-
 [![Gladia Docker Hub Push](https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml)
 
 
