@@ -1,14 +1,13 @@
 from os import path
 from pathlib import Path
 
+from deoldify import device, visualize
+from deoldify.device_id import DeviceId
 from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
 from gladia_api_utils.system import get_random_available_gpu_id
 from PIL import Image
 from torch.cuda import is_available as cuda_is_available
-
-from deoldify import device, visualize
-from deoldify.device_id import DeviceId
 
 
 def predict(image: bytes) -> Image:

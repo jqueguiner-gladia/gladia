@@ -1,10 +1,10 @@
 from io import BytesIO
 
+import face_recognition
 from gladia_api_utils.file_management import input_to_files
 from gladia_api_utils.image_management import blur_image
 from gladia_api_utils.io import np_to_img_buffer
 
-import face_recognition
 
 @input_to_files
 def predict(image: bytes) -> BytesIO:

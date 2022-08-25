@@ -1,4 +1,5 @@
 import json
+
 from LanguageIdentifier import rank
 
 
