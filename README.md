@@ -49,8 +49,6 @@
 
 [![Gladia Base Builder](https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml)
 
-[![Gladia Builder](https://github.com/gladiaio/gladia/actions/workflows/gladia-builder.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-builder.yml)
-
 [![Gladia Docker Hub Push](https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml)
 
 
@@ -81,7 +79,15 @@ Help us build the biggest treasure trove of State of the Arts AI models, one we 
 # Quickstart
 ## Magic Start
 ```sh
-docker run -d --gpus all --shm-size=5g -p 8080:8080 gladiaio/gladia:latest
+$ docker run -d --gpus all --shm-size=5g -p 8080:8080 gladiaio/gladia:latest
+
+# to test image generation for both stability API and the open source stable diffusion
+# you'll need STABILITY_KEY and HUGGINGFACE_ACCESS_TOKEN
+# getting STABILITY_KEY here https://beta.dreamstudio.ai/membership
+# getting HUGGINGFACE_ACCESS_TOKEN here https://huggingface.co/settings/tokens
+
+$ docker run -d --gpus all --shm-size=5g -p 8080:8080 -e STABILITY_KEY=sk-***** -e HUGGINGFACE_ACCESS_TOKEN=hf_***** gladiaio/gladia:latest
+
 ```
 Access the service through [http://localhost:8080/docs](http://localhost:8080/docs) or [http://localhost:8080/redoc](http://localhost:8080/redoc) or whatever public/private IP of the server you are running on
 

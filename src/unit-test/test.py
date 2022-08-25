@@ -150,23 +150,16 @@ def perform_test(
                 if value.get("data_type", None) == "url":
                     if "audio" in key or "audio" in value["title"].lower():
                         # URL audio
-                        urls_files.append(
-                            {key: "https://anshe.org/audio/3Weeks-080715.mp3"}
-                        )
+                        default_url_file_test = "http://files.gladia.io/test/test.mp3"
                     elif "video" in key or "video" in value["title"].lower():
                         # URL Video
-                        urls_files.append(
-                            {
-                                key: "https://upload.wikimedia.org/wikipedia/commons/8/80/Expedition_50-51_Crew_Docks_to_the_Space_Station.webm"
-                            }
-                        )
+                        default_url_file_test = "http://files.gladia.io/test/test.webm"
                     else:
                         # URL Image
-                        urls_files.append(
-                            {
-                                key: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png"
-                            }
-                        )
+                        default_url_file_test = "http://files.gladia.io/test/test.png"
+                    urls_files.append(
+                        {key: value.get("_examples", default_url_file_test)}
+                    )
                 else:
                     texts.append({key: ("text", value["_examples"][0])})
             else:

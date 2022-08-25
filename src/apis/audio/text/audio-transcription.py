@@ -5,7 +5,7 @@ inputs = [
     {
         "type": "audio",
         "name": "audio",
-        "example": "https://anshe.org/audio/3Weeks-080715.mp3",
+        "example": "http://files.gladia.io/test/test.mp3",
         "placeholder": "Audio to transcribe",
     },
     {
