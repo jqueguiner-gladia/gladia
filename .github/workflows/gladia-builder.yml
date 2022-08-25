@@ -39,14 +39,14 @@ jobs:
           password: ${{ secrets.NVCR_ACCESS_TOKEN }}
 
       - name: Build Gladia image with no-cache
-        if: contains(github.event.pull_request.labels.*.name, 'ci: force-no-cache')
+        if: "contains(github.event.pull_request.labels.*.name, 'ci: force-no-cache')"
         env:
           DOCKER_BUILDKIT: 1
         working-directory: ./src
         run: docker build --no-cache -t docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }} -f gpu.Dockerfile .
 
       - name: Build Gladia image
-        if: !contains(github.event.pull_request.labels.*.name, 'ci: force-no-cache')
+        if: "!contains(github.event.pull_request.labels.*.name, 'ci: force-no-cache')"
         env:
           DOCKER_BUILDKIT: 1
         working-directory: ./src
