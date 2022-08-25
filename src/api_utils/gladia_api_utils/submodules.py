@@ -181,9 +181,9 @@ def exec_in_subprocess(
     env_name: str, module_path: str, model: str, output_tmp_result: str, **kwargs
 ):
 
-    HERE = Path(__file__).parent
+    HERE = os.path.abspath(Path(__file__).parent)
 
-    cmd = f"""micromamba run -n {env_name} python {os.path.join(HERE, 'run_process.py')} {module_path} {model} {output_tmp_result} """
+    cmd = f"""micromamba run -n {env_name} --cwd {os.path.abspath(module_path)} python {os.path.join(HERE, 'run_process.py')} {os.path.abspath(module_path)} {model} {output_tmp_result} """
     cmd += f"{quote(urllib.parse.quote(json.dumps(kwargs)))}"
 
     try:
