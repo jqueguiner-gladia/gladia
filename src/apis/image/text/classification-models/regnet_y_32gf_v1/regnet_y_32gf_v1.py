@@ -7,7 +7,7 @@ from importlib_metadata import version
 
 def predict(
     image: bytes, top_k: int = 1
-) -> Dict[str, Union[List[Dict[str, Union[str, float]]], Dict[str, float]]]:
+) -> Dict[str, Union[str, Dict[str, float]]]:
     img = _open(image)
 
     model = TorchvisionModel(

@@ -23,5 +23,6 @@ def predict(image: bytes, top_k: int = 1) -> Dict[str, Union[str, Dict[str, floa
     class_id = model_prediction.argmax().item()
     prediction = weights.meta["categories"][class_id]
     prediction_raw = dict(zip(weights.meta["categories"], model_prediction.tolist()))
+    prediction_raw = dict(sorted(prediction_raw.items(), key=lambda x:x[1], reverse=True)[0: top_k])
 
     return {"prediction": prediction, "prediction_raw": prediction_raw}

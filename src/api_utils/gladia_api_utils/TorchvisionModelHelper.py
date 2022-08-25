@@ -56,21 +56,11 @@ class TorchvisionModel:
 
         preprocessed_image = self.__preprocessing(image).unsqueeze(0)
 
-        prediction = self.__model(preprocessed_image).squeeze(0).softmax(0)
+        model_prediction = self.__model(preprocessed_image).squeeze(0).softmax(0)
 
-        top_class_ids = get_top_k(prediction, int(top_k)).indices
+        top_class_ids = get_top_k(model_prediction, int(top_k)).indices
 
-        output = []
-        for class_id in top_class_ids:
-            output.append(
-                {
-                    "class": self.__weights.meta["categories"][class_id],
-                    "score": prediction[class_id].item(),
-                }
-            )
+        prediction_raw = { self.__weights.meta["categories"][class_id]: model_prediction[class_id].item() for class_id in top_class_ids}
+        prediction = list(prediction_raw.keys())[0]
 
-        all_scored_categories = dict(
-            zip(self.__weights.meta["categories"], prediction.tolist())
-        )
-
-        return {"prediction": output, "prediction_raw": all_scored_categories}
+        return {"prediction": prediction, "prediction_raw": prediction_raw}

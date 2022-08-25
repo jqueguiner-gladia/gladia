@@ -5,7 +5,7 @@ from torchvision.io import read_image
 from torchvision.models import MNASNet1_0_Weights, mnasnet1_0
 
 
-def predict(image: bytes) -> Dict[str, Union[str, Dict[str, float]]]:
+def predict(image: bytes, top_k: int = 1) -> Dict[str, Union[str, Dict[str, float]]]:
     img = _open(image)
 
     weights = MNASNet1_0_Weights.DEFAULT
@@ -23,5 +23,6 @@ def predict(image: bytes) -> Dict[str, Union[str, Dict[str, float]]]:
     class_id = model_prediction.argmax().item()
     prediction = weights.meta["categories"][class_id]
     prediction_raw = dict(zip(weights.meta["categories"], model_prediction.tolist()))
+    prediction_raw = dict(sorted(prediction_raw.items(), key=lambda x:x[1], reverse=True)[0: top_k])
 
     return {"prediction": prediction, "prediction_raw": prediction_raw}
