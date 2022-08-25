@@ -312,8 +312,11 @@ class TaskRouter:
         # This function send bask the get road content to the caller
         async def get_versions():
             task_metadata = get_task_metadata(rel_path)
-            get_content = {"models": self.versions}
-            get_content = merge_dicts(get_content, task_metadata)
+            get_content = {"models": dict(sorted(self.versions.items()))}
+            # dict(sorted( is used to order
+            # the models in alphabetical order
+            get_content = dict(sorted(merge_dicts(get_content, task_metadata).items()))
+
             return get_content
 
         response_classes = {
