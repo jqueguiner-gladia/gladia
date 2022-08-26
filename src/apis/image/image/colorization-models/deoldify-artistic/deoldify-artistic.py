@@ -1,6 +1,8 @@
 from os import path
 from pathlib import Path
 
+from deoldify import device, visualize
+from deoldify.device_id import DeviceId
 from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
 from gladia_api_utils.system import get_random_available_gpu_id
@@ -26,9 +28,6 @@ def predict(image: bytes) -> Image:
     models_path = download_models(urls)
 
     current_model_path = path.join(models_path["deoldify-artistic"]["output_path"])
-
-    from deoldify import device, visualize
-    from deoldify.device_id import DeviceId
 
     gpu_id = get_random_available_gpu_id()
 

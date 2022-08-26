@@ -1,5 +1,4 @@
 import json
-import os
 from typing import List
 
 from gladia_api_utils.triton_helper import (
@@ -35,7 +34,6 @@ def predict(text: str) -> List[dict]:
 
     client = TritonClient(
         model_name=MODEL_NAME,
-        current_path=os.path.split(__file__)[0],
         sub_parts=MODEL_SUB_PARTS,
         output_name="output",
         preload_model=check_if_model_needs_to_be_preloaded(MODEL_NAME),
