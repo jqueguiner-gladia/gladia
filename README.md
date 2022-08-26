@@ -143,8 +143,6 @@ We created a [dedicated page](./src/howto101.md) with detailed instructions on h
 2. Make a first API call to your own newly running container
 3. Run the test suite within the newly running container
 
-# CI
-CI power by [CDS](https://github.com/ovh/cds)
 
 # Project Management
 - [core framework](https://github.com/gladiaio/gladia/projects/1)
