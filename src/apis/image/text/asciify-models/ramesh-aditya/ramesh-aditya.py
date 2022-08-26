@@ -1,3 +1,5 @@
+from typing import Dict
+
 from gladia_api_utils.io import _open
 from PIL import Image
 
@@ -52,7 +54,7 @@ def convert_image_to_ascii(
     return "\n".join(ascii_image)
 
 
-def predict(image: bytes) -> str:
+def predict(image: bytes) -> Dict[str, str]:
     """
     Transform an image to ascii characters
 
@@ -67,4 +69,4 @@ def predict(image: bytes) -> str:
     image = resize_image(image, new_width=new_width)
     new_image = convert_image_to_ascii(image.convert("L"))
 
-    return new_image
+    return {"prediction": new_image, "prediction_raw": new_image}

@@ -1,4 +1,7 @@
-def predict(sentence_1: str, sentence_2: str) -> float:
+from typing import Dict
+
+
+def predict(sentence_1: str, sentence_2: str) -> Dict[str, float]:
     """
     Tell for a given sencence_2, whether or not it follows sentence_1
 
@@ -13,4 +16,4 @@ def predict(sentence_1: str, sentence_2: str) -> float:
 
     result = happy_ns.predict_next_sentence(sentence_1, sentence_2)
 
-    return result
+    return {"prediction": result, "prediction_raw": result}

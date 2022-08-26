@@ -1,7 +1,9 @@
+from typing import Dict, Union
+
 from transformers import pipeline
 
 
-def predict(text: str) -> str:
+def predict(text: str) -> Dict[str, Union[str, Dict[str, str]]]:
     """
     Generate the continuation of the sentence
 
@@ -15,4 +17,6 @@ def predict(text: str) -> str:
 
     del generator
 
-    return res[0]["generated_text"]
+    prediction = res[0]["generated_text"]
+
+    return {"prediction": prediction, "prediction_raw": res}

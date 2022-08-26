@@ -1,4 +1,5 @@
 import itertools
+from typing import Dict, List, Tuple
 
 import torch
 import transformers
@@ -6,7 +7,7 @@ import transformers
 
 def get_tokens(
     input_string: str, tokenizer: transformers.PreTrainedTokenizer
-) -> ([str], [[str]]):
+) -> Tuple[List[str], List[List[str]]]:
     """
     Tokenize an input string
 
@@ -22,7 +23,7 @@ def get_tokens(
 
 
 def tokens_to_tensor(
-    tokens: [[str]], tokenizer: transformers.PreTrainedTokenizer
+    tokens: List[List[str]], tokenizer: transformers.PreTrainedTokenizer
 ) -> torch.Tensor:
     """
     From a given tokenized sentence, return it as a Tensor
@@ -44,7 +45,7 @@ def tokens_to_tensor(
     return prepared_ids["input_ids"]
 
 
-def map_tokens_to_words(tokens: [[str]]) -> [int]:
+def map_tokens_to_words(tokens: List[List[str]]) -> List[int]:
     """
     Associate tokens to their respective words.
 
@@ -61,12 +62,12 @@ def map_tokens_to_words(tokens: [[str]]) -> [int]:
 
 
 def get_words_alignment(
-    sentence_src: [str],
-    sentence_tgt: [str],
-    tok2word_map_src: [int],
-    tok2word_map_tgt: [int],
+    sentence_src: List[str],
+    sentence_tgt: List[str],
+    tok2word_map_src: List[int],
+    tok2word_map_tgt: List[int],
     softmax_inter: torch.Tensor,
-) -> [dict]:
+) -> List[dict]:
     """
     Associate words from sentence_src to sentence_tgt
 
@@ -89,7 +90,9 @@ def get_words_alignment(
     return output
 
 
-def predict(input_string_language_1: str, input_string_language_2: str) -> [dict]:
+def predict(
+    input_string_language_1: str, input_string_language_2: str
+) -> Dict[str, List[Dict[str, str]]]:
     """
     Associated words from `input_string_language_1` to `input_string_language_2`.
 
@@ -132,10 +135,12 @@ def predict(input_string_language_1: str, input_string_language_2: str) -> [dict
         torch.nn.Softmax(dim=-2)(dot_prod) > threshold
     )
 
-    return get_words_alignment(
+    result = get_words_alignment(
         sentence_src=sentence_src,
         sentence_tgt=sentence_tgt,
         tok2word_map_src=tok2word_map_src,
         tok2word_map_tgt=tok2word_map_tgt,
         softmax_inter=softmax_inter,
     )
+
+    return {"prediction": result, "prediction_raw": result}

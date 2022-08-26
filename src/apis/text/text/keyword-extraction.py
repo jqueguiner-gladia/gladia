@@ -12,11 +12,7 @@ inputs = [
     }
 ]
 
-output = {
-    "name": "keywords",
-    "type": "list",
-    "example": '[["crown", 0.5544], ["queen", 0.4428], ["kingdom", 0.4382], ["macmillan", 0.4289], ["prince", 0.3954]]',
-}
+output = {"name": "keywords", "type": "str", "example": "crown"}
 
 TaskRouter(
     router=router,

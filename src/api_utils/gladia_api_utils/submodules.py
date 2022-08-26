@@ -9,7 +9,7 @@ import urllib.parse
 from logging import getLogger
 from pathlib import Path
 from shlex import quote
-from typing import Optional
+from typing import Any, Optional
 from urllib.request import urlopen
 
 import forge
@@ -327,15 +327,19 @@ class TaskRouter:
 
         response_class = response_classes.get(self.output["type"], JSONResponse)
 
-        responses = {}
-        if response_class in response_classes.values():
-            responses = {
-                200: {
-                    "content": {
-                        response_class.media_type: {"schema": response_class.schema}
-                    }
-                }
+        response_schema = (
+            response_class.schema
+            if response_class in response_classes.values()
+            else {
+                "type": "json",
+                "prediction": self.output["type"],
+                "prediction_raw": Any,
             }
+        )
+
+        responses = {
+            200: {"content": {response_class.media_type: {"schema": response_schema}}}
+        }
 
         endpoint_parameters_description = dict()
         for parameter in input:

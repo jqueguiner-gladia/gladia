@@ -1,9 +1,11 @@
-import json
+from typing import Dict, List, Union
 
 from happytransformer import HappyQuestionAnswering
 
 
-def predict(context: str, question: str) -> str:
+def predict(
+    context: str, question: str
+) -> Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]:
     """
     Using the given `context`, answer the provided `question`.
 
@@ -12,7 +14,22 @@ def predict(context: str, question: str) -> str:
     :return: JSON formatted str containing both the answer and the confidence score.
     """
 
-    happy_qa = HappyQuestionAnswering("ALBERT", "mfeb/albert-xxlarge-v2-squad2")
-    result = happy_qa.answer_question(context, question)
+    NB_RESULTS = 25
 
-    return json.dumps({"answer": result[0].answer, "score": result[0].score})
+    happy_qa = HappyQuestionAnswering("ALBERT", "mfeb/albert-xxlarge-v2-squad2")
+    result = happy_qa.answer_question(context, question, top_k=NB_RESULTS)
+
+    prediction_raw = [
+        {
+            "answer": answer.answer,
+            "score": answer.score,
+            "start": answer.start,
+            "end": answer.end,
+        }
+        for answer in result
+    ]
+    prediction = result[0].answer
+
+    del happy_qa
+
+    return {"prediction": prediction, "prediction_raw": prediction_raw}

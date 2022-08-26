@@ -60,9 +60,9 @@ def predict(text: str) -> List[Dict[str, Any]]:
 
     client.set_input(name="TEXT", shape=np_output.shape, datatype="BYTES")
 
-    output = softmax(client(np_output)[0][0])
+    output = list(softmax(client(np_output)[0][0]))
 
-    return [
-        {"language": language, "score": score}
-        for (language, score) in zip(LANGUAGES, output)
-    ]
+    prediction = LANGUAGES[output.index(max(output))]
+    prediction_raw = dict(zip(LANGUAGES, output))
+
+    return {"prediction": prediction, "prediction_raw": prediction_raw}

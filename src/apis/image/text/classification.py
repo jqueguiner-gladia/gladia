@@ -17,7 +17,11 @@ inputs = [
     },
 ]
 
-output = {"name": "classified_image", "type": "text", "example": "class: probability%"}
+output = {
+    "name": "classified_image",
+    "type": "str",
+    "example": "bow tie",
+}
 
 router = APIRouter()
 

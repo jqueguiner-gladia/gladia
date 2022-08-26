@@ -1,4 +1,5 @@
 import os
+from typing import Dict, List, Union
 
 from gladia_api_utils.triton_helper import (
     TritonClient,
@@ -7,7 +8,7 @@ from gladia_api_utils.triton_helper import (
 )
 
 
-def predict(text: str) -> dict:
+def predict(text: str) -> Dict[str, Union[str, List[float]]]:
     """
     From a given, classify it between 1 (hate) and 5 (love).
 
@@ -44,7 +45,4 @@ def predict(text: str) -> dict:
     rating = {0: "negative", 1: "negative", 2: "neutral", 3: "positive", 4: "positive"}
     label = rating[output.index(max(output))].upper()
 
-    return {
-        "label": label,
-        "score": 1,
-    }  # NOTE: there is no confidence score from this model
+    return {"prediction": label, "prediction_raw": output}

@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import Dict, List, Union
 
 from gladia_api_utils.triton_helper import (
     TritonClient,
@@ -8,7 +8,7 @@ from gladia_api_utils.triton_helper import (
 )
 
 
-def predict(text: str) -> List[dict]:
+def predict(text: str) -> Dict[str, Union[List[Dict[str, Union[str, float]]], str]]:
     """
     Apply NER on the given task and return each token within the sentence associated to its label.
 
@@ -43,6 +43,8 @@ def predict(text: str) -> List[dict]:
 
     client.set_input(name="TEXT", shape=np_output.shape, datatype="BYTES")
 
-    output = client(np_output)[0].decode("utf8")
+    prediction_raw = client(np_output)
+    prediction_decode = prediction_raw[0].decode("utf8")
+    prediction = json.loads(prediction_decode)[0]
 
-    return json.loads(output)[0]
+    return {"prediction": prediction, "prediction_raw": prediction_raw}

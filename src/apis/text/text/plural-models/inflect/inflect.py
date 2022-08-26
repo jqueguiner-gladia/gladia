@@ -1,7 +1,9 @@
+from typing import Dict
+
 import inflect
 
 
-def predict(word: str, count: int) -> str:
+def predict(word: str, count: int) -> Dict[str, str]:
     """
     Apply the `inflect.engine().plural` function to accord the `word` in plural regarding its `count`.\n
 
@@ -17,5 +19,6 @@ def predict(word: str, count: int) -> str:
     """
 
     p = inflect.engine()
+    result = p.plural(word, count)
 
-    return p.plural(word, count)
+    return {"prediction": result, "prediction_raw": result}

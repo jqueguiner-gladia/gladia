@@ -1,3 +1,5 @@
+from typing import Dict
+
 import torch
 from transformers import (
     AutoModelWithLMHead,
@@ -37,10 +39,10 @@ def generate(
     decoded = tokenizer.decode(resp[0])
     reformatted = decoded.replace(new_line_token, "\n")
 
-    return reformatted
+    return reformatted, decoded
 
 
-def predict(code_snippet: str) -> str:
+def predict(code_snippet: str) -> Dict[str, str]:
     """
     Generate the continuation of the provided `code_snippet`.
 
@@ -53,9 +55,9 @@ def predict(code_snippet: str) -> str:
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelWithLMHead.from_pretrained(model_name)
 
-    out = generate(code_snippet, tokenizer, model)
+    result, result_raw = generate(code_snippet, tokenizer, model)
 
     del model
     del tokenizer
 
-    return out
+    return {"prediction": result, "prediction_raw": result_raw}

@@ -18,7 +18,11 @@ inputs = [
     },
 ]
 
-output = {"name": "word_aligment", "type": "dict", "example": "word_aligment"}
+output = {
+    "name": "word_aligment",
+    "type": "list",
+    "example": '[{"source": "Sentence","target": "来自"}]',
+}
 
 TaskRouter(
     router=router,

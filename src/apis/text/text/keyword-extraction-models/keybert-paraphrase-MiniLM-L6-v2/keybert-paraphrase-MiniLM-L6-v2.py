@@ -1,3 +1,5 @@
+from typing import Dict, Union
+
 from gladia_api_utils.triton_helper import (
     TritonClient,
     check_if_model_needs_to_be_preloaded,
@@ -8,16 +10,22 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-def select_key_words(text_embeddings, vocabulary_embeddings, vocabulary, top_n=5):
+def select_key_words(text_embeddings, vocabulary_embeddings, vocabulary, top_n=1):
 
     distances = cosine_similarity(text_embeddings, vocabulary_embeddings)
     top_n_indexes = distances.argsort()[0][-top_n:]
+    all_indexes = distances.argsort()[0]
+    prediction = [(vocabulary[index], distances[0][index]) for index in top_n_indexes][
+        ::-1
+    ]
+    prediction_raw = {vocabulary[index]: distances[0][index] for index in all_indexes}
+    prediction_raw = dict(reversed(list(prediction_raw.items())))
 
-    return [(vocabulary[index], distances[0][index]) for index in top_n_indexes][::-1]
+    return {"prediction": prediction[0][0], "prediction_raw": prediction_raw}
 
 
 # TODO : check if num_seq > 128 and raise error if this is the case
-def predict(text: str) -> [(str, float)]:
+def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     Extract keywords from a given sentence
 

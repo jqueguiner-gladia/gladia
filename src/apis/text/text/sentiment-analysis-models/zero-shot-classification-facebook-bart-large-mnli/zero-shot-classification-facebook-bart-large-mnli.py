@@ -14,6 +14,5 @@ def predict(text: str) -> dict:
     prediction = classifier(text, candidate_labels=["POSITIVE", "NEUTRAL", "NEGATIVE"])
 
     label = prediction["labels"][np.argmax(prediction["scores"])]
-    score = np.amax(prediction["scores"])
 
-    return {"label": label, "score": score}
+    return {"prediction": label, "prediction_raw": prediction}

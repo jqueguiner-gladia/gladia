@@ -17,7 +17,7 @@ inputs = [
     },
 ]
 
-output = {"name": "extracted_text", "type": "list", "example": "extracted_text"}
+output = {"name": "extracted_text", "type": "str", "example": "extracted_text"}
 
 router = APIRouter()
 
