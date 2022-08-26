@@ -1,5 +1,6 @@
 from typing import Dict, List, Union
 
+
 def predict(
     text: str,
 ) -> Dict[str, Union[str, Dict[str, Union[str, List[str], List[float]]]]]:

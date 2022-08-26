@@ -10,7 +10,7 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     :param text: text to analyze
     :return: json scoring the chance of the text to be in each language
     """
-    
+
     prediction_raw = {}
 
     for lang, score in rank(text):
