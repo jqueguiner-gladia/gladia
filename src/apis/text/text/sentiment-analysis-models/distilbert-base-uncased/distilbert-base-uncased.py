@@ -1,5 +1,7 @@
 from typing import Dict, List, Union
 
+from happytransformer import HappyTextClassification
+
 
 def predict(
     text: str,
