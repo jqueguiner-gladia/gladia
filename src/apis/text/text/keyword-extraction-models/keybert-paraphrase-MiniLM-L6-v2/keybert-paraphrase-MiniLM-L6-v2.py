@@ -1,5 +1,6 @@
 from typing import Dict, Union
 
+import truecase
 from gladia_api_utils.triton_helper import (
     TritonClient,
     check_if_model_needs_to_be_preloaded,
@@ -46,7 +47,7 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
         preload_model=check_if_model_needs_to_be_preloaded(MODEL_NAME),
     )
 
-    text_preprocessed = data_processing.text_to_numpy(text)
+    text_preprocessed = data_processing.text_to_numpy(truecase.get_true_case(text))
     client.set_input(name="TEXT", shape=text_preprocessed.shape, datatype="BYTES")
     text_embeddings = nparray(
         client(text_preprocessed, load_model=True, unload_model=False)[0]

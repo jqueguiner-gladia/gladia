@@ -1,5 +1,6 @@
 from typing import Dict
 
+import truecase
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
@@ -16,7 +17,7 @@ def predict(text: str) -> Dict[str, str]:
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-    input_ids = tokenizer.encode(text, return_tensors="pt")
+    input_ids = tokenizer.encode(truecase.get_true_case(text), return_tensors="pt")
 
     outputs = model.generate(input_ids)
 

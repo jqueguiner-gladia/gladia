@@ -1,6 +1,7 @@
 from typing import Dict, Union
 
 import numpy as np
+import truecase
 from gladia_api_utils.triton_helper import (
     TritonClient,
     check_if_model_needs_to_be_preloaded,
@@ -28,7 +29,10 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     tokenizer = BertTokenizer.from_pretrained(TOKENIZER_NAME)
 
     input_ids = tokenizer(
-        text, return_tensors="pt", max_length=256, padding="max_length"
+        truecase.get_true_case(text),
+        return_tensors="pt",
+        max_length=256,
+        padding="max_length",
     ).input_ids
 
     client.set_input(shape=(1, 256), datatype="INT32")

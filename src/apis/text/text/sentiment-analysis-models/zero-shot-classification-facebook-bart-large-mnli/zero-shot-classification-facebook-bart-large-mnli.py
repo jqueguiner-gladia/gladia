@@ -1,4 +1,5 @@
 import numpy as np
+import truecase
 from transformers import pipeline
 
 
@@ -11,7 +12,10 @@ def predict(text: str) -> dict:
     """
 
     classifier = pipeline("zero-shot-classification")
-    prediction = classifier(text, candidate_labels=["POSITIVE", "NEUTRAL", "NEGATIVE"])
+    prediction = classifier(
+        truecase.get_true_case(text),
+        candidate_labels=["POSITIVE", "NEUTRAL", "NEGATIVE"],
+    )
 
     label = prediction["labels"][np.argmax(prediction["scores"])]
 

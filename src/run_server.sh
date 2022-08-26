@@ -5,6 +5,8 @@ API_SERVER_PORT_HTTP="${API_SERVER_PORT_HTTP:-8080}"
 API_SERVER_WORKERS="${API_SERVER_WORKERS:-1}"
 API_SERVER_TIMEOUT="${API_SERVER_TIMEOUT:-1200}"
 
+# init nltk data used for truecase
+micromamba run -n server python -c "import nltk; nltk.download('punkt')"
 
 if [ $MODE = "standalone" ]
 then

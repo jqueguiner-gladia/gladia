@@ -1,6 +1,6 @@
-import os
 from typing import Dict, List, Union
 
+import truecase
 from gladia_api_utils.triton_helper import (
     TritonClient,
     check_if_model_needs_to_be_preloaded,
@@ -24,13 +24,12 @@ def predict(text: str) -> Dict[str, Union[str, List[float]]]:
 
     client = TritonClient(
         model_name=MODEL_NAME,
-        current_path=os.path.split(__file__)[0],
         sub_parts=MODEL_SUB_PARTS,
         output_name="output",
         preload_model=check_if_model_needs_to_be_preloaded(MODEL_NAME),
     )
 
-    numpy_input = data_processing.text_to_numpy(text)
+    numpy_input = data_processing.text_to_numpy(truecase.get_true_case(text))
 
     client.set_input(name="TEXT", shape=numpy_input.shape, datatype="BYTES")
 

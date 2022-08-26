@@ -1,5 +1,6 @@
 from typing import Dict, List, Union
 
+import truecase
 from happytransformer import HappyTextClassification
 
 
@@ -16,8 +17,11 @@ def predict(
     happy_tc = HappyTextClassification(
         "DISTILBERT", "distilbert-base-uncased", num_labels=2
     )
-    result = happy_tc.classify_text(text)
+
+    result = happy_tc.classify_text(truecase.get_true_case(text))
+
     prediction = "POSITIVE" if result.label == "LABEL_0" else "NEGATIVE"
+
     prediction_raw = {"label": result.label, "score": result.score}
 
     return {"prediction": prediction, "prediction_raw": prediction_raw}

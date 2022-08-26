@@ -1,5 +1,6 @@
 from typing import Dict, List, Union
 
+import truecase
 from happytransformer import HappyQuestionAnswering
 
 
@@ -17,7 +18,11 @@ def predict(
     NB_RESULTS = 25
 
     happy_qa = HappyQuestionAnswering("ROBERTA", "deepset/roberta-base-squad2")
-    result = happy_qa.answer_question(context, question, top_k=NB_RESULTS)
+    result = happy_qa.answer_question(
+        truecase.get_true_case(context),
+        truecase.get_true_case(question),
+        top_k=NB_RESULTS,
+    )
 
     prediction_raw = [
         {

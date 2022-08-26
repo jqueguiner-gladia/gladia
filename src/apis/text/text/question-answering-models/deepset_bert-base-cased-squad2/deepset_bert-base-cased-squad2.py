@@ -1,6 +1,7 @@
 from typing import Dict, List, Union
 
 import torch
+import truecase
 from transformers import (
     AutoModelForQuestionAnswering,
     AutoTokenizer,
@@ -40,7 +41,10 @@ def predict(
     tokenizer, model = load_model()
 
     inputs = tokenizer.encode_plus(
-        question, context, add_special_tokens=True, return_tensors="pt"
+        truecase.get_true_case(question),
+        truecase.get_true_case(context),
+        add_special_tokens=True,
+        return_tensors="pt",
     )
     input_ids = inputs["input_ids"].tolist()[0]
 

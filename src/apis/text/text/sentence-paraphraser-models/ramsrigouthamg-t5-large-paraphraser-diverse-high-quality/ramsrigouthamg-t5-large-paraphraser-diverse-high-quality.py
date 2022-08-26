@@ -1,6 +1,7 @@
 from typing import Dict
 
 import torch
+import truecase
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
@@ -21,7 +22,7 @@ def predict(context: str) -> Dict[str, str]:
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    text = f"paraphrase: {context}</s>"
+    text = f"paraphrase: {truecase.get_true_case(context)}</s>"
 
     encoding = tokenizer.encode_plus(
         text, max_length=128, padding="max_length", return_tensors="pt"
