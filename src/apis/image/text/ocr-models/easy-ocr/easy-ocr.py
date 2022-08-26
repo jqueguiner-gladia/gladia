@@ -1,3 +1,4 @@
+import easyocr
 import numpy as np
 from gladia_api_utils.io import _open
 
@@ -10,8 +11,6 @@ def predict(image: bytes, source_language: str) -> [str]:
     :param source_language: language of the text to be searched
     :return: characters found in the image
     """
-
-    import easyocr
 
     image = _open(image)
     image = np.array(image)
