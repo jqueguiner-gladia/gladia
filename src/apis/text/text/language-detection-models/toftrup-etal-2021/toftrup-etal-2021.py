@@ -1,5 +1,7 @@
 from typing import Dict, Union
 
+from LanguageIdentifier import rank
+
 
 def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
@@ -8,10 +10,9 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     :param text: text to analyze
     :return: json scoring the chance of the text to be in each language
     """
-
-    from LanguageIdentifier import rank
-
+    
     prediction_raw = {}
+
     for lang, score in rank(text):
         prediction_raw[lang] = score
 

@@ -1,15 +1,13 @@
 from typing import Dict, Union
 
-
 def predict(text: str) -> Dict[str, Union[str, Dict[str, Union[str, float]]]]:
+
     """
     For a given text, predict if it's POSITIVE or NEGATIVE
 
     :param text: text to analyze.
     :return: JSON formatted str containing the label (POSITIVE/NEGATIVE) with it score
     """
-
-    from happytransformer import HappyTextClassification
 
     happy_tc = HappyTextClassification(
         model_type="DISTILBERT",

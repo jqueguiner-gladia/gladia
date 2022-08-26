@@ -3,6 +3,7 @@ from typing import Dict
 
 import cv2
 import numpy as np
+import pytesseract
 from gladia_api_utils.io import _open
 
 
@@ -14,8 +15,6 @@ def predict(image: bytes, source_language: str) -> Dict[str, str]:
     :param source_language: [UNUSED] language of the text to be searched
     :return: characters found in the image
     """
-
-    import pytesseract
 
     del source_language
 

@@ -35,7 +35,6 @@ def predict(text: str) -> Dict[str, Union[List[Dict[str, Union[str, float]]], st
 
     client = TritonClient(
         model_name=MODEL_NAME,
-        current_path=os.path.split(__file__)[0],
         sub_parts=MODEL_SUB_PARTS,
         output_name="output",
         preload_model=check_if_model_needs_to_be_preloaded(MODEL_NAME),

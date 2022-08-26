@@ -1,5 +1,7 @@
 from typing import Dict, List, Union
 
+from happytransformer import HappyQuestionAnswering
+
 
 def predict(
     context: str, question: str
@@ -11,8 +13,6 @@ def predict(
     :param question: question to answer
     :return: JSON formatted str containing both the answer and the confidence score.
     """
-
-    from happytransformer import HappyQuestionAnswering
 
     NB_RESULTS = 25
 
