@@ -26,13 +26,19 @@ class TritonClient:
 
         Args:
             triton_server_url (str): URL to the triton server
+            triton_server_port (int): PORT to the triton server
             model_name (str): name of the model to communicate with
             current_path (str, optional): current path (allows to download model if needed). Defaults to "".
         """
 
         self.__triton_server_url = kwargs.get(
             "triton_server_url",
-            os.getenv("TRITON_SERVER_URL", default="localhost:8000"),
+            os.getenv("TRITON_SERVER_URL", default="localhost"),
+        )
+
+        self.__triton_server_port = kwargs.get(
+            "triton_server_port",
+            os.getenv("TRITON_SERVER_PORT_HTTP", default=8000),
         )
 
         self.__current_path = kwargs.get(
@@ -64,7 +70,8 @@ class TritonClient:
             self.__preload_model = False
 
         self.__client = tritonclient.InferenceServerClient(
-            url=self.__triton_server_url, verbose=False
+            url=f"{self.__triton_server_url}:{self.__triton_server_port}",
+            verbose=False,
         )
 
         self.__registered_inputs = {}
@@ -88,14 +95,14 @@ class TritonClient:
 
         for model_sub_part in self.__model_sub_parts:
             response = requests.post(
-                url=f"http://{self.__triton_server_url}/v2/repository/models/{model_sub_part}/load",
+                url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/models/{model_sub_part}/load",
             )
 
             if response.status_code != 200:
                 return False
 
         response = requests.post(
-            url=f"http://{self.__triton_server_url}/v2/repository/models/{self.__model_name}/load"
+            url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/models/{self.__model_name}/load"
         )
 
         return response.status_code == 200
@@ -110,7 +117,7 @@ class TritonClient:
         successfully_unload_model: bool = True
 
         response = requests.post(
-            url=f"http://{self.__triton_server_url}/v2/repository/models/{self.__model_name}/unload",
+            url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/models/{self.__model_name}/unload",
             data={"unload_dependents": False},
         )
 
@@ -119,7 +126,7 @@ class TritonClient:
 
         for model_sub_part in self.__model_sub_parts:
             response = requests.post(
-                url=f"http://{self.__triton_server_url}/v2/repository/models/{model_sub_part}/unload",
+                url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/models/{model_sub_part}/unload",
             )
 
             if response.status_code != 200:
@@ -163,7 +170,7 @@ class TritonClient:
         """
 
         response = requests.post(
-            url=f"http://{self.__triton_server_url}/v2/repository/index"
+            url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/index"
         )
 
         for model in response.json():
