@@ -149,7 +149,7 @@ jobs:
           -e PR=${{ github.event.pull_request.number }} \
           -e GHT=${{ secrets.GITHUB_TOKEN }} \
           jlmagouille-${{ github.event.pull_request.number }} \
-          /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py'
+          /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py -g -p $PR -t $GHT'
 
       - name: Logs
         if: always()
