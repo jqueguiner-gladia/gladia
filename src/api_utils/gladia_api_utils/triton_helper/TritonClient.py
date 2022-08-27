@@ -95,14 +95,14 @@ class TritonClient:
 
         for model_sub_part in self.__model_sub_parts:
             response = requests.post(
-                url=f"http://{self.__triton_server_url}/v2/repository/models/{model_sub_part}/load",
+                url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/models/{model_sub_part}/load",
             )
 
             if response.status_code != 200:
                 return False
 
         response = requests.post(
-            url=f"http://{self.__triton_server_url}/v2/repository/models/{self.__model_name}/load"
+            url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/models/{self.__model_name}/load"
         )
 
         return response.status_code == 200
@@ -117,7 +117,7 @@ class TritonClient:
         successfully_unload_model: bool = True
 
         response = requests.post(
-            url=f"http://{self.__triton_server_url}/v2/repository/models/{self.__model_name}/unload",
+            url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/models/{self.__model_name}/unload",
             data={"unload_dependents": False},
         )
 
@@ -126,7 +126,7 @@ class TritonClient:
 
         for model_sub_part in self.__model_sub_parts:
             response = requests.post(
-                url=f"http://{self.__triton_server_url}/v2/repository/models/{model_sub_part}/unload",
+                url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/models/{model_sub_part}/unload",
             )
 
             if response.status_code != 200:
