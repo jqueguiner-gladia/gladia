@@ -38,7 +38,7 @@ class TritonClient:
 
         self.__triton_server_port = kwargs.get(
             "triton_server_port",
-            os.getenv("TRITON_SERVER_PORT", default=8000),
+            os.getenv("TRITON_SERVER_PORT_HTTP", default=8000),
         )
 
         self.__current_path = kwargs.get(
