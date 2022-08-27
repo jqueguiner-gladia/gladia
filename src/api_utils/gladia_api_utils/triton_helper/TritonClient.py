@@ -70,7 +70,8 @@ class TritonClient:
             self.__preload_model = False
 
         self.__client = tritonclient.InferenceServerClient(
-            url=f"{self.__triton_server_url}:{str(self.__triton_server_port)}", verbose=False
+            url=f"{self.__triton_server_url}:{str(self.__triton_server_port)}",
+            verbose=False,
         )
 
         self.__registered_inputs = {}
