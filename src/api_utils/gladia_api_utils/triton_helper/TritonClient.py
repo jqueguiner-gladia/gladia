@@ -70,7 +70,7 @@ class TritonClient:
             self.__preload_model = False
 
         self.__client = tritonclient.InferenceServerClient(
-            url=f"{self.__triton_server_url}:8000",
+            url=f"{self.__triton_server_url}:{self.__triton_server_port}",
             verbose=False,
         )
 
@@ -170,7 +170,7 @@ class TritonClient:
         """
 
         response = requests.post(
-            url=f"http://{self.__triton_server_url}/v2/repository/index"
+            url=f"http://{self.__triton_server_url}:{self.__triton_server_port}/v2/repository/index"
         )
 
         for model in response.json():
