@@ -26,13 +26,19 @@ class TritonClient:
 
         Args:
             triton_server_url (str): URL to the triton server
+            triton_server_port (int): PORT to the triton server
             model_name (str): name of the model to communicate with
             current_path (str, optional): current path (allows to download model if needed). Defaults to "".
         """
 
         self.__triton_server_url = kwargs.get(
             "triton_server_url",
-            os.getenv("TRITON_SERVER_URL", default="localhost:8000"),
+            os.getenv("TRITON_SERVER_URL", default="localhost"),
+        )
+
+        self.__triton_server_port = kwargs.get(
+            "triton_server_port",
+            os.getenv("TRITON_SERVER_PORT", default=8000),
         )
 
         self.__current_path = kwargs.get(
@@ -64,7 +70,7 @@ class TritonClient:
             self.__preload_model = False
 
         self.__client = tritonclient.InferenceServerClient(
-            url=self.__triton_server_url, verbose=False
+            url=f"{self.__triton_server_url}:{str(self.__triton_server_port)}", verbose=False
         )
 
         self.__registered_inputs = {}
