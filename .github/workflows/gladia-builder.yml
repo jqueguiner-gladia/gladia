@@ -142,8 +142,19 @@ jobs:
       - name: Give it 5s to make sure it is ready
         run: sleep 5s
         
+      - name: Non breaking test
+        id: full-test
+        if: "contains(github.event.pull_request.labels.*.name, 'ci: test-continue-when-fail')"
+        run: | 
+          docker exec -i \
+          -e PR=${{ github.event.pull_request.number }} \
+          -e GHT=${{ secrets.GITHUB_TOKEN }} \
+          jlmagouille-${{ github.event.pull_request.number }} \
+          /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py -c -g -p $PR -t $GHT'
+
       - name: Test
         id: test
+        if: "!contains(github.event.pull_request.labels.*.name, 'ci: test-continue-when-fail')"
         run: | 
           docker exec -i \
           -e PR=${{ github.event.pull_request.number }} \
