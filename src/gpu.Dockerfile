@@ -15,11 +15,18 @@ ARG MAMBA_ALWAYS_SOFTLINK="true"
 ARG CLEAN_LAYER_SCRIPT=$PATH_TO_GLADIA_SRC/tools/docker/clean-layer.sh
 ARG VENV_BUILDER_PATH=$PATH_TO_GLADIA_SRC/tools/venv-builder/
 
+# TF_CPP_MIN_LOG_LEVEL=2 
+# https://stackoverflow.com/questions/35911252/disable-tensorflow-debugging-information
+# 0 = all messages are logged (default behavior)
+# 1 = INFO messages are notcd  printed
+# 2 = INFO and WARNING messages are not printed
+# 3 = INFO, WARNING, and ERROR messages are not printed
 ENV GLADIA_TMP_PATH=$GLADIA_TMP_PATH \
     PATH_TO_GLADIA_SRC=$PATH_TO_GLADIA_SRC \
     API_SERVER_PORT_HTTP=$API_SERVER_PORT_HTTP \
     VENV_BUILDER_PATH=$VENV_BUILDER_PATH \
-    NLTK_DATA=$GLADIA_TMP_PATH/nltk_data
+    NLTK_DATA=$GLADIA_TMP_PATH/nltk_data \
+    TF_CPP_MIN_LOG_LEVEL=2
 
 RUN mkdir -p $GLADIA_TMP_PATH \
     mkdir -p $NLTK_DATA
