@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from gladia_api_utils.submodules import TaskRouter
-from gladia_api_utils
 
 router = APIRouter()
 
