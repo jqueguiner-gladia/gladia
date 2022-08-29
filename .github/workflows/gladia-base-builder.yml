@@ -47,8 +47,7 @@ jobs:
         run: docker push docker.gladia.io/gladia-base:latest
         
       - name: Tag new base latest to Docker registry
-        run: docker tag docker.gladia.io/gladia-base:latest
-         gladiaio/gladia-base:latest    
+        run: docker tag docker.gladia.io/gladia-base:latest gladiaio/gladia-base:latest    
         
       - name: Push new base latest to Docker registry
         run: docker push gladiaio/gladia-base:latest
