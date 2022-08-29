@@ -1,30 +1,21 @@
 from typing import Dict, Union
 
 from gladia_api_utils.io import _open
-from torchvision.io import read_image
-from torchvision.models import MNASNet0_5_Weights, mnasnet0_5
+from gladia_api_utils.TorchvisionModelHelper import TorchvisionModel
 
 
 def predict(image: bytes, top_k: int = 1) -> Dict[str, Union[str, Dict[str, float]]]:
     img = _open(image)
 
-    weights = MNASNet0_5_Weights.DEFAULT
-    model = mnasnet0_5(weights=weights)
-    model.eval()
-
-    # Step 2: Initialize the inference transforms
-    preprocess = weights.transforms()
-
-    # Step 3: Apply inference preprocessing transforms
-    batch = preprocess(img).unsqueeze(0)
-
-    # Step 4: Use the model and print the predicted category
-    model_prediction = model(batch).squeeze(0).softmax(0)
-    class_id = model_prediction.argmax().item()
-    prediction = weights.meta["categories"][class_id]
-    prediction_raw = dict(zip(weights.meta["categories"], model_prediction.tolist()))
-    prediction_raw = dict(
-        sorted(prediction_raw.items(), key=lambda x: x[1], reverse=True)[0:top_k]
+    model = TorchvisionModel(
+        model_name="mnasnet0_5",
+        weights="MNASNet0_5_Weights",
+        weights_version="IMAGENET1K_V1",
+        quantized=False,
     )
+    output = model(img, top_k)
 
-    return {"prediction": prediction, "prediction_raw": prediction_raw}
+    return {
+        "prediction": output["prediction"],
+        "prediction_raw": output["prediction_raw"],
+    }
