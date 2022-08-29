@@ -5,14 +5,14 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "sentence",
         "example": "I think therefore I",
         "placeholder": "Insert the text to find the next word from.",
     }
 ]
 
-output = {"name": "next_word", "type": "str", "example": "next word"}
+output = {"name": "next_word", "type": "string", "example": "next word"}
 
 
 TaskRouter(

@@ -3,27 +3,27 @@ from gladia_api_utils.submodules import TaskRouter
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "prompt",
         "example": "the Eiffel tower landing on the moon",
         "placeholder": "Prompt to generate image from",
     },
     {
-        "type": "int",
+        "type": "integer",
         "name": "samples",
         "default": 1,
         "example": 1,
         "placeholder": "Number of predictions",
     },
     {
-        "type": "int",
+        "type": "integer",
         "name": "steps",
         "default": 40,
         "example": 40,
         "placeholder": "Number of steps",
     },
     {
-        "type": "int",
+        "type": "integer",
         "name": "seed",
         "default": 396916372,
         "example": 396916372,

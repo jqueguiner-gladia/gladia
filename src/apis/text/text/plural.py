@@ -5,13 +5,13 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "word",
         "example": "cat",
         "placeholder": "Insert the word to pluralize here",
     },
     {
-        "type": "int",
+        "type": "integer",
         "name": "count",
         "default": 2,
         "example": 2,
@@ -19,6 +19,6 @@ inputs = [
     },
 ]
 
-output = {"name": "pluralized_text", "type": "str", "example": "cats"}
+output = {"name": "pluralized_text", "type": "string", "example": "cats"}
 
 TaskRouter(router=router, input=inputs, output=output, default_model="inflect")

@@ -5,14 +5,14 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "text",
         "example": "Input text to perform language detection on",
         "placeholder": "Insert the text to perform language detection on",
     }
 ]
 
-output = {"name": "generated_text", "type": "str", "example": "en"}
+output = {"name": "generated_text", "type": "string", "example": "en"}
 
 TaskRouter(
     router=router,
