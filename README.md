@@ -41,15 +41,16 @@
   <a href="https://sonarcloud.io/project/overview?id=gladiaio_gladia" alt="code-quality">
     <img src="https://sonarcloud.io/api/project_badges/measure?project=gladiaio_gladia&metric=alert_status" />
   </a>
+  <a href="https://hub.docker.com/repository/docker/gladiaio/gladia" alt="code-quality">
+    <img src="https://img.shields.io/docker/pulls/gladiaio/gladia.svg" />
+  </a>
+  <a href="https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml" alt="code-quality">
+    <img src="https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml/badge.svg" />
+  </a>
+  <a href="https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml" alt="code-quality">
+    <img src="https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml/badge.svg" />
+  </a>
 </p>
-
-
-
-[![Gladia Docker pulls](https://img.shields.io/docker/pulls/gladiaio/gladia.svg)](https://hub.docker.com/repository/docker/gladiaio/gladia)
-
-[![Gladia Base Builder](https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-base-builder.yml)
-
-[![Gladia Docker Hub Push](https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml/badge.svg)](https://github.com/gladiaio/gladia/actions/workflows/gladia-latest-deploy.yml)
 
 
 Follow Gladia Twitter account to get the latest update
