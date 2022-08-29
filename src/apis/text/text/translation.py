@@ -13,17 +13,26 @@ inputs = [
     {
         "type": "text",
         "name": "source_language",
-        "example": "en",
-        "placeholder": "Use the ISO 2 letters representation for source language",
+        "example": "eng",
+        "placeholder": "Use the ISO 3 letters (ISO 639-3) representation for source language",
     },
     {
         "type": "text",
         "name": "target_language",
-        "example": "fr",
-        "placeholder": "Use the ISO 2 letters representation for target language",
+        "example": "fra",
+        "placeholder": "Use the ISO 3 letters (ISO 639-3) representation for target language",
     },
 ]
 
-output = {"name": "translated_text", "type": "str", "example": "translated_text"}
+output = {
+    "name": "translated_text",
+    "type": "str",
+    "example": '{"prediction": "Le texte à traduire",  "prediction_raw": "Le texte à traduire"}',
+}
 
-TaskRouter(router=router, input=inputs, output=output, default_model="Helsinki-NLP")
+TaskRouter(
+    router=router,
+    input=inputs,
+    output=output,
+    default_model="facebook-nllb-200-distilled-600M",
+)
