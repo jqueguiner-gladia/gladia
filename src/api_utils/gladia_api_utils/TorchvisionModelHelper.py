@@ -54,7 +54,7 @@ class TorchvisionModel:
             List[Dict[str, int]]: List of the predicted classes associated with it score
         """
 
-        preprocessed_image = self.__preprocessing(image.convert('RGB')).unsqueeze(0)
+        preprocessed_image = self.__preprocessing(image.convert("RGB")).unsqueeze(0)
 
         model_prediction = self.__model(preprocessed_image).squeeze(0).softmax(0)
 
