@@ -31,14 +31,14 @@ def predict(sentence_1: str, sentence_2: str) -> dict:
     """
 
     MODEL_NAME = "sentence-transformers_all-MiniLM-L6-v2_tensorrt_inference"
-    MODEL_SUB_PARTS = [
-        "sentence-transformers_all-MiniLM-L6-v2_tensorrt_model",
-        "sentence-transformers_all-MiniLM-L6-v2_tensorrt_tokenize",
-    ]
+    # MODEL_SUB_PARTS = [
+    #     "sentence-transformers_all-MiniLM-L6-v2_tensorrt_model",
+    #     "sentence-transformers_all-MiniLM-L6-v2_tensorrt_tokenize",
+    # ]
 
     client = TritonClient(
         model_name=MODEL_NAME,
-        sub_parts=MODEL_SUB_PARTS,
+        # sub_parts=MODEL_SUB_PARTS,
         output_name="output",
         preload_model=check_if_model_needs_to_be_preloaded(MODEL_NAME),
     )

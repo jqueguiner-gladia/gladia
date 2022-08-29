@@ -16,6 +16,7 @@
   "gladia": {
     "latency": "",
     "format": "",
+    "engine": "triton",
     "accelerator": ""
   }
 }

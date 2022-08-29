@@ -16,6 +16,11 @@
   "gladia": {
     "latency": "",
     "format": "",
-    "accelerator": ""
+    "engine": "triton",
+    "accelerator": "",
+    "dependencies": [
+      "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_model",
+      "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_tokenize"
+    ]
   }
 }

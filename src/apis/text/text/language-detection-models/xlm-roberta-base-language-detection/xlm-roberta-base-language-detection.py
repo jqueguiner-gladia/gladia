@@ -21,10 +21,10 @@ def predict(text: str) -> List[Dict[str, Any]]:
     """
 
     MODEL_NAME = "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_inference"
-    MODEL_SUB_PARTS = [
-        "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_model",
-        "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_tokenize",
-    ]
+    # MODEL_SUB_PARTS = [ # TODO: retrieve from .metadata
+    #     "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_model",
+    #     "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_tokenize",
+    # ]
 
     LANGUAGES = [
         "ja",
@@ -51,7 +51,7 @@ def predict(text: str) -> List[Dict[str, Any]]:
 
     client = TritonClient(
         model_name=MODEL_NAME,
-        sub_parts=MODEL_SUB_PARTS,
+        # sub_parts=MODEL_SUB_PARTS,
         output_name="output",
         preload_model=check_if_model_needs_to_be_preloaded(MODEL_NAME),
     )

@@ -16,6 +16,11 @@
   "gladia": {
     "latency": "",
     "format": "",
-    "accelerator": ""
+    "accelerator": "",
+    "locked_in_memory": true,
+    "dependencies": [
+      "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_model",
+      "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_tokenize"
+    ]
   }
 }

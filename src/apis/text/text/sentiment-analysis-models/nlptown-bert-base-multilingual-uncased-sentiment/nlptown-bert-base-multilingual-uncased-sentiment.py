@@ -16,15 +16,15 @@ def predict(text: str) -> dict:
     """
 
     MODEL_NAME = "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_inference"
-    MODEL_SUB_PARTS = [
-        "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_model",
-        "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_tokenize",
-    ]
+    # MODEL_SUB_PARTS = [
+    #     "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_model",
+    #     "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_tokenize",
+    # ]
 
     client = TritonClient(
         model_name=MODEL_NAME,
         current_path=os.path.split(__file__)[0],
-        sub_parts=MODEL_SUB_PARTS,
+        # sub_parts=MODEL_SUB_PARTS,
         output_name="output",
         preload_model=check_if_model_needs_to_be_preloaded(MODEL_NAME),
     )

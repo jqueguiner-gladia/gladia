@@ -1,3 +1,4 @@
+from typing import Tuple
 from gladia_api_utils.triton_helper import (
     TritonClient,
     check_if_model_needs_to_be_preloaded,
@@ -17,7 +18,7 @@ def select_key_words(text_embeddings, vocabulary_embeddings, vocabulary, top_n=5
 
 
 # TODO : check if num_seq > 128 and raise error if this is the case
-def predict(text: str) -> [(str, float)]:
+def predict(text: str) -> Tuple[(str, float)]:
     """
     Extract keywords from a given sentence
 
@@ -26,14 +27,14 @@ def predict(text: str) -> [(str, float)]:
     """
 
     MODEL_NAME = "sentence-transformers_paraphrase-MiniLM-L6-v2_tensorrt_inference"
-    MODEL_SUB_PARTS = [
-        "sentence-transformers_paraphrase-MiniLM-L6-v2_tensorrt_model",
-        "sentence-transformers_paraphrase-MiniLM-L6-v2_tensorrt_tokenize",
-    ]
+    # MODEL_SUB_PARTS = [
+    #     "sentence-transformers_paraphrase-MiniLM-L6-v2_tensorrt_model",
+    #     "sentence-transformers_paraphrase-MiniLM-L6-v2_tensorrt_tokenize",
+    # ]
 
     client = TritonClient(
         model_name=MODEL_NAME,
-        sub_parts=MODEL_SUB_PARTS,
+        # sub_parts=MODEL_SUB_PARTS,
         output_name="output",
         preload_model=check_if_model_needs_to_be_preloaded(MODEL_NAME),
     )

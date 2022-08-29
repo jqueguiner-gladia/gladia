@@ -16,6 +16,11 @@
   "gladia": {
     "latency": "",
     "format": "",
-    "accelerator": ""
+    "engine": "triton",
+    "accelerator": "",
+    "dependencies": [
+      "sentence-transformers_paraphrase-MiniLM-L6-v2_tensorrt_model",
+      "sentence-transformers_paraphrase-MiniLM-L6-v2_tensorrt_tokenize"
+    ]
   }
 }
