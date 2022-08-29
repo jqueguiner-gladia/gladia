@@ -1,4 +1,4 @@
-FROM docker.gladia.io/gladia-base
+FROM gladiaio/gladia-base
 
 ARG SKIP_CUSTOM_ENV_BUILD="false"
 ARG SKIP_ROOT_CACHE_CLEANING="false"

@@ -331,7 +331,7 @@ class TaskRouter:
             response_class.schema
             if response_class in response_classes.values()
             else {
-                "type": "json",
+                "type": "object",
                 "prediction": self.output["type"],
                 "prediction_raw": Any,
             }

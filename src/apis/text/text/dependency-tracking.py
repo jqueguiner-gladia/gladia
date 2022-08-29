@@ -5,14 +5,14 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "input_string",
         "example": "Text to analyzed",
         "placeholder": "Insert the text to analyze here",
     }
 ]
 
-output = {"name": "analyzed_text", "type": "str", "example": "analyzed_text"}
+output = {"name": "analyzed_text", "type": "string", "example": "analyzed_text"}
 
 
 TaskRouter(router=router, input=inputs, output=output, default_model="LAL-Parser")

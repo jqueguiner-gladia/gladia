@@ -5,14 +5,14 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "text",
         "example": "I like you. I love you",
         "placeholder": "Insert the text to anlayse sentiment from",
     }
 ]
 
-output = {"name": "results", "type": "str", "example": "results"}
+output = {"name": "results", "type": "string", "example": "results"}
 
 TaskRouter(
     router=router,

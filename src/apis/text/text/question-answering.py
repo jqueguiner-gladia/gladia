@@ -5,20 +5,20 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "context",
         "example": "My name is Clara and I live in Berkeley.",
         "placeholder": "Insert the text to extract answer from",
     },
     {
-        "type": "text",
+        "type": "string",
         "name": "question",
         "example": "What's my name?",
         "placeholder": "Insert the question to be answered",
     },
 ]
 
-output = {"name": "answer", "type": "str", "example": "answer"}
+output = {"name": "answer", "type": "string", "example": "answer"}
 
 
 TaskRouter(

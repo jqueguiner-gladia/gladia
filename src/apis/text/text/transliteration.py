@@ -5,13 +5,13 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "text",
         "example": "Лорем ипсум долор сит амет",
         "placeholder": "Insert the text to transliterate here",
     },
     {
-        "type": "text",
+        "type": "string",
         "name": "language",
         "example": "ru",
         "placeholder": "Insert the language code here",
@@ -20,7 +20,7 @@ inputs = [
 
 output = {
     "name": "transliterated_text",
-    "type": "str",
+    "type": "string",
     "example": "transliterated_text",
 }
 
