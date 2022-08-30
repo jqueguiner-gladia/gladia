@@ -1,0 +1,5678 @@
+{
+    "/text/text/autocorrect/": {
+        "flexudy-t5-base-multi-sentence-doctor": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "sentence": "Text to corrcte"
+                    },
+                    "duration": 12.73,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/emotion-recognition/": {
+        "mrm8488-t5-base-finetuned-emotion": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "I like you. I love you"
+                    },
+                    "duration": 12.57,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/hate-speech-detection/": {
+        "Hate-speech-CNERG-dehatebert-mono-english": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "I hate you piece of shit"
+                    },
+                    "duration": 7.01,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/keyword-extraction/": {
+        "keybert-paraphrase-MiniLM-L6-v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "The Crown is a historical drama streaming television series about the reign of Queen Elizabeth II, created and principally written by Peter Morgan, and produced by Left Bank Pictures and Sony Pictures Television for Netflix."
+                    },
+                    "duration": 0.42,
+                    "status": 200
+                }
+            ]
+        },
+        "keybert-paraphrase-multilingual-MiniLM-L12-v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "The Crown is a historical drama streaming television series about the reign of Queen Elizabeth II, created and principally written by Peter Morgan, and produced by Left Bank Pictures and Sony Pictures Television for Netflix."
+                    },
+                    "duration": 5.67,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/language-detection/": {
+        "toftrup-etal-2021": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "Input text to perform language detection on"
+                    },
+                    "duration": 19.71,
+                    "status": 200
+                }
+            ]
+        },
+        "xlm-roberta-base-language-detection": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "Input text to perform language detection on"
+                    },
+                    "duration": 0.09,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/language-generation/": {
+        "EleutherAI-gpt-neo-2_7B": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "Input text to start generation from"
+                    },
+                    "duration": 133.19,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/named-entity-recognition/": {
+        "dbmdz-bert-large-cased-finetuned-conll03-english": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "Hugging Face Inc. is a company based in New York City. Its headquarters are in DUMBO, therefore very close to the Manhattan Bridge."
+                    },
+                    "duration": 0.14,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/next-sentence-prediction/": {
+        "bert-base-uncased": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "sentence_1": "I like you.",
+                        "sentence_2": "But it's not about you."
+                    },
+                    "duration": 7.73,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/next-word-prediction/": {
+        "albert-base-v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "sentence": "I think therefore I"
+                    },
+                    "duration": 4.27,
+                    "status": 200
+                }
+            ]
+        },
+        "bert-base-uncased": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "sentence": "I think therefore I"
+                    },
+                    "duration": 5.05,
+                    "status": 200
+                }
+            ]
+        },
+        "distilbert-base-uncased": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "sentence": "I think therefore I"
+                    },
+                    "duration": 5.84,
+                    "status": 200
+                }
+            ]
+        },
+        "roberta-base": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "sentence": "I think therefore I"
+                    },
+                    "duration": 8.55,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/plural/": {
+        "inflect": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "word": "cat",
+                        "count": 2
+                    },
+                    "duration": 0.03,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/programming-language-generation/": {
+        "sentdex-GPyT": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "code_snippet": "def is_palendrome(s):"
+                    },
+                    "duration": 9.54,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/question-answering/": {
+        "deepset-roberta-base-squad2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "context": "My name is Clara and I live in Berkeley.",
+                        "question": "What's my name?"
+                    },
+                    "duration": 8.99,
+                    "status": 200
+                }
+            ]
+        },
+        "deepset_bert-base-cased-squad2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "context": "My name is Clara and I live in Berkeley.",
+                        "question": "What's my name?"
+                    },
+                    "duration": 7.87,
+                    "status": 200
+                }
+            ]
+        },
+        "distilbert-base-cased-distilled-squad": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "context": "My name is Clara and I live in Berkeley.",
+                        "question": "What's my name?"
+                    },
+                    "duration": 7.13,
+                    "status": 200
+                }
+            ]
+        },
+        "mfeb-albert-xxlarge-v2-squad2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "context": "My name is Clara and I live in Berkeley.",
+                        "question": "What's my name?"
+                    },
+                    "duration": 12.84,
+                    "status": 200
+                }
+            ]
+        },
+        "mrm8488-bert-tiny-5-finetuned-squadv2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "context": "My name is Clara and I live in Berkeley.",
+                        "question": "What's my name?"
+                    },
+                    "duration": 4.43,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/sentence-paraphraser/": {
+        "ramsrigouthamg-t5-large-paraphraser-diverse-high-quality": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "context": "Once, a group of frogs was roaming around the forest in search of water."
+                    },
+                    "duration": 35.51,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/sentiment-analysis/": {
+        "distilbert-base-uncased": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "I like you. I love you"
+                    },
+                    "duration": 4.36,
+                    "status": 200
+                }
+            ]
+        },
+        "distilbert-base-uncased-finetuned-sst-2-english": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "I like you. I love you"
+                    },
+                    "duration": 7.16,
+                    "status": 200
+                }
+            ]
+        },
+        "nlptown-bert-base-multilingual-uncased-sentiment": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "I like you. I love you"
+                    },
+                    "duration": 0.06,
+                    "status": 200
+                }
+            ]
+        },
+        "zero-shot-classification-facebook-bart-large-mnli": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "text": "I like you. I love you"
+                    },
+                    "duration": 21.07,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/similarity/": {
+        "all-MiniLM-L6-v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "sentence_1": "I like banana",
+                        "sentence_2": "I hate banana"
+                    },
+                    "duration": 0.03,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/translation/": {
+        "facebook-nllb-200-distilled-600M": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "input_string": "Text to translate",
+                        "source_language": "eng",
+                        "target_language": "fra"
+                    },
+                    "duration": 31.98,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/text/text/word-alignment/": {
+        "bert-base-multilingual-cased": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "input_string_language_1": "Sentence from first language",
+                        "input_string_language_2": "\u6765\u81ea \u7b2c\u4e00 \u8bed\u8a00\u7684 \u53e5\u5b50"
+                    },
+                    "duration": 10.31,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/image/image/background-removal/": {
+        "mobilenet": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 41.03,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 6.59,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 6.67,
+                    "status": 200
+                }
+            ]
+        },
+        "xception": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 30.62,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 11.41,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 11.48,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/image/image/colorization/": {
+        "deoldify-artistic": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 46.76,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 35.01,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 34.96,
+                    "status": 200
+                }
+            ]
+        },
+        "deoldify-stable": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 53.25,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 39.52,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 39.22,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/image/image/face-bluring/": {
+        "ageitgey": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 8.69,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 14.52,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 14.6,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/image/image/uncolorization/": {
+        "v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.2,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 2.79,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 2.92,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/image/text/asciify/": {
+        "ramesh-aditya": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.05,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 0.12,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {},
+                    "duration": 0.31,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/image/text/classification/": {
+        "alexnet": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 2.68,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.51,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.7,
+                    "status": 200
+                }
+            ]
+        },
+        "convnext_base": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.35,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.39,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.52,
+                    "status": 200
+                }
+            ]
+        },
+        "convnext_large": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 9.67,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.76,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.92,
+                    "status": 200
+                }
+            ]
+        },
+        "convnext_small": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 2.43,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.82,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.99,
+                    "status": 200
+                }
+            ]
+        },
+        "convnext_tiny": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.67,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.5,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.67,
+                    "status": 200
+                }
+            ]
+        },
+        "densenet121": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.65,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.34,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.51,
+                    "status": 200
+                }
+            ]
+        },
+        "densenet161": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.61,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.68,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.09,
+                    "status": 200
+                }
+            ]
+        },
+        "densenet169": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.88,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.51,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.7,
+                    "status": 200
+                }
+            ]
+        },
+        "densenet201": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.33,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.67,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.84,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_b0": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.47,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.28,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.46,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_b1_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.64,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.35,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.53,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_b1_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.59,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.34,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.52,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_b2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.85,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.38,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.56,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_b3": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.07,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.76,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.63,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_b4": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.43,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.65,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.79,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_b5": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 2.16,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.81,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.98,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_b6": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 2.86,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.08,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.33,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_b7": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.46,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.94,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.76,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_v2_l": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 7.48,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.36,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.49,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_v2_m": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.02,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.19,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.36,
+                    "status": 200
+                }
+            ]
+        },
+        "efficientnet_v2_s": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.62,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.61,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.78,
+                    "status": 200
+                }
+            ]
+        },
+        "googlenet": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.59,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.25,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.42,
+                    "status": 200
+                }
+            ]
+        },
+        "googlenet_quantized_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.68,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.68,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.86,
+                    "status": 200
+                }
+            ]
+        },
+        "inception_v3": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 2.0,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.4,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.56,
+                    "status": 200
+                }
+            ]
+        },
+        "inception_v3_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.39,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.46,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.4,
+                    "status": 200
+                }
+            ]
+        },
+        "mnasnet0_5": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.3,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.18,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.34,
+                    "status": 200
+                }
+            ]
+        },
+        "mnasnet0_75": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.36,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.19,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.36,
+                    "status": 200
+                }
+            ]
+        },
+        "mnasnet1_0": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.34,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.21,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.37,
+                    "status": 200
+                }
+            ]
+        },
+        "mnasnet1_3": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.54,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.23,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.4,
+                    "status": 200
+                }
+            ]
+        },
+        "mobilenet_v2_quantized_qnnpack_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.1,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.92,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.12,
+                    "status": 200
+                }
+            ]
+        },
+        "mobilenet_v2_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.27,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.2,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.36,
+                    "status": 200
+                }
+            ]
+        },
+        "mobilenet_v2_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.36,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.2,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.37,
+                    "status": 200
+                }
+            ]
+        },
+        "mobilenet_v3_large_quantized_qnnpack_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.97,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.92,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.0,
+                    "status": 200
+                }
+            ]
+        },
+        "mobilenet_v3_large_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.45,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.25,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.42,
+                    "status": 200
+                }
+            ]
+        },
+        "mobilenet_v3_large_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.47,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.24,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.42,
+                    "status": 200
+                }
+            ]
+        },
+        "mobilenet_v3_small": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.56,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.19,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.36,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_16gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 2.87,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.93,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.1,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_16gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 3.85,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.91,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.14,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_1_6gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.69,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.31,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.47,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_1_6gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.7,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.29,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.45,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_32gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.36,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.54,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.69,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_32gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.4,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.55,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.71,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_3_2gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.17,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.4,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.57,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_3_2gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.35,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.4,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.57,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_400mf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.59,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.25,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.42,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_400mf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.64,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.25,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.41,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_800mf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.49,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.27,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.42,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_800mf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.19,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.26,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.42,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_8gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.93,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.71,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.9,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_x_8gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.87,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.7,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.86,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_128gf_swag_e2e_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 27.22,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 8.59,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 8.73,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_128gf_swag_linear_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 27.89,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 8.18,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 8.33,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_16gf_swag_e2e_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.08,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.35,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.5,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_16gf_swag_linear_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.29,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.48,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.44,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_16gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.2,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.24,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.47,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_16gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.26,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.49,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.77,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_1_6gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.07,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.43,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.69,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_1_6gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.02,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.43,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.71,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_32gf_swag_e2e_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 7.79,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.22,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.47,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_32gf_swag_linear_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 6.93,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.12,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.3,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_32gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 7.14,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.06,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.33,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_32gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 6.4,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.08,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 2.23,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_3_2gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.24,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.55,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.78,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_3_2gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.36,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.76,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.75,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_400mf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.44,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.26,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.4,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_400mf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.52,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.24,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.41,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_8gf_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 2.11,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.75,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.96,
+                    "status": 200
+                }
+            ]
+        },
+        "regnet_y_8gf_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 2.26,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.84,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.92,
+                    "status": 200
+                }
+            ]
+        },
+        "resnet152_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.08,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.05,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.2,
+                    "status": 200
+                }
+            ]
+        },
+        "resnet152_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 3.39,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.05,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.38,
+                    "status": 200
+                }
+            ]
+        },
+        "resnet18": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.75,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.27,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.45,
+                    "status": 200
+                }
+            ]
+        },
+        "resnet18_quantized_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.55,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.49,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.66,
+                    "status": 200
+                }
+            ]
+        },
+        "resnet34": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.36,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.68,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.58,
+                    "status": 200
+                }
+            ]
+        },
+        "resnet50_quantized_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.39,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.11,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.26,
+                    "status": 200
+                }
+            ]
+        },
+        "resnet50_quantized_fbgemm_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.53,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.14,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.29,
+                    "status": 200
+                }
+            ]
+        },
+        "resnet50_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.68,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.47,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.65,
+                    "status": 200
+                }
+            ]
+        },
+        "resnet50_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.75,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.47,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.64,
+                    "status": 200
+                }
+            ]
+        },
+        "resnext101_32x8d_quantized_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.41,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 4.07,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 3.77,
+                    "status": 200
+                }
+            ]
+        },
+        "resnext101_32x8d_quantized_fbgemm_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.01,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 3.9,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 4.16,
+                    "status": 200
+                }
+            ]
+        },
+        "resnext101_32x8d_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.22,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.32,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.72,
+                    "status": 200
+                }
+            ]
+        },
+        "resnext101_32x8d_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.54,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.32,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.56,
+                    "status": 200
+                }
+            ]
+        },
+        "resnext101_64x4d_quantized_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.88,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 3.78,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 3.98,
+                    "status": 200
+                }
+            ]
+        },
+        "resnext101_64x4d_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 3.98,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.27,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.39,
+                    "status": 200
+                }
+            ]
+        },
+        "resnext50_32x4d_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.22,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.48,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.63,
+                    "status": 200
+                }
+            ]
+        },
+        "resnext50_32x4d_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.4,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.46,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.63,
+                    "status": 200
+                }
+            ]
+        },
+        "shufflenet_v2_x0_5": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.16,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.16,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.32,
+                    "status": 200
+                }
+            ]
+        },
+        "shufflenet_v2_x0_5_quantized_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.33,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.38,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.52,
+                    "status": 200
+                }
+            ]
+        },
+        "shufflenet_v2_x1_0": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.18,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.18,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.34,
+                    "status": 200
+                }
+            ]
+        },
+        "shufflenet_v2_x1_0_quantized_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.4,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.4,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.92,
+                    "status": 200
+                }
+            ]
+        },
+        "shufflenet_v2_x1_5": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.36,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.2,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.37,
+                    "status": 200
+                }
+            ]
+        },
+        "shufflenet_v2_x1_5_quantized_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.47,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.47,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.63,
+                    "status": 200
+                }
+            ]
+        },
+        "shufflenet_v2_x2_0": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.48,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.24,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.4,
+                    "status": 200
+                }
+            ]
+        },
+        "shufflenet_v2_x2_0_quantized_fbgemm_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.99,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.61,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.77,
+                    "status": 200
+                }
+            ]
+        },
+        "squeezenet1_0": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.48,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.15,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.34,
+                    "status": 200
+                }
+            ]
+        },
+        "squeezenet1_1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 0.2,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.15,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.32,
+                    "status": 200
+                }
+            ]
+        },
+        "swin_b": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.91,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.68,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.85,
+                    "status": 200
+                }
+            ]
+        },
+        "swin_s": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 2.89,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.07,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.25,
+                    "status": 200
+                }
+            ]
+        },
+        "swin_t": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 1.78,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.71,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 0.82,
+                    "status": 200
+                }
+            ]
+        },
+        "vgg11": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.11,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.15,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.31,
+                    "status": 200
+                }
+            ]
+        },
+        "vgg11_bn": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.85,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.08,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.23,
+                    "status": 200
+                }
+            ]
+        },
+        "vgg13": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.2,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.07,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.23,
+                    "status": 200
+                }
+            ]
+        },
+        "vgg13_bn": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 4.96,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.1,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.36,
+                    "status": 200
+                }
+            ]
+        },
+        "vgg16_bn": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.35,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.25,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.42,
+                    "status": 200
+                }
+            ]
+        },
+        "vgg16_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.5,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.09,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.28,
+                    "status": 200
+                }
+            ]
+        },
+        "vgg19": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.62,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.17,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.33,
+                    "status": 200
+                }
+            ]
+        },
+        "vgg19_bn": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.9,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.17,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.33,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_b_16_swag_e2e_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 3.97,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.19,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.32,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_b_16_swag_linear_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 3.98,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.06,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.22,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_b_16_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 3.91,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.06,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.2,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_b_32": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 3.8,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.05,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.16,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_h_14_swag_e2e_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 29.65,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 11.87,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 9.07,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_h_14_swag_linear_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 26.56,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 9.79,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 7.17,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_l_16_swag_e2e_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 14.16,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 4.42,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 4.52,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_l_16_swag_linear_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 13.13,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 3.53,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 3.88,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_l_16_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 12.8,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 3.67,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 4.52,
+                    "status": 200
+                }
+            ]
+        },
+        "vit_l_32": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 12.78,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 3.2,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 3.32,
+                    "status": 200
+                }
+            ]
+        },
+        "wide_resnet101_2_v1": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 3.68,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.76,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.89,
+                    "status": 200
+                }
+            ]
+        },
+        "wide_resnet101_2_v2": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "top_k": 1,
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 6.69,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.79,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "top_k": 1
+                    },
+                    "duration": 1.95,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/image/text/ocr/": {
+        "easy-ocr": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "source_language": "en",
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 34.17,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "source_language": "en"
+                    },
+                    "duration": 12.86,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "source_language": "en"
+                    },
+                    "duration": 8.08,
+                    "status": 200
+                }
+            ]
+        },
+        "tesseract-default": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "source_language": "en",
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 6.09,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "source_language": "en"
+                    },
+                    "duration": 1.94,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "source_language": "en"
+                    },
+                    "duration": 2.05,
+                    "status": 200
+                }
+            ]
+        },
+        "tesseract-denoising": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "source_language": "en",
+                        "image_url": [
+                            "http://files.gladia.io/test/test.png"
+                        ]
+                    },
+                    "duration": 5.11,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.jpg",
+                            "/app/unit-test/test.jpg"
+                        ]
+                    },
+                    "data": {
+                        "source_language": "en"
+                    },
+                    "duration": 2.78,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "image": [
+                            "test.png",
+                            "/app/unit-test/test.png"
+                        ]
+                    },
+                    "data": {
+                        "source_language": "en"
+                    },
+                    "duration": 2.92,
+                    "status": 200
+                }
+            ]
+        }
+    },
+    "/audio/text/audio-transcription/": {
+        "coqui_english_huge_vocab": {
+            "requests": [
+                {
+                    "file": {},
+                    "data": {
+                        "language": "en",
+                        "audio_url": [
+                            "http://files.gladia.io/test/test.mp3"
+                        ]
+                    },
+                    "duration": 23.88,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "audio": [
+                            "test.mp3",
+                            "/app/unit-test/test.mp3"
+                        ]
+                    },
+                    "data": {
+                        "language": "en"
+                    },
+                    "duration": 2.89,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "audio": [
+                            "test.wav",
+                            "/app/unit-test/test.wav"
+                        ]
+                    },
+                    "data": {
+                        "language": "en"
+                    },
+                    "duration": 4.76,
+                    "status": 200
+                },
+                {
+                    "file": {
+                        "audio": [
+                            "test.m4a",
+                            "/app/unit-test/test.m4a"
+                        ]
+                    },
+                    "data": {
+                        "language": "en"
+                    },
+                    "duration": 3.65,
+                    "status": 200
+                }
+            ]
+        }
+    }
+}

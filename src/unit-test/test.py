@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from time import sleep
+from time import sleep, time
 
 import click
 import requests
@@ -10,6 +10,9 @@ global nb_total_tests
 global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
 global test_final_status
 global endpoints
+global latency_diagnostic
+
+latency_diagnostic = {}
 
 STATUS_PASSED = "🟢"
 STATUS_SKIPPED = "🟡"
@@ -81,12 +84,17 @@ def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
 
     while tries <= max_retry and response.status_code != 200:
 
+        start_timestamp = time()
+
         response = requests.post(
             f"{url}{path}",
             params=params,
             data=data,
             files={key: open(value[1], "rb") for key, value in files.items()},
         )
+
+        end_timestamp = time()
+        duration = round(end_timestamp - start_timestamp, 2)
 
         uploaded_files = [value[0] for value in files.values()]
         url_files = [key for key in data.keys() if key.endswith("_url")]
@@ -99,7 +107,7 @@ def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
 
     print(f"|  |      |")
 
-    return response
+    return response, duration
 
 
 def perform_test(
@@ -119,6 +127,7 @@ def perform_test(
     global IS_CI
     global endpoints
     global formats_to_test
+    global latency_diagnostic
 
     output_content_type_asserts = {
         "image/*": "image/png",
@@ -257,9 +266,10 @@ def perform_test(
     elif default_models_only:
         models = [details["post"]["parameters"][0]["schema"]["default"]]
     else:
-        models = response.json()["models"]
+        models = response.json()["models"] 
 
     for model in models:
+
         if IS_CI:
             sleep(1)
 
@@ -268,7 +278,7 @@ def perform_test(
         valid = True
         output_type_ok = True
         for request in requests_inputs:
-            response = request_endpoint(
+            response, duration = request_endpoint(
                 url=url,
                 path=path,
                 params=params,
@@ -276,6 +286,22 @@ def perform_test(
                 files=request["files"],
                 max_retry=max_retry,
             )
+
+            if not path in latency_diagnostic.keys():
+                latency_diagnostic[path]={}
+            if not model in latency_diagnostic[path].keys():
+                latency_diagnostic[path][model]={}
+            if not "requests" in latency_diagnostic[path][model].keys():
+                latency_diagnostic[path][model]["requests"]=[]
+            latency_diagnostic[path][model]["requests"].append({
+                "file": request["files"],
+                "data": request["data"],
+                "duration": duration,
+                "status": response.status_code
+            })
+
+            with open("unit-test/latency_diagnostic.json", "w") as fp:
+                json.dump(latency_diagnostic , fp, indent=4) 
 
             output_type_ok = (
                 output_content_type_asserts[response_output_type]
