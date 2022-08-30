@@ -293,7 +293,7 @@ def main():
         "--modality",
         action="append",
         type=str,
-        help="Specify a RegExp to filter input nd output modalities to process. default .*",
+        help="Specify a RegExp to filter input nd output modalities to process. If full_path_mode set to True a full_path is expected. default .*",
     )
     parser.add_argument(
         "--path_to_apis",
