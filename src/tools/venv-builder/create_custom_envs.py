@@ -206,7 +206,7 @@ def build_env_for_activated_tasks(
     Build the mamba env for every activated tasks
 
     Args:
-        path_to_config_file (str): Path to the general config file describing which tasks is activated
+        path_to_config_file (str): Path to the general config file describing which tasks are activated
         path_to_apis (str): Path to the Gladia's tasks
         modality (str): modality name pattern filter (default: .*)
         full_path_mode (bool): If True, will not check regex, not check activated task and
