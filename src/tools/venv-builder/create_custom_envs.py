@@ -91,7 +91,7 @@ dependencies:"""
 
 def create_custom_env(env_name: str, path_to_env_file: str) -> None:
     """
-    crete the mamba env for the provided env file
+    create the mamba env for the provided env file
 
     Args:
         env_name (str): Name of the env to create
