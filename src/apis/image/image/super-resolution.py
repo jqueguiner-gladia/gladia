@@ -15,5 +15,5 @@ output = {"name": "enhanced_image", "type": "image", "example": "enhanced_image"
 router = APIRouter()
 
 TaskRouter(
-    router=router, input=inputs, output=output, default_model="idealo-psnr-small"
+    router=router, input=inputs, output=output, default_model="latent-sr"
 )
