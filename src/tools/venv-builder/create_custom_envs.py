@@ -238,8 +238,7 @@ def build_env_for_activated_tasks(
             head, task = os.path.split(head.rstrip("/"))
 
             create_custom_env(
-                env_name="-".join([task, model]),
-                path_to_env_file=env_file_path
+                env_name="-".join([task, model]), path_to_env_file=env_file_path
             )
 
         else:
