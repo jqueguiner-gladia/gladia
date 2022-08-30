@@ -219,12 +219,6 @@ def build_env_for_activated_tasks(
         FileNotFoundError: The provided config file couldn't be found
     """
 
-    paths = sorted(
-        get_activated_task_path(
-            path_to_config_file=path_to_config_file, path_to_apis=path_to_apis
-        )
-    )
-
     # if full_path_mode is True, use modality as a full path to the api env to build
     # otherwise, use modality as a regex to filter the activated tasks from the config file
     if full_path_mode:
@@ -246,6 +240,13 @@ def build_env_for_activated_tasks(
                 f"Couldn't find env.yaml for {modality[0]}, please check your config file."
             )
     else:
+
+        paths = sorted(
+            get_activated_task_path(
+                path_to_config_file=path_to_config_file, path_to_apis=path_to_apis
+            )
+        )
+        
         for task in tqdm(paths):
 
             if not bool(re.search(modality[0], task)):
