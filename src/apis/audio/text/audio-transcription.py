@@ -9,7 +9,7 @@ inputs = [
         "placeholder": "Audio to transcribe",
     },
     {
-        "type": "text",
+        "type": "string",
         "name": "language",
         "default": "en",
         "example": "en",
@@ -19,7 +19,7 @@ inputs = [
 
 output = {
     "name": "transcription",
-    "type": "text",
+    "type": "string",
     "example": "I'm telling you that this is the tools i've seen so far.",
 }
 

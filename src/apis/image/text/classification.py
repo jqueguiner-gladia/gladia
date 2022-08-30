@@ -9,7 +9,7 @@ inputs = [
         "placeholder": "Image to classify",
     },
     {
-        "type": "int",
+        "type": "integer",
         "name": "top_k",
         "default": 1,
         "example": 1,
@@ -19,7 +19,7 @@ inputs = [
 
 output = {
     "name": "classified_image",
-    "type": "str",
+    "type": "string",
     "example": "bow tie",
 }
 

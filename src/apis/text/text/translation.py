@@ -5,19 +5,19 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "input_string",
         "example": "Text to translate",
         "placeholder": "Insert the text to translate here",
     },
     {
-        "type": "text",
+        "type": "string",
         "name": "source_language",
         "example": "eng",
         "placeholder": "Use the ISO 3 letters (ISO 639-3) representation for source language",
     },
     {
-        "type": "text",
+        "type": "string",
         "name": "target_language",
         "example": "fra",
         "placeholder": "Use the ISO 3 letters (ISO 639-3) representation for target language",

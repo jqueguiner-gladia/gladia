@@ -5,14 +5,14 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "text",
         "example": "I hate you piece of shit",
         "placeholder": "Insert the text to classify as hate or not",
     }
 ]
 
-output = {"name": "classified_text", "type": "str", "example": "offensive"}
+output = {"name": "classified_text", "type": "string", "example": "offensive"}
 
 TaskRouter(
     router=router,

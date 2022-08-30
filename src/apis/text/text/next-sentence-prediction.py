@@ -5,13 +5,13 @@ router = APIRouter()
 
 inputs = [
     {
-        "type": "text",
+        "type": "string",
         "name": "sentence_1",
         "example": "I like you.",
         "placeholder": "Insert the first sentence",
     },
     {
-        "type": "text",
+        "type": "string",
         "name": "sentence_2",
         "example": "But it's not about you.",
         "placeholder": "Insert the second sentence to estimate the probability from",
@@ -20,7 +20,7 @@ inputs = [
 
 output = {
     "name": "next_sentence_probability",
-    "type": "float",
+    "type": "number",
     "example": "0.999984622001648",
 }
 

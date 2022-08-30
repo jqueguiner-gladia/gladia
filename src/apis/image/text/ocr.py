@@ -9,7 +9,7 @@ inputs = [
         "placeholder": "Image to extract text from",
     },
     {
-        "type": "text",
+        "type": "string",
         "name": "source_language",
         "default": "en",
         "example": "en",
@@ -17,7 +17,7 @@ inputs = [
     },
 ]
 
-output = {"name": "extracted_text", "type": "str", "example": "extracted_text"}
+output = {"name": "extracted_text", "type": "string", "example": "extracted_text"}
 
 router = APIRouter()
 

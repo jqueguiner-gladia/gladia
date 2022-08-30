@@ -207,8 +207,14 @@ if __name__ == "__main__":
 
     from thop import profile
 
+<<<<<<< HEAD
     layer = PAB(64, 3, 4, False, nn.PReLU())
 
+=======
+    # layer = CAB(64, 3, 4, False, nn.PReLU())
+    layer = PAB(64, 3, 4, False, nn.PReLU())
+    # layer = SAB(64, 3, 4, False, nn.PReLU())
+>>>>>>> 88c137d7b884df8f495273040b4d07623cc3d53d
     for idx, m in enumerate(layer.modules()):
         print(idx, "-", m)
     s = time.time()
@@ -216,6 +222,11 @@ if __name__ == "__main__":
     rgb = torch.ones(1, 64, 256, 256, dtype=torch.float, requires_grad=False)
     out = layer(rgb)
     flops, params = profile(layer, inputs=(rgb,))
+<<<<<<< HEAD
     logger.info(f"parameters: {params}")
     logger.info(f"flops {flops}")
+=======
+    logger.info("parameters:", params)
+    logger.info("flops", flops)
+>>>>>>> 88c137d7b884df8f495273040b4d07623cc3d53d
     logger.info("time: {:.4f}ms".format((time.time() - s) * 10))
