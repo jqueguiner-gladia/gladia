@@ -53,6 +53,8 @@
 </p>
 
 
+[![](https://dcbadge.vercel.app/api/server/UUd79ckzz9)](https://discord.gg/UUd79ckzz9)
+
 Follow Gladia Twitter account to get the latest update
 <p align="left">
   <a href="https://twitter.com/gladia_io" alt="Twitter">
