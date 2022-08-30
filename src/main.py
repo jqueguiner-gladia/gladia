@@ -340,7 +340,7 @@ def import_submodules(package: str = "module", recursive: bool = True) -> None:
             or __module_is_a_model(module_split)
         ) and (not __module_is_subprocess(module_file_path)):
             import_submodules(module_path)
-            
+
         else:
             logger.debug(f"skipping {module_relative_path}")
 
