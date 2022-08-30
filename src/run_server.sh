@@ -19,7 +19,13 @@ then
     --exit-on-error=false \
     --model-control-mode=explicit \
     --repository-poll-secs 10 \
-    --allow-metrics=false & gunicorn main:app -b 0.0.0.0:${API_SERVER_PORT_HTTP} --workers ${API_SERVER_WORKERS} --worker-class uvicorn.workers.UvicornWorker --timeout ${API_SERVER_TIMEOUT}
+    --allow-metrics=false & \
+  gunicorn main:app \
+    -b 0.0.0.0:${API_SERVER_PORT_HTTP} \
+    --workers ${API_SERVER_WORKERS} \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --timeout ${API_SERVER_TIMEOUT}
+    --preload
 elif [ $MODE = "server" ]
 then
   micromamba run -n server gunicorn main:app \
