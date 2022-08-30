@@ -40,13 +40,31 @@ singular_types = text_types + number_types + decimal_types + boolean_types
 
 
 def is_binary_file(file_path: str) -> bool:
+    """
+    Check if a file is binary or not
+
+    Args:
+        file_path (str): path to the file to check
+
+    Returns:
+        bool: True if the file is binary, False otherwise
+    """
     textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
     is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
 
     return is_binary_string(open(file_path, "rb").read(1024))
 
 
-def is_valid_path(string: str):
+def is_valid_path(string: str) -> bool:
+    """
+    Check if a string is a valid path
+
+    Args:
+        string (str): string to check
+
+    Returns:
+        bool: True if the string is a valid path, False otherwise
+    """
     if string and isinstance(string, str) and PATTERN.match(string):
         return True
     else:
@@ -55,6 +73,15 @@ def is_valid_path(string: str):
 
 # take several dictionaries in input and return a merged one
 def merge_dicts(*args: dict) -> dict:
+    """
+    Take several dictionaries in input and return a merged one
+
+    Args:
+        *args (dict): dictionaries to merge
+
+    Returns:
+        bool: merged dictionaries
+    """
     sum_items = list()
     for dictionary in args:
         sum_items += list(dictionary.items())
@@ -62,6 +89,15 @@ def merge_dicts(*args: dict) -> dict:
 
 
 def to_task_name(word) -> str:
+    """
+    This function is used to retrieve the task name from the folder name
+
+    Args:
+        word (str): folder name
+
+    Returns:
+        str: task name
+    """
     # remove the models suffix
     # remove 1 more character to remove the "-"
     return word[: -(len(models_folder_suffix) + 1)]
@@ -74,11 +110,27 @@ def to_models_folder_name(word) -> str:
     We use the -{models_folder_suffix} in order to
     avoid fastapi to be confused with the routing layer
     defined by the task.py
+
+    Args:
+        word (str): task name
+
+    Returns:
+        str: folder name
     """
     return f"{word}-{models_folder_suffix}"
 
 
-def dict_model(name: str, dict_def: dict):
+def dict_model(name: str, dict_def: dict) -> BaseModel:
+    """
+    Create a pydantic model from a dictionary
+
+    Args:
+        name (str): name of the model
+        dict_def (dict): dictionary definition of the model
+
+    Returns:
+        pydantic.BaseModel: model
+    """
     fields = {}
 
     for field_name, value in dict_def.items():
@@ -93,6 +145,16 @@ def dict_model(name: str, dict_def: dict):
 
 
 def get_module_infos(root_path=None) -> list:
+    """
+    This function is used to parse a path to retrieve the task, plugin and tags
+    from a given path.
+
+    Args:
+        root_path (str): path to parse
+
+    Returns:
+        list: list of dictionaries containing the task, plugin and tags
+    """
     if root_path:
         caller_file = root_path
     else:
@@ -108,6 +170,16 @@ def get_module_infos(root_path=None) -> list:
 
 
 def get_model_versions(root_path=None) -> dict:
+    """
+    This function is used to parse a path to retrieve the model versions available
+    by crawling the models folder.
+
+    Args:
+        root_path (str): path to parse and crawl
+
+    Returns:
+        dict: dictionary containing the model versions
+    """
     # used for relative paths
     if root_path:
         rel_path = root_path
@@ -152,7 +224,16 @@ def get_model_versions(root_path=None) -> dict:
     return versions, package_path
 
 
-def get_task_dir_relpath_from_py_file(py_rel_path):
+def get_task_dir_relpath_from_py_file(py_rel_path: str) -> str:
+    """
+    Retrieve the task directory relative path from a python file path.
+
+    Args:
+        py_rel_path (str): path to the python file
+
+    Returns:
+        str: path to the task directory
+    """
     # Remove extension
     rel_path = py_rel_path.replace(".py", "")
     # get the last part corresponding to the task
@@ -162,7 +243,16 @@ def get_task_dir_relpath_from_py_file(py_rel_path):
     return rel_path
 
 
-def get_task_metadata(rel_path):
+def get_task_metadata(rel_path: str) -> dict:
+    """
+    Retrieve the task metadata from a task directory.
+
+    Args:
+        rel_path (str): path to the task directory
+
+    Returns:
+        dict: task metadata
+    """
     # Retieve metadata from metadata file and push it to versions,
     # the output of the get road
     rel_path = get_task_dir_relpath_from_py_file(rel_path)
@@ -179,7 +269,31 @@ def get_task_metadata(rel_path):
 
 def exec_in_subprocess(
     env_name: str, module_path: str, model: str, output_tmp_result: str, **kwargs
-):
+) -> str:
+    """
+    Execute a python module in a subprocess. The subprocess is executed in a
+    separate thread. The subprocess is executed with the micromamba environment env_name.
+    The subprocess is executed with the module module_path. The subprocess is executed with the model model.
+
+
+    environment variable model set to the value of model. The subprocess is
+    executed with the environment variable output_tmp_result set to the value of
+    output_tmp_result. The subprocess is executed with the environment variable
+    **kwargs is used to passthrough the variables to the predict function.
+
+    Args:
+        env_name (str): name of the micromamba environment to use
+        module_path (str): path to the module
+        model (str): model to execute
+        output_tmp_result (str): temporary result file path
+        **kwargs: arguments for the predict function to pass to the subprocess
+
+    Returns:
+        str: result stdout of the subprocess
+
+    Raises:
+        Exception: if the subprocess fails
+    """
 
     HERE = os.path.abspath(Path(__file__).parent)
 
@@ -207,6 +321,8 @@ def exec_in_subprocess(
         if proc.returncode != 0:
             logger.error(error_message)
             raise RuntimeError(error_message)
+        else:
+            return std_outputs.decode("utf-8")
 
     except subprocess.CalledProcessError as error:
         error_message = f"Could not run in subprocess command {cmd}: {error}"
@@ -217,6 +333,15 @@ def exec_in_subprocess(
 
 
 def get_module_env_name(module_path: str) -> str:
+    """
+    Get the name of the micromamba environment to use for a module.
+
+    Args:
+        module_path (str): path to the module
+
+    Returns:
+        str: name of the micromamba environment to use for the module
+    """
 
     if os.path.isfile(os.path.join(module_path, "env.yaml")):
         path = os.path.join(module_path, "env.yaml").split("/")
@@ -233,7 +358,16 @@ def get_module_env_name(module_path: str) -> str:
         return None
 
 
-def get_endpoint_parameter_type(parameter):
+def get_endpoint_parameter_type(parameter: dict) -> str:
+    """
+    Retrieve the parameter type from the endpoint parameter.
+
+    Args:
+        parameter (dict): parameter to get the type from
+
+    Returns:
+        str: type of the parameter
+    """
     type_correspondence = {key: str for key in text_types}
     type_correspondence.update({key: int for key in number_types})
     type_correspondence.update({key: float for key in decimal_types})
@@ -246,7 +380,16 @@ def get_endpoint_parameter_type(parameter):
     return parameter_type
 
 
-def create_description_for_the_endpoit_parameter(endpoint_param):
+def create_description_for_the_endpoit_parameter(endpoint_param: dict) -> dict:
+    """
+    Create a description for the endpoint parameter.
+
+    Args:
+        endpoint_param (dict): endpoint parameter to get the description from
+
+    Returns:
+        dict: dict description of the endpoint parameter
+    """
 
     parameters_to_add = {}
 
@@ -277,8 +420,18 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
     return parameters_to_add
 
 
-def get_error_reponse(code: int, message: str):
-    JSONResponse(status_code=code, content={"message": message})
+def get_error_reponse(code: int, message: str) -> JSONResponse:
+    """
+    Create an error response.
+
+    Args:
+        code (int): error code
+        message (str): error message
+
+    Returns:
+        JSONResponse: error response
+    """
+    return JSONResponse(status_code=code, content={"message": message})
 
 
 class TaskRouter:
@@ -402,6 +555,11 @@ class TaskRouter:
             kwargs = parameters_in_body
 
             routeur = to_task_name(self.root_package_path)
+
+            module_path = os.path.join(
+                os.getcwd(), f"{routeur}-{models_folder_suffix}", kwargs["model"]
+            )
+
             this_routeur = importlib.import_module(routeur.replace("/", "."))
             inputs = this_routeur.inputs
 
@@ -409,7 +567,6 @@ class TaskRouter:
             # remove it from kwargs to avoid passing it to the predict function
             del kwargs["model"]
 
-            module_path = f"{self.root_package_path}/{model}/"
             if not os.path.exists(module_path):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -534,9 +691,12 @@ class TaskRouter:
         """
         Verify that the default model for the task is implemented.
 
-        :param root_package_path: path to the package
-        :param default_model: name of the default model for the task
-        :return: True if it exists, False otherwise.
+        Args:
+            root_package_path: path to the package
+            default_model: name of the default model for the task
+
+        Returns:
+            bool: True if the default model is implemented, False otherwise
         """
 
         model_dir = os.path.join(root_package_path, default_model)
