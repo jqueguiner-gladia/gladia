@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import re
 import subprocess
@@ -14,6 +15,18 @@ logger = getLogger(__name__)
 
 
 def retrieve_package_from_env_file(env_file: dict) -> Tuple[List[str], List[str]]:
+    """
+    retrieve the necessary packages to install from the env file
+
+    Args:
+        env_file (dict): env file to use to retrieve the packages to install from
+
+    Returns:
+        Tuple[List[str], List[str]]: Tuple of the packages to install from pip and from channel
+
+    Raises:
+        RuntimeError: If the env file is empty
+    """
     packages_to_install_from_pip = []
     packages_to_install_from_channel = []
 
@@ -35,6 +48,17 @@ def create_temp_env_file(
     packages_to_install_from_channel: List[str],
     packages_to_install_from_pip: List[str],
 ) -> str:
+    """
+    create a temporary environment to use at the creation of the mamba env
+
+    Args:
+        env_name (str): Name of the env to create
+        packages_to_install_from_channel (List[str]): List of packages to install from channel
+        packages_to_install_from_pip (List[str]): List of packages to install from pip
+
+    Returns:
+        str: Path to the temporary env file
+    """
 
     tmp = tempfile.NamedTemporaryFile(delete=False)
 
@@ -66,6 +90,19 @@ dependencies:"""
 
 
 def create_custom_env(env_name: str, path_to_env_file: str) -> None:
+    """
+    create the mamba env for the provided env file
+
+    Args:
+        env_name (str): Name of the env to create
+        path_to_env_file (str): Path to the env file to use to create the env
+
+    Returns:
+        None
+
+    Raises:
+        FileNotFoundError: The provided env file couldn't be found
+    """
     logger.debug(f"Creating env : {env_name}")
 
     custom_env = yaml.safe_load(open(path_to_env_file, "r"))
@@ -127,10 +164,14 @@ def create_custom_env(env_name: str, path_to_env_file: str) -> None:
 
 
 def build_specific_envs(paths: List[str]) -> None:
-    """Build mamba envs using the provided {paths}
+    """
+    Build mamba envs using the provided {paths}
 
-    Arguments:
-        paths {List[str]} -- List of path to either a model folder or a model's env file (env.yaml)
+    Args:
+        paths List[str]: List of path to either a model folder or a model's env file (env.yaml)
+
+    Returns:
+        None
 
     Raises:
         FileNotFoundError: The profided model folder or env file couldn't be founded
@@ -159,48 +200,85 @@ def build_specific_envs(paths: List[str]) -> None:
 
 
 def build_env_for_activated_tasks(
-    path_to_config_file: str, path_to_apis: str, modality=".*"
+    path_to_config_file: str, path_to_apis: str, modality=".*", full_path_mode=False
 ) -> None:
-    """Build the mamba env for every activated tasks
+    """
+    Build the mamba env for every activated tasks
 
-    Arguments:
-        path_to_config_file {str} -- Path to the general config file describing which tasks is activated
-        path_to_apis {str} -- Path to the Gladia's tasks
-        modality {str} -- modality name pattern filter
+    Args:
+        path_to_config_file (str): Path to the general config file describing which tasks are activated
+        path_to_apis (str): Path to the Gladia's tasks
+        modality (str): modality name pattern filter (default: .*)
+        full_path_mode (bool): If True, will not check regex, not check activated task and
+            use modality as a full path to the api env to build (default: False)
+
+    Returns:
+        None
+
+    Raises:
+        FileNotFoundError: The provided config file couldn't be found
     """
 
-    paths = get_activated_task_path(
-        path_to_config_file=path_to_config_file, path_to_apis=path_to_apis
-    )
+    # if full_path_mode is True, use modality as a full path to the api env to build
+    # otherwise, use modality as a regex to filter the activated tasks from the config file
+    if full_path_mode:
+        logger.debug(f"full_path_mode activated {modality}")
+        logger.debug(f"building env for {modality}")
 
-    for task in tqdm(paths):
+        env_file_path = os.path.join(modality[0], "env.yaml")
 
-        if not bool(re.search(modality[0], task)):
-            logger.debug(f"Skipping task {task}")
+        if os.path.exists(env_file_path):
+            head, model = os.path.split(modality[0].rstrip("/"))
+            head, task = os.path.split(head.rstrip("/"))
 
-            continue
-
-        if os.path.exists(os.path.join(task, "env.yaml")):
             create_custom_env(
-                env_name=os.path.split(task)[1],
-                path_to_env_file=os.path.join(task, "env.yaml"),
+                env_name="-".join([task, model]), path_to_env_file=env_file_path
             )
 
-        models = list(
-            filter(
-                lambda dir: os.path.split(dir)[-1][0] not in ["_", "."],
-                os.listdir(task),
+        else:
+            raise FileNotFoundError(
+                f"Couldn't find env.yaml for {modality[0]}, please check your config file."
+            )
+    else:
+
+        paths = sorted(
+            get_activated_task_path(
+                path_to_config_file=path_to_config_file, path_to_apis=path_to_apis
             )
         )
 
-        for model in models:
-            if not os.path.exists(os.path.join(task, model, "env.yaml")):
+        for task in tqdm(paths):
+
+            if not bool(re.search(modality[0], task)):
+                logger.debug(f"Skipping task {task}")
+
                 continue
 
-            create_custom_env(
-                env_name=f"{os.path.split(task)[-1]}-{model}",  # FIXME: il y a aura un conflit entre le nom du dossier qui est au pluriel et le nom de la route qui est au singulier
-                path_to_env_file=os.path.join(task, model, "env.yaml"),
+            env_file_path = os.path.join(task, "env.yaml")
+            if os.path.exists(env_file_path):
+                create_custom_env(
+                    env_name=os.path.split(task)[1],
+                    path_to_env_file=env_file_path,
+                )
+
+            # make sur we don't have a __pycache__ folder
+            # or a file
+            models = list(
+                filter(
+                    lambda dir: os.path.split(dir)[-1][0] not in ["_", "."],
+                    os.listdir(task),
+                )
             )
+
+            for model in models:
+                env_file_path = os.path.join(task, model, "env.yaml")
+                if not os.path.exists(env_file_path):
+                    continue
+
+                create_custom_env(
+                    env_name=f"{os.path.split(task)[-1]}-{model}",
+                    path_to_env_file=env_file_path,
+                )
 
 
 def main():
@@ -216,13 +294,27 @@ def main():
         "--modality",
         action="append",
         type=str,
-        help="Specify a RegExp to filter input nd output modalities to process. default .*",
+        help="Specify a RegExp to filter input nd output modalities to process. If full_path_mode set to True a full_path is expected. default .*",
     )
     parser.add_argument(
         "--path_to_apis",
         action="append",
         type=str,
         help="Specify a path to the api app .*",
+    )
+    parser.add_argument(
+        "--debug_mode",
+        dest="debug_mode",
+        action="store_true",
+        default=False,
+        help="Activate the debug mode for logger (True if called)",
+    )
+    parser.add_argument(
+        "--full_path_mode",
+        dest="full_path_mode",
+        action="store_true",
+        default=False,
+        help="Activate the strict mode for modality/task/model path (True if called)",
     )
     args = parser.parse_args()
 
@@ -232,12 +324,16 @@ def main():
     if args.path_to_apis:
         path_to_apis = args.path_to_apis
     else:
-        path_to_apis = "/app/apis"
+        path_to_apis = os.path.join(os.getenv("PATH_TO_GLADIA_SRC", "/app"), "apis")
+
+    if args.debug_mode:
+        logger.setLevel(logging.DEBUG)
 
     return build_env_for_activated_tasks(
-        path_to_config_file=f"{path_to_apis}/../config.json",
+        path_to_config_file=os.path.join(path_to_apis, "..", "config.json"),
         path_to_apis=path_to_apis,
         modality=args.modality,
+        full_path_mode=args.full_path_mode,
     )
 
 
