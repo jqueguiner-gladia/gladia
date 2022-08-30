@@ -432,8 +432,8 @@ class TaskRouter:
                     elif kwargs.get(f"{input_name}_url", None):
                         url = kwargs[f"{input_name}_url"]
 
-                        dummy_header= {
-                            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) '
+                        dummy_header = {
+                            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) "
                         }
 
                         req = urllib.request.Request(url=url, headers=dummy_header)
