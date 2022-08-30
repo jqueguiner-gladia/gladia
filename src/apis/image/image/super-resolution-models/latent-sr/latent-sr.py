@@ -38,7 +38,12 @@ def predict(image: Image, steps: int = 10) -> Image:
     config = OmegaConf.load(path_conf)
     model, step = load_model_from_config(config, path_ckpt)
 
-    logs = run(model["model"], _open(image).convert("RGB"), "superresolution", custom_steps=steps)
+    logs = run(
+        model["model"],
+        _open(image).convert("RGB"),
+        "superresolution",
+        custom_steps=steps,
+    )
 
     sample = logs["sample"]
     sample = sample.detach().cpu()
