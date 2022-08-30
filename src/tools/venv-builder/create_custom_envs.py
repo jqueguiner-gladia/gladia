@@ -246,7 +246,7 @@ def build_env_for_activated_tasks(
                 path_to_config_file=path_to_config_file, path_to_apis=path_to_apis
             )
         )
-        
+
         for task in tqdm(paths):
 
             if not bool(re.search(modality[0], task)):
