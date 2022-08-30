@@ -329,21 +329,21 @@ class CMFNet(nn.Module):
 
         ## Enter the UNet-CAB
         x1 = self.stage1_encoder(shallow1)
-        x1_D = self.stage1_decoder(x1)
+        x1_d = self.stage1_decoder(x1)
         ## Apply SAM
-        x1_out, x1_img = self.sam1o(x1_D[0], x)
+        x1_out, x1_img = self.sam1o(x1_d[0], x)
 
         ## Enter the UNet-PAB
         x2 = self.stage2_encoder(shallow2)
-        x2_D = self.stage2_decoder(x2)
+        x2_d = self.stage2_decoder(x2)
         ## Apply SAM
-        x2_out, x2_img = self.sam2o(x2_D[0], x)
+        x2_out, x2_img = self.sam2o(x2_d[0], x)
 
         ## Enter the UNet-SAB
         x3 = self.stage3_encoder(shallow3)
-        x3_D = self.stage3_decoder(x3)
+        x3_d = self.stage3_decoder(x3)
         ## Apply SAM
-        x3_out, x3_img = self.sam3o(x3_D[0], x)
+        x3_out, x3_img = self.sam3o(x3_d[0], x)
 
         ## Aggregate SAM features of Stage 1, Stage 2 and Stage 3
         mix_r = self.mix(x1_img, x2_img, x3_img)
