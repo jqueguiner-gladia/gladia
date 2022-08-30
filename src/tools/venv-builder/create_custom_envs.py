@@ -230,13 +230,16 @@ def build_env_for_activated_tasks(
     if full_path_mode:
         logger.debug(f"full_path_mode activated {modality}")
         logger.debug(f"building env for {modality}")
-        if os.path.exists(os.path.join(modality[0], "env.yaml")):
+
+        env_file_path = os.path.join(modality[0], "env.yaml")
+
+        if os.path.exists(env_file_path):
             head, model = os.path.split(modality[0].rstrip("/"))
             head, task = os.path.split(head.rstrip("/"))
 
             create_custom_env(
                 env_name="-".join([task, model]),
-                path_to_env_file=os.path.join(modality[0], "env.yaml"),
+                path_to_env_file=env_file_path
             )
 
         else:
@@ -251,12 +254,15 @@ def build_env_for_activated_tasks(
 
                 continue
 
-            if os.path.exists(os.path.join(task, "env.yaml")):
+            env_file_path = os.path.join(task, "env.yaml")
+            if os.path.exists(env_file_path):
                 create_custom_env(
                     env_name=os.path.split(task)[1],
-                    path_to_env_file=os.path.join(task, "env.yaml"),
+                    path_to_env_file=env_file_path,
                 )
 
+            # make sur we don't have a __pycache__ folder
+            # or a file
             models = list(
                 filter(
                     lambda dir: os.path.split(dir)[-1][0] not in ["_", "."],
@@ -265,12 +271,13 @@ def build_env_for_activated_tasks(
             )
 
             for model in models:
-                if not os.path.exists(os.path.join(task, model, "env.yaml")):
+                env_file_path = os.path.join(task, model, "env.yaml")
+                if not os.path.exists(env_file_path):
                     continue
 
                 create_custom_env(
                     env_name=f"{os.path.split(task)[-1]}-{model}",
-                    path_to_env_file=os.path.join(task, model, "env.yaml"),
+                    path_to_env_file=env_file_path,
                 )
 
 
