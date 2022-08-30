@@ -339,10 +339,7 @@ def import_submodules(package: str = "module", recursive: bool = True) -> None:
             or __module_is_a_task(module_split, module_config)
             or __module_is_a_model(module_split)
         ) and (not __module_is_subprocess(module_file_path)):
-            import_submodules(module_path)
-            clean_key = module_path.replace("-", "_")
-            if clean_key not in sys.modules:
-                sys.modules[module_path.replace("-", "_")] = sys.modules[module_path]
+            __clean_package_import(module_path)
         else:
             logger.debug(f"skipping {module_relative_path}")
 
