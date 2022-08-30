@@ -16,7 +16,7 @@ logger = getLogger(__name__)
 
 def retrieve_package_from_env_file(env_file: dict) -> Tuple[List[str], List[str]]:
     """
-    retriebe the necessary packages to install from the env file
+    retrieve the necessary packages to install from the env file
 
     Args:
         env_file (dict): env file to use to retrieve the packages to install from
