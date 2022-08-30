@@ -209,7 +209,7 @@ def build_env_for_activated_tasks(
         path_to_config_file (str): Path to the general config file describing which tasks is activated
         path_to_apis (str): Path to the Gladia's tasks
         modality (str): modality name pattern filter (default: .*)
-        full_path_mode (bool): If True, will not check regex, not check activated task and 
+        full_path_mode (bool): If True, will not check regex, not check activated task and
             use modality as a full path to the api env to build (default: False)
 
     Returns:
@@ -238,7 +238,7 @@ def build_env_for_activated_tasks(
                 env_name="-".join([task, model]),
                 path_to_env_file=os.path.join(modality[0], "env.yaml"),
             )
-            
+
         else:
             raise FileNotFoundError(
                 f"Couldn't find env.yaml for {modality[0]}, please check your config file."
