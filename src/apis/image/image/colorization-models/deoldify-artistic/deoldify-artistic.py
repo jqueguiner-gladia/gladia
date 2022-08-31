@@ -16,8 +16,11 @@ def predict(image: bytes) -> Image:
     """
     Call the model to return the image colorized
 
-    :param image: image to colorize
-    :return: colorized image
+    Args:
+        image (bytes): Image to colorize
+
+    Returns:
+        Image: Colorized image
     """
 
     urls = {
