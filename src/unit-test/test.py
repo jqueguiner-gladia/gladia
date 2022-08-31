@@ -93,8 +93,7 @@ def get_openapi_json_inputs(task_details) -> dict:
     return openapi_json_inputs
 
 
-def get_task_inputs(task_details):
-    def add_default_files(initial_files, files_to_add):
+def add_default_files(initial_files, files_to_add):
         """ex of files to add:
             {"Image": ("image", "[.jpg, .png]")}
 
@@ -111,6 +110,10 @@ def get_task_inputs(task_details):
         }
         initial_files.update(dict_to_merge)
         return initial_files
+        
+
+def get_task_inputs(task_details):
+    
 
     task_inputs = []
     openapi_json_inputs = get_openapi_json_inputs(task_details)
