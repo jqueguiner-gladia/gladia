@@ -431,7 +431,13 @@ class TaskRouter:
                     # if an url key is in the kwargs and if a file is in it
                     elif kwargs.get(f"{input_name}_url", None):
                         url = kwargs[f"{input_name}_url"]
-                        kwargs[input_name] = urlopen(url).read()
+
+                        dummy_header = {
+                            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) "
+                        }
+
+                        req = urllib.request.Request(url=url, headers=dummy_header)
+                        kwargs[input_name] = urlopen(req).read()
 
                     # if not, file is missing
                     else:
