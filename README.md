@@ -58,7 +58,7 @@
 Follow Gladia Twitter account to get the latest update
 <p align="left">
   <a href="https://twitter.com/gladia_io" alt="Twitter">
-    <img src="https://img.shields.io/twitter/follow/gladia_io.svg?style=social&label=Follow" />
+    <img src="https://img.shields.io/twitter/follow/gladia_io.svg?style=social&label=Follow Gladia" />
   </a>
 </p>
 
