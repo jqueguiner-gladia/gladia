@@ -1,6 +1,5 @@
 from typing import Dict
 
-import truecase
 from transformers import AutoModelWithLMHead, AutoTokenizer
 
 
@@ -17,7 +16,7 @@ def predict(sentence: str) -> Dict[str, str]:
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelWithLMHead.from_pretrained(model_name)
 
-    input_text = f"repair_sentence: {truecase.get_true_case(sentence)}</s>"
+    input_text = f"repair_sentence: {sentence}</s>"
 
     input_ids = tokenizer.encode(input_text, return_tensors="pt")
 
