@@ -5,7 +5,7 @@ inputs = [
     {
         "type": "image",
         "name": "image",
-        "example": "http://files.gladia.io/test/test.png",
+        "example": "http://files.gladia.io/examples/image/image/uncolorization/landscape-pics-wallpapers.png",
         "placeholder": "Image to uncolorize",
     }
 ]
