@@ -2,7 +2,8 @@
   "paper": {
     "title": "",
     "link": "",
-    "authors": []
+    "authors": [],
+    "citation": ""
   },
   "license": {
     "title": "",
@@ -16,6 +17,7 @@
   "gladia": {
     "latency": "",
     "format": "",
-    "accelerator": ""
+    "accelerator": "",
+    "example": ""
   }
 }
