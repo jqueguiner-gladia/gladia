@@ -12,16 +12,17 @@ def predict(image: bytes) -> BytesIO:
     """
     Call the model returning the image with the faces blured
 
-    :param image: the image to blur the faces from
-    :return: the image with the faces blured
+    Args:
+        image (bytes): Image to blur
+
+    Returns:
+        BytesIO: Image with the faces blured
     """
 
     sigma = 50
     width, height = _open(image).size
-    
-    image = face_recognition.load_image_file(image)
 
-    
+    image = face_recognition.load_image_file(image)
 
     locations = face_recognition.face_locations(image)
 
