@@ -1,5 +1,6 @@
 from os import path
 from pathlib import Path
+from unittest import result
 
 from deoldify import device, visualize
 from deoldify.device_id import DeviceId
@@ -7,8 +8,8 @@ from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
 from gladia_api_utils.system import get_random_available_gpu_id
 from PIL import Image
-from torch.cuda import is_available as cuda_is_available
-
+import torch
+import gc
 
 def predict(image: bytes) -> Image:
     """
@@ -40,6 +41,7 @@ def predict(image: bytes) -> Image:
     render_factor = 30
 
     image = _open(image)
+    width, height = image.size
 
     image_colorizer = visualize.get_image_colorizer(
         root_folder=Path(current_model_path).parent,
@@ -52,5 +54,9 @@ def predict(image: bytes) -> Image:
     )
 
     del image_colorizer
+    gc.collect()
+    torch.cuda.empty_cache()
+
+    result.resize((width, height))
 
     return result

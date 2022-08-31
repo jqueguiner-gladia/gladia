@@ -68,6 +68,11 @@ def np_to_img_buffer(data, format="PNG"):
     return buf.getvalue()
 
 
+def np_to_img_pil(data):
+    img = Image.fromarray(np.uint8(data))
+    return img
+
+
 def to_pandas(buffer):
     buffer_mime_type = get_buffer_type(buffer)
     get_buffer_category = get_mime_category(buffer_mime_type)
