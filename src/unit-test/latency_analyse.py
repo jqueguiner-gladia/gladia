@@ -19,7 +19,7 @@ def get_default_models():
 
 default_models = get_default_models()
 data_csv = []
-data_csv.append(["task", "model", "is_default_model" "latency_with_loading (s)"])
+data_csv.append(["task", "model", "is_default_model", "latency_with_loading (s)"])
 model_latency_with_loading = {}
 jpg_latency_without_loading = []
 png_latency_without_loading = []
