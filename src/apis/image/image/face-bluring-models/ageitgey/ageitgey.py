@@ -3,8 +3,7 @@ from io import BytesIO
 import face_recognition
 from gladia_api_utils.file_management import input_to_files
 from gladia_api_utils.image_management import blur_image
-from gladia_api_utils.io import np_to_img_pil
-from gladia_api_utils.io import _open
+from gladia_api_utils.io import _open, np_to_img_pil
 
 
 @input_to_files
