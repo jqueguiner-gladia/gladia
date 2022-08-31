@@ -15,7 +15,13 @@ logger = getLogger(__name__)
 
 def _open(input) -> Any:
     """
-    convert input to infer, numpy, PIL image, binary, pdf,
+    convert input to infer, numpy, PIL image, binary, pdf
+
+    Args:
+        input (Any): Input to convert
+
+    Returns:
+        Any: Converted input
     """
 
     output = None
@@ -50,17 +56,45 @@ def _open(input) -> Any:
     return output
 
 
-def to_numpy(buffer):
+def to_numpy(buffer: bytes) -> np.ndarray:
+    """
+    convert a buffer to numpy array
+
+    Args:
+        buffer (bytes): buffer to convert
+
+    Returns:
+        numpy.ndarray: numpy array representing the buffer
+    """
     return np.array(Image.open(io.BytesIO(buffer)))
 
 
-def to_pil(buffer):
+def to_pil(buffer: bytes) -> Image:
+    """
+    convert a buffer to PIL image
+
+    Args:
+        buffer (bytes): buffer to convert
+
+    Returns:
+        Image: PIL image
+    """
     data = to_numpy(buffer)
 
     return Image.fromarray(np.uint8(data))
 
 
-def np_to_img_buffer(data, format="PNG"):
+def np_to_img_buffer(data: np.ndarray, format: str = "PNG"):
+    """
+    convert numpy array to image buffer
+
+    Args:
+        data (numpy.ndarray): numpy array to convert
+        format (str): image format to convert to
+
+    Returns:
+        bytes: image buffer
+    """
     buf = io.BytesIO()
     img = Image.fromarray(np.uint8(data))
     img.save(buf, format=format)
@@ -68,12 +102,29 @@ def np_to_img_buffer(data, format="PNG"):
     return buf.getvalue()
 
 
-def np_to_img_pil(data):
-    img = Image.fromarray(np.uint8(data))
-    return img
+def np_to_img_pil(data: np.ndarray) -> Image:
+    """
+    convert numpy array to PIL image
+
+    Args:
+        data (numpy.ndarray): numpy array to convert
+
+    Returns:
+        Image: PIL image
+    """
+    return Image.fromarray(np.uint8(data))
 
 
-def to_pandas(buffer):
+def to_pandas(buffer: bytes) -> pd.DataFrame:
+    """
+    convert a buffer to pandas dataframe
+
+    Args:
+        buffer (bytes): buffer to convert
+
+    Returns:
+        pandas.DataFrame: dataframe
+    """
     buffer_mime_type = get_buffer_type(buffer)
     get_buffer_category = get_mime_category(buffer_mime_type)
     output = None
