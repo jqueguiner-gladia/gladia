@@ -65,7 +65,9 @@ def get_endpoints_models(url, path, header):
     return response.json()["models"]
 
 
-def get_task_models_to_test(url, path, header={}, specific_models=[], default_models_only=False):
+def get_task_models_to_test(
+    url, path, header={}, specific_models=[], default_models_only=False
+):
     global endpoints
 
     task_response = requests.get(f"{url}{path}", headers=header).json()
@@ -92,7 +94,6 @@ def get_openapi_json_inputs(task_details) -> dict:
 
 
 def get_task_inputs(task_details):
-
     def add_default_files(initial_files, files_to_add):
         """ex of files to add:
             {"Image": ("image", "[.jpg, .png]")}
@@ -110,7 +111,6 @@ def get_task_inputs(task_details):
         }
         initial_files.update(dict_to_merge)
         return initial_files
-
 
     task_inputs = []
     openapi_json_inputs = get_openapi_json_inputs(task_details)
@@ -134,9 +134,7 @@ def get_task_inputs(task_details):
                 else:
                     # URL Image
                     default_url_file_test = config["test_files_config"]["image"]["url"]
-                urls_files.append(
-                    {key: value.get("_examples", default_url_file_test)}
-                )
+                urls_files.append({key: value.get("_examples", default_url_file_test)})
             else:
                 texts.append({key: ("text", value["_examples"][0])})
         else:
@@ -205,14 +203,20 @@ def is_file_in_inputs(task_inputs):
 
 
 def is_header_output_type_ok(response, expected_response_output_type):
-    return output_content_type_asserts[expected_response_output_type] == response.headers["content-type"]
+    return (
+        output_content_type_asserts[expected_response_output_type]
+        == response.headers["content-type"]
+    )
 
 
 def is_response_valid(response, details):
-    expected_response_output_type = list(details["post"]["responses"]["200"]["content"].keys())[
-        0
-    ]
-    if response.status_code != 200 or is_header_output_type_ok(response, expected_response_output_type) is False:
+    expected_response_output_type = list(
+        details["post"]["responses"]["200"]["content"].keys()
+    )[0]
+    if (
+        response.status_code != 200
+        or is_header_output_type_ok(response, expected_response_output_type) is False
+    ):
         return False
     else:
         return True
@@ -229,7 +233,8 @@ def reorder_endpoints(endpoints):
                 {
                     key: value
                     for key, value in endpoints["paths"].items()
-                    if key.split("/")[1] == input_order_item and key.split("/")[2] == output_order_item
+                    if key.split("/")[1] == input_order_item
+                    and key.split("/")[2] == output_order_item
                 }
             )
     endpoints["paths"] = reorder_paths
@@ -237,15 +242,16 @@ def reorder_endpoints(endpoints):
 
 
 def get_error_message(response, details) -> str:
-    expected_response_output_type = list(details["post"]["responses"]["200"]["content"].keys())[
-        0
-    ]
+    expected_response_output_type = list(
+        details["post"]["responses"]["200"]["content"].keys()
+    )[0]
     output_type_error_message = (
         " ({} instead of {})".format(
             response.headers["content-type"],
             output_content_type_asserts[expected_response_output_type],
         )
-        if response.status_code == 200 and is_header_output_type_ok(response, expected_response_output_type) is False
+        if response.status_code == 200
+        and is_header_output_type_ok(response, expected_response_output_type) is False
         else ""
     )
     return output_type_error_message
@@ -298,8 +304,10 @@ def perform_test(
     global formats_to_test
 
     task_inputs = get_task_inputs(details)
-    models = get_task_models_to_test(url, path, header, specific_models, default_models_only)
-    
+    models = get_task_models_to_test(
+        url, path, header, specific_models, default_models_only
+    )
+
     for model in models:
         if IS_CI:
             sleep(1)
@@ -372,9 +380,7 @@ def get_config():
 
 def get_formats_to_test(audio_file, image_file, video_file):
     formats_to_test = {}
-    formats_args = [
-        {"audio": audio_file}, {"image": image_file}, {"video": video_file}
-    ]
+    formats_args = [{"audio": audio_file}, {"image": image_file}, {"video": video_file}]
     config = get_config()
 
     for file_type in formats_args:
