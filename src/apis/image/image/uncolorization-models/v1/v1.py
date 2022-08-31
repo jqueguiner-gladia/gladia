@@ -6,8 +6,11 @@ def predict(image: bytes) -> np.ndarray:
     """
     Take an image as input and return it as grayscale
 
-    :param image: image to remove the color from
-    :return: gray scale image
+    Args:
+        image (bytes): image to convert to grayscale
+
+    Returns:
+        numpy.ndarray: grayscale image
     """
 
     img = cv2.imdecode(np.fromstring(image, np.uint8), cv2.IMREAD_COLOR)
