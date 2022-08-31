@@ -5,7 +5,7 @@ inputs = [
     {
         "type": "image",
         "name": "image",
-        "example": "http://files.gladia.io/test/test.png",
+        "example": "http://files.gladia.io/test/test.jpg",
         "placeholder": "Image to remove the background from",
     }
 ]
