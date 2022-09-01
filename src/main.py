@@ -18,7 +18,7 @@ from fastapi_utils.timing import add_timing_middleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.responses import RedirectResponse
 
-gladia_src_folder = os.get("PATH_TO_GLADIA_SRC", "/app")
+gladia_src_folder = os.getenv("PATH_TO_GLADIA_SRC", "/app")
 
 # apis path is a path to the folder containing all the APIs
 # directly under the main folder and equivalent to
