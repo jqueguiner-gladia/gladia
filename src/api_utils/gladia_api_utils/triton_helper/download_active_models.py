@@ -12,7 +12,7 @@ logger = getLogger(__name__)
 def __filter_directories(directories: List[str]) -> List[str]:
     """
     Remove hidden directories from `directories`
-    
+
     Args:
         directories (List[str]): directories to remove hidden dir from
 

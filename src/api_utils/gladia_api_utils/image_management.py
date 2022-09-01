@@ -9,7 +9,7 @@ from skimage.filters import gaussian
 def compress_JPG_image(image: Image, path_original: str, size=(1920, 1080)) -> str:
     """
     Convert a given file to JPG file
-    
+
     Args:
         image (Image): image to convert
         path_original (str): path to original image
@@ -46,7 +46,7 @@ def compress_JPG_image(image: Image, path_original: str, size=(1920, 1080)) -> s
 def convert_to_JPG(path_original: str) -> str:
     """
     Convert a given file to JPG file
-    
+
     Args:
         path_original (str): path to original image
 
@@ -88,10 +88,18 @@ def convert_to_JPG(path_original: str) -> str:
     return path_original
 
 
-def blur_image(image: Image, x0: int, x1: int, y0: int, y1: int, sigma: int=1, multichannel: bool=True):
+def blur_image(
+    image: Image,
+    x0: int,
+    x1: int,
+    y0: int,
+    y1: int,
+    sigma: int = 1,
+    multichannel: bool = True,
+):
     """
     Square blur in image
-    
+
     Args:
         image (Image): image to blur
         x0 (int): x0 coordinate (top left)
@@ -130,7 +138,7 @@ def draw_segment(baseImg: Image, matImg: np.array) -> Image:
 
     width, height = baseImg.size
     dummyImg = np.zeros([height, width, 4], dtype=np.uint8)
-    
+
     for x in range(width):
         for y in range(height):
             color = matImg[y, x]
@@ -139,7 +147,7 @@ def draw_segment(baseImg: Image, matImg: np.array) -> Image:
                 dummyImg[y, x, 3] = 0
             else:
                 dummyImg[y, x] = [r, g, b, 255]
-    
+
     img = Image.fromarray(dummyImg)
-    
+
     return img

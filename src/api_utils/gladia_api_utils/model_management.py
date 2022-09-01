@@ -1,11 +1,11 @@
 import os
+import shutil
 import sys
+import tempfile
 import threading
 from logging import getLogger
 from pathlib import Path
 from urllib.parse import urlparse
-import tempfile
-import shutil
 
 from git import Repo
 
@@ -17,10 +17,10 @@ logger = getLogger(__name__)
 def download_model(
     url: str,
     output_path: str,
-    uncompress_after_download: bool=True,
-    file_type: str=None,
-    reset: bool=True,
-    branch: str="origin",
+    uncompress_after_download: bool = True,
+    file_type: str = None,
+    reset: bool = True,
+    branch: str = "origin",
 ) -> str:
     """
     download a model and uncompress it if necessary
@@ -44,9 +44,7 @@ def download_model(
     model_root_path = os.path.dirname(os.path.join(cwd, rel_path))
 
     # check env to see if mutualized_storage had been set
-    mutualized_storage_root = os.getenv(
-        "GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/"
-    )
+    mutualized_storage_root = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/")
 
     if not os.path.isabs(output_path):
         output_path = os.path.join(mutualized_storage_root, rel_path, output_path)
@@ -76,7 +74,7 @@ def download_model(
 
     else:
         logger.debug(f"Downloading {url}")
-        
+
         # if the output_path is not an existing directory create it
         if not os.path.isdir(Path(output_path)):
             os.makedirs(output_path)
@@ -86,7 +84,7 @@ def download_model(
         uncompress_tmp_dirpath = tempfile.mkdtemp()
 
         # download the model to the temporary folder
-        downloaded_full_path=download_file(url, dl_tmp_dirpath)
+        downloaded_full_path = download_file(url, dl_tmp_dirpath)
 
         # if the model is uncompressable uncompress it
         if uncompress_after_download and is_uncompressable(downloaded_full_path):
@@ -109,7 +107,7 @@ def download_models(model_list: dict) -> dict:
 
     Args:
         model_list (dict): list of models to download should be [(url, output_path, uncompression_mode)]
-    
+
     Returns:
         dict: list of models with their paths
     """

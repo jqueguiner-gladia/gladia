@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
 
 from .casting import cast_response
-from .file_management import write_tmp_file, is_binary_file
+from .file_management import is_binary_file, write_tmp_file
 from .responses import AudioResponse, ImageResponse, VideoResponse
 
 versions = list()
@@ -37,7 +37,6 @@ number_types = ["number", "int", "integer"]
 decimal_types = ["float", "decimal"]
 boolean_types = ["bool", "boolean"]
 singular_types = text_types + number_types + decimal_types + boolean_types
-
 
 
 # take several dictionaries in input and return a merged one
@@ -143,7 +142,7 @@ def get_module_infos(root_path=None) -> list:
     return task, plugin, tags
 
 
-def get_model_versions(root_path: str=None) -> dict:
+def get_model_versions(root_path: str = None) -> dict:
     """
     Get the list of available model versions.
     We use the -{models_folder_suffix} in order to
@@ -227,7 +226,7 @@ def get_task_metadata(rel_path: str) -> dict:
 
     Args:
         rel_path (str): relative path to the task dir
-    
+
     Returns:
         dict: metadata of the task
     """
@@ -235,7 +234,7 @@ def get_task_metadata(rel_path: str) -> dict:
     rel_path = get_task_dir_relpath_from_py_file(rel_path)
     metadata_file_name = ".metadata.json"
     metadata_file_path = os.path.join(rel_path, metadata_file_name)
-    
+
     if not Path(metadata_file_path).exists():
         metadata_file_path = os.path.join("apis", ".metadata_model_template.json")
     else:
@@ -252,7 +251,7 @@ def exec_in_subprocess(
     """
     Execute a model in a subprocess.
     The subprocess is executed in a separate thread.
-    
+
     Args:
         env_name (str): name of the environment
         module_path (str): path to the module
@@ -359,13 +358,13 @@ def get_endpoint_parameter_type(parameter: dict) -> Any:
 
 def create_description_for_the_endpoint_parameter(endpoint_param: dict) -> dict:
     """
-    Create a description for the endpoint parameters. 
-    The description is a dictionary that will be used to automatically generate 
+    Create a description for the endpoint parameters.
+    The description is a dictionary that will be used to automatically generate
     the swagger documentation.
-    
+
     Args:
         endpoint_param (dict): parameter of the endpoint
-    
+
     Returns:
         dict: dict representing the description of the endpoint's parameter
     """
@@ -402,11 +401,11 @@ def create_description_for_the_endpoint_parameter(endpoint_param: dict) -> dict:
 def get_error_reponse(code: int, message: str) -> JSONResponse:
     """
     Create a JSONResponse error response
-    
+
     Args:
         code (int): error code
         message (str): error message
-    
+
     Returns:
         dict: error response
     """
@@ -418,7 +417,10 @@ class TaskRouter:
     """
     The TaskRouter class is used to route tasks to the appropriate model.
     """
-    def __init__(self, router: APIRouter, input: list[dict], output, default_model: str):
+
+    def __init__(
+        self, router: APIRouter, input: list[dict], output, default_model: str
+    ):
         """
         Initialize the TaskRouter class
         It will create a router and all the to the main FastAPI routeur.

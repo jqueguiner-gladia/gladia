@@ -21,6 +21,7 @@ class SpeechToTextEngine:
     Returns:
         SpeechToTextEngine: speech to text engine instance
     """
+
     def __init__(
         self,
         model_uri: str = "english/coqui/v1.0.0-huge-vocab",
@@ -38,7 +39,6 @@ class SpeechToTextEngine:
         Returns:
             SpeechToTextEngine: speech to text engine instance
         """
-
 
         model_path_prefix = f"{os.getenv('MODEL_CACHE_ROOT')}/audio/text/{model_uri}"
 
@@ -59,12 +59,11 @@ class SpeechToTextEngine:
         self.model = Model(model_path)
         self.model.enableExternalScorer(scorer_path)
 
-
     def normalize_audio(self, audio: bytes) -> bytes:
         """
         Normalize audio to [-1, 1]
 
-        Args: 
+        Args:
             audio (bytes): audio to normalize
 
         Returns:

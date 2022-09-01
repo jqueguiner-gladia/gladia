@@ -6,6 +6,7 @@ import sys
 import tempfile
 from logging import getLogger
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 import gdown
@@ -15,15 +16,13 @@ from PIL import Image
 from xtract import XZ, BZip2, GZip, Rar, Tar, Zip, xtract
 from xtract.utils import get_file_type
 
-from typing import Any
-
 logger = getLogger(__name__)
 
 
 def is_binary_file(file_path: str) -> bool:
     """
     Check if a file is binary or not.
-    
+
     Args:
         file_path (str): The path to the file to check.
 
@@ -71,6 +70,7 @@ def input_to_files(func):
     Returns:
         function: The decorated function.
     """
+
     def inner(*args, **kwargs) -> Any:
         """
         Wrapper for the decorated function.
@@ -103,7 +103,10 @@ def input_to_files(func):
 
 
 def download_file(
-    url: str, file_full_path: str, force_create_dir: bool=True, force_redownload: bool=False
+    url: str,
+    file_full_path: str,
+    force_create_dir: bool = True,
+    force_redownload: bool = False,
 ) -> Path:
     """
     Download a file from a url.
@@ -113,7 +116,7 @@ def download_file(
         file_full_path (str): The path to the file to download.
         force_create_dir (bool): Create the directory if it doesn't exist. (default: True)
         force_redownload (bool): Redownload the file if it already exists. (default: False)
-    
+
     Returns:
         Path: The path to the downloaded file.
     """
@@ -153,7 +156,7 @@ def write_url_content_to_file(file_full_path: Path, url) -> bool:
     return write_to_file(file_full_path, data)
 
 
-def write_to_file(file_full_path: str, data: Any, overwrite: bool=False) -> bool:
+def write_to_file(file_full_path: str, data: Any, overwrite: bool = False) -> bool:
     """
     Write data to a file.
 
@@ -189,7 +192,7 @@ def generate_random_filename(directory: str, extension: str):
     Args:
         directory (str): The directory to generate the filename in.
         extension (str): The extension to use.
-    
+
     Returns:
         str: The random filename.
     """
@@ -259,7 +262,9 @@ def create_directory(path: str) -> bool:
         return False
 
 
-def uncompress(path: str, destination: str=None, delete_after_uncompress: bool=True) -> str:
+def uncompress(
+    path: str, destination: str = None, delete_after_uncompress: bool = True
+) -> str:
     """
     Uncompress a file.
 
@@ -288,7 +293,10 @@ def uncompress(path: str, destination: str=None, delete_after_uncompress: bool=T
 
 
 def compress_directory(
-    path: str, compression_format: str="gzip", destination: str=None, delete_after_compress: bool=False
+    path: str,
+    compression_format: str = "gzip",
+    destination: str = None,
+    delete_after_compress: bool = False,
 ) -> str:
     """
     compress a directory and returns the path of the compressed file.
@@ -522,7 +530,7 @@ def is_pdf(file_path: str) -> bool:
 
     Args:
         file_path (str): The path to the file to analyze.
-        
+
     Returns:
         bool: True if the file is a pdf file.
     """
@@ -806,7 +814,7 @@ def create_random_directory(root_path: str) -> str:
 def generate_random_filename(root_path: str, extension: str) -> str:
     """
     Generate a random filename in the root_path.
-    
+
     Args:
         root_path (str): The path to the root directory to create the file into.
         extension (str): The extension of the file.

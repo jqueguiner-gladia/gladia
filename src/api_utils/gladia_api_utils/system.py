@@ -44,7 +44,7 @@ def get_cwd():
     Returns:
         str: current working directory
     """
-    
+
     # used for relative paths
     namespace = sys._getframe(1).f_globals
     cwd = os.getcwd()

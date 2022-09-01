@@ -3,6 +3,7 @@ import json
 import os
 import pathlib
 import re
+from typing import Union
 from warnings import warn
 
 import numpy as np
@@ -13,7 +14,6 @@ from PIL.PngImagePlugin import PngInfo
 from starlette.responses import StreamingResponse
 
 from .file_management import get_file_type
-from typing import Union
 
 
 class NpEncoder(json.JSONEncoder):
@@ -21,6 +21,7 @@ class NpEncoder(json.JSONEncoder):
     Custom JSON encoder for numpy arrays and other types
     will map numpy types to python types
     """
+
     def default(self, obj):
         if isinstance(obj, np.integer):
             return int(obj)
@@ -60,10 +61,12 @@ def __convert_pillow_image_response(
     return returned_response
 
 
-def __convert_ndarray_response(response: np.ndarray, output_type: str) -> Union[StreamingResponse, JSONResponse]:
+def __convert_ndarray_response(
+    response: np.ndarray, output_type: str
+) -> Union[StreamingResponse, JSONResponse]:
     """
-    Convert a numpy array Fastapi response 
-    returns Streaming response if the ndarray is an image 
+    Convert a numpy array Fastapi response
+    returns Streaming response if the ndarray is an image
     returns JSON response if the ndarray is a array
 
     Args:
@@ -139,18 +142,20 @@ def __convert_io_response(response: io.IOBase, output_type: str) -> StreamingRes
     return response
 
 
-def __convert_string_response(response: str) -> Union[JSONResponse, StreamingResponse, str]:
+def __convert_string_response(
+    response: str,
+) -> Union[JSONResponse, StreamingResponse, str]:
     """
     Convert a string response to a JSON response
 
     Args:
         response (str): string response
-    
+
     Returns:
-        JSONResponse: FastAPI JSON response for the input string, 
+        JSONResponse: FastAPI JSON response for the input string,
         if the string is not interpretable JSON response the plain string is returned
         if the string is a path to a file, a StreamingResponse is returned
-        
+
     """
     # if response is a string but not a file path
     # try to load it as a json representation
@@ -175,7 +180,12 @@ def __convert_string_response(response: str) -> Union[JSONResponse, StreamingRes
         except Exception as e:
             warn(f"Couldn't interpret response returning plain response: {e}")
             try:
-                return JSONResponse(content={"prediction": str(response), "prediction_raw": str(response)})
+                return JSONResponse(
+                    content={
+                        "prediction": str(response),
+                        "prediction_raw": str(response),
+                    }
+                )
             except Exception as e:
                 warn(f"Couldn't interpret response returning plain response: {e}")
                 return response
@@ -191,8 +201,7 @@ def __convert_string_response(response: str) -> Union[JSONResponse, StreamingRes
                 except Exception as e:
                     file_to_stream = open(response, "rb")
                     return StreamingResponse(
-                        file_to_stream, 
-                        media_type=get_file_type(response)
+                        file_to_stream, media_type=get_file_type(response)
                     )
                 finally:
                     os.remove(response)
@@ -204,7 +213,9 @@ def __convert_string_response(response: str) -> Union[JSONResponse, StreamingRes
             return response
 
 
-def cast_response(response, expected_output: dict) -> Union[StreamingResponse, JSONResponse, str]:
+def cast_response(
+    response, expected_output: dict
+) -> Union[StreamingResponse, JSONResponse, str]:
     """Cast model response to the expected output type
 
     Args:
@@ -223,7 +234,11 @@ def cast_response(response, expected_output: dict) -> Union[StreamingResponse, J
             # convert it to a StreamingResponse
             return __convert_pillow_image_response(image, addition_exif)
         else:
-            return JSONResponse(content=json.loads(json.dumps(response, cls=NpEncoder, ensure_ascii=False)))
+            return JSONResponse(
+                content=json.loads(
+                    json.dumps(response, cls=NpEncoder, ensure_ascii=False)
+                )
+            )
 
     elif isinstance(response, Image.Image):
         # if the response is a pillow image
@@ -250,9 +265,11 @@ def cast_response(response, expected_output: dict) -> Union[StreamingResponse, J
     elif isinstance(response, (list, dict)):
         # if the response is a list or dict
         # convert it to a JSONResponse
-        return JSONResponse(json.loads(
-            json.dumps(response, cls=NpEncoder, ensure_ascii=False).encode("utf8")
-        ))
+        return JSONResponse(
+            json.loads(
+                json.dumps(response, cls=NpEncoder, ensure_ascii=False).encode("utf8")
+            )
+        )
 
     elif isinstance(response, str):
         # if the response is a string
