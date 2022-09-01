@@ -11,7 +11,79 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  build:
+    if: |-
+      ${{ 
+        !contains(github.event.pull_request.labels.*.name, 'ci') &&
+        !contains(github.event.pull_request.labels.*.name, 'doc') &&
+        github.event.pull_request.merged == true
+      }}
+    runs-on: [self-hosted, linux, STD]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Login to DockerHub Registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Login to NVCR Registry
+        uses: docker/login-action@v2
+        with:
+          registry: nvcr.io
+          username: ${{ secrets.NVCR_USERNAME }}
+          password: ${{ secrets.NVCR_ACCESS_TOKEN }}
+          
+      - name: Login to Gladia Registry
+        uses: docker/login-action@v1
+        with:
+          registry: docker.gladia.io
+          username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
+          password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
+          
+      - name: Build Gladia Base image
+        if: "contains(github.event.pull_request.labels.*.name, 'ci: force-build-base')"
+        env:
+          DOCKER_BUILDKIT: 1
+        working-directory: ./src
+        run: |
+          docker build \
+          --no-cache \
+          -t docker.gladia.io/gladia-base:latest |
+          -f base.Dockerfile \
+          .
+        
+      - name: Push new base latest to Gladia registry
+        if: "contains(github.event.pull_request.labels.*.name, 'ci: force-build-base')"
+        run: docker push docker.gladia.io/gladia-base:latest
+
+      - name: Build Gladia image with no-cache
+        if: "contains(github.event.pull_request.labels.*.name, 'ci: force-no-cache')"
+        env:
+          DOCKER_BUILDKIT: 1
+        working-directory: ./src
+        run: |
+          docker build \
+          --no-cache \
+          -t docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }} \
+          -f gpu.Dockerfile \
+          .
+
+      - name: Build Gladia image
+        if: "!contains(github.event.pull_request.labels.*.name, 'ci: force-no-cache')"
+        env:
+          DOCKER_BUILDKIT: 1
+        working-directory: ./src
+        run: |
+          docker build \
+          -t docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }} \
+          -f gpu.Dockerfile \
+          .
+
   promote-DH:
+    needs: build
     if: github.event.pull_request.merged == true
     runs-on: [self-hosted, linux, STD]
     steps:
