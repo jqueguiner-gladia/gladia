@@ -21,13 +21,12 @@ def predict(word: str, count: Union[int, str]) -> Dict[str, str]:
     """
 
     p = inflect.engine()
-    
+
     # if singular_noun is False
     # it means it is a singular noun
     if p.singular_noun(word) == False:
         result = p.plural(word, count)
     else:
         result = word
-    
-    
+
     return {"prediction": result, "prediction_raw": result}
