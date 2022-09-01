@@ -8,7 +8,7 @@ from logging import getLogger
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
-
+from typing import List
 import gdown
 import magic
 import requests
@@ -843,7 +843,7 @@ def create_random_directory(root_path: str) -> str:
     return full_path
 
 
-def generate_random_filename(root_path: str, extension: str) -> list(str, str):
+def generate_random_filename(root_path: str, extension: str) -> List(str, str):
     """
     Generate a random filename in the root_path.
 
