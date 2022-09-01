@@ -65,7 +65,7 @@ def __convert_ndarray_response(
     response: np.ndarray, output_type: str
 ) -> Union[StreamingResponse, JSONResponse]:
     """
-    Convert a numpy array Fastapi response
+    Convert a numpy array into Fastapi response
     returns Streaming response if the ndarray is an image
     returns JSON response if the ndarray is a array
 
