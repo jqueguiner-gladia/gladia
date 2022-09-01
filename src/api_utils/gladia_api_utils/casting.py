@@ -99,7 +99,7 @@ def __convert_bytes_response(response: bytes, output_type: str) -> StreamingResp
 
     Args:
         response (bytes): bytes response
-        output_type (str): output type of the response
+        output_type (str): output type of the response, only supported value is `image`
 
     Returns:
         StreamingResponse: FastAPI streaming response for an image
