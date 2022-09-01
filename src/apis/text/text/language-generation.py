@@ -14,6 +14,4 @@ inputs = [
 
 output = {"name": "detected_language", "type": "string", "example": "generated_text"}
 
-TaskRouter(
-    router=router, input=inputs, output=output, default_model="bloom-560m"
-)
+TaskRouter(router=router, input=inputs, output=output, default_model="bloom-560m")

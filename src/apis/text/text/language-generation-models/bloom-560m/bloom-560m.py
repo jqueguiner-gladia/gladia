@@ -1,6 +1,6 @@
-import truecase
-
 from typing import Dict, Union
+
+import truecase
 from transformers import pipeline
 
 
