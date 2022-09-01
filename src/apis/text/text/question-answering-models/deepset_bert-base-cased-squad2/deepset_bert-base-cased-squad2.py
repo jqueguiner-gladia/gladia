@@ -14,7 +14,7 @@ def load_model() -> (PreTrainedTokenizer, PreTrainedModel):
     """
     Load `deepset/bert-base-cased-squad2` tokenizer and model.
 
-    
+
     :return: tuple containing both the tokenizer and the model
     """
 
@@ -39,7 +39,7 @@ def predict(
         question (str): The question to answer
 
     Returns:
-       Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]: The answer to the question    
+       Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]: The answer to the question
     """
 
     tokenizer, model = load_model()

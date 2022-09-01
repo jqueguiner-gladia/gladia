@@ -1,5 +1,7 @@
 from typing import Dict, Union
+
 from happytransformer import HappyWordPrediction
+
 
 def predict(sentence: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """

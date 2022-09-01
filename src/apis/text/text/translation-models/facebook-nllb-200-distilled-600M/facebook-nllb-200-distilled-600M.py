@@ -1,5 +1,7 @@
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
 from typing import Dict
+
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
+
 TASK = "translation"
 CKPT = "facebook/nllb-200-distilled-600M"
 
@@ -218,7 +220,9 @@ for code in codes_as_string:
     flores_codes_mapping[iso_3] = lang_code
 
 
-def predict(input_string: str, source_language: str, target_language: str) -> Dict[str, str]:
+def predict(
+    input_string: str, source_language: str, target_language: str
+) -> Dict[str, str]:
     """
     Translate the text from source lang to target lang
 

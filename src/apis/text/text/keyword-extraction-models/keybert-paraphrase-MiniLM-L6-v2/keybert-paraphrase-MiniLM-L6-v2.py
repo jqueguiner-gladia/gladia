@@ -14,7 +14,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 def select_key_words(text_embeddings, vocabulary_embeddings, vocabulary, top_n=1):
     """
     Select the top n keywords from the vocabulary
-    
+
     Args:
         text_embeddings (numpy.ndarray): embeddings of the text
         vocabulary_embeddings (numpy.ndarray): embeddings of the vocabulary

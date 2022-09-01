@@ -34,7 +34,7 @@ def convert_image_to_ascii(
     Args:
         image (Image): Image to convert to ascii
         buckets (int): range of pixels associated to each ascii character (default: 255 // (len(ASCII_CHARS) - 1))
-    
+
     Returns:
         str: ascii characters representation of the image
     """

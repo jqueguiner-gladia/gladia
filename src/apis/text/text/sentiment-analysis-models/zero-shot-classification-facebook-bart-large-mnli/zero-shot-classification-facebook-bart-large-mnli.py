@@ -1,7 +1,8 @@
+from typing import Dict, List, Union
+
 import numpy as np
 import truecase
 from transformers import pipeline
-from typing import Dict, Union, List
 
 
 def predict(text: str) -> Dict[str, Union[str, List[float]]]:

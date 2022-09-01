@@ -2,7 +2,7 @@ import itertools
 from typing import Dict, List, Tuple
 
 import torch
-from transformers import PreTrainedTokenizer, BertModel, BertTokenizer
+from transformers import BertModel, BertTokenizer, PreTrainedTokenizer
 
 
 def get_tokens(
@@ -30,7 +30,7 @@ def tokens_to_tensor(
 ) -> torch.Tensor:
     """
     From a given tokenized sentence, return it as a Tensor
-    
+
     Args:
         tokens (List[List[str]]): tokenized sentence
         tokenizer (PreTrainedTokenizer): tokenizer used to tokenize the text

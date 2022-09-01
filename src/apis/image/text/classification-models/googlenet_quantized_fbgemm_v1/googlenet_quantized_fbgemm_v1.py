@@ -14,7 +14,7 @@ def predict(image: bytes, top_k: int = 1) -> Dict[str, Union[str, Dict[str, floa
 
     Returns:
         Dict[str, Union[str, Dict[str, float]]]: Dictionary of the top_k predictions
-    """    
+    """
     img = _open(image)
 
     model = TorchvisionModel(
