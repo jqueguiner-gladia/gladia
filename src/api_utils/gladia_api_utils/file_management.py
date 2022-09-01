@@ -6,9 +6,9 @@ import sys
 import tempfile
 from logging import getLogger
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 from uuid import uuid4
-from typing import List
+
 import gdown
 import magic
 import requests
