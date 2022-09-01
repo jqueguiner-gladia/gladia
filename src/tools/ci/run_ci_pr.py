@@ -8,7 +8,6 @@ class bcolors:
     """
     Colors for terminal output
     """
-
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
     OKCYAN = "\033[96m"
@@ -23,7 +22,7 @@ class bcolors:
 def has_only_pr_with_prefix(response, pr_prefix_to_check: str, verbose: bool = False):
     """
     Check if the response contains only PRs with the given prefix
-
+    
     Args:
         response (requests.Response): The Github response
         pr_prefix_to_check (str): The prefix to check on the PRs
@@ -51,9 +50,9 @@ def has_only_pr_with_prefix(response, pr_prefix_to_check: str, verbose: bool = F
 
             # if the PR title doesn't contains the prefix
             # in the first characters of the title
-            if not pr["title"].upper().startswith(
-                pr_prefix_to_check.upper()
-            ) and not pr["title"].upper().startswith(f"({pr_prefix_to_check.upper()})"):
+            if not pr["title"].upper().startswith(pr_prefix_to_check.upper()) and not pr[
+                "title"
+            ].upper().startswith(f"({pr_prefix_to_check.upper()})"):
                 only_prs_with_prefix = False
                 break
         if verbose:
@@ -136,20 +135,25 @@ def has_only_pr_with_prefix(response, pr_prefix_to_check: str, verbose: bool = F
     "--verbose", is_flag=True, show_default=False, default=False, help="Verbose output"
 )
 def commit_should_run(
-    commit_short: str = "",
-    repo: str = "gladiaio/gladia",
-    gh_token: str = "",
-    prefix_to_check: str = "WIP",
-    break_when_only_prefix: bool = False,
-    break_if_no_pr: bool = False,
-    return_pr: bool = False,
-    pr_nb_only: bool = False,
-    first_pr_only: bool = False,
-    deploy_message: bool = False,
-    verbose: bool = False,
-) -> bool:
+    commit_short: str="",
+    repo: str="gladiaio/gladia",
+    gh_token: str="",
+    prefix_to_check: str="WIP",
+    break_when_only_prefix: bool=False,
+    break_if_no_pr: bool=False,
+    return_pr: bool=False,
+    pr_nb_only: bool=False,
+    first_pr_only: bool=False,
+    deploy_message: bool=False,
+    verbose: bool=False,
+) -> None:
     """
     Check if the commit should be run
+    Return an exit code depending on the result 0 if the commit should be run, 1 otherwise
+    print the PRs associated to the commit if return_pr is True
+    print the PR ids associated to the commit if pr_nb_only is True
+    print the first PR where the commit appears if first_pr_only is True
+    print the deploy message associated to the PR if deploy_message is True
 
     Args:
         commit_short (str): Short Sha of commit.
@@ -165,7 +169,7 @@ def commit_should_run(
         verbose (bool): Verbose output.
 
     Returns:
-        int: 0 if the commit should be run, 1 otherwise.
+        None
     """
     if deploy_message:
         pr_nb_only = True
