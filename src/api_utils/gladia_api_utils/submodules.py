@@ -11,6 +11,7 @@ from pathlib import Path
 from shlex import quote
 from typing import Any, Optional
 from urllib.request import urlopen
+from Typing import List
 
 import forge
 import starlette
@@ -19,7 +20,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
 
 from .casting import cast_response
-from .file_management import is_binary_file, write_tmp_file
+from .file_management import is_binary_file, write_tmp_file, is_valid_path
 from .responses import AudioResponse, ImageResponse, VideoResponse
 
 versions = list()
@@ -419,7 +420,7 @@ class TaskRouter:
     """
 
     def __init__(
-        self, router: APIRouter, input: list[dict], output, default_model: str
+        self, router: APIRouter, input: List[dict], output, default_model: str
     ):
         """
         Initialize the TaskRouter class
