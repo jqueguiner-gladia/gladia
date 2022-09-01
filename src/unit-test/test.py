@@ -4,10 +4,10 @@ import re
 import sys
 from time import sleep
 from urllib.request import Request, urlopen
-from validators import url as is_url
 
 import click
 import requests
+from validators import url as is_url
 
 global nb_total_tests
 global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
