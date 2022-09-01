@@ -1,28 +1,27 @@
 import os
+import onnxruntime as ort
 
-import numpy as np
-import tensorflow.compat.v1 as tf
-from gladia_api_utils.image_management import draw_segment
-from gladia_api_utils.io import _open
-from gladia_api_utils.model_management import download_models
 from PIL import Image
+from numpy import ndarray
+from numpy import asarray as as_nparray
+from typing import Tuple
 
-tf.disable_v2_behavior()
+from gladia_api_utils.io import _open
+from gladia_api_utils.image_management import draw_segment
+from gladia_api_utils.model_management import download_models
 
-urls = {
+
+models_to_download = {
     "mobile-net": {
-        "url": "https://huggingface.co/databuzzword/mobile-net",
+        "url": "https://huggingface.co/Gladiaio/databuzzword_mobile-net_onnx",
         "output_path": "models",
     }
 }
 
-models_path = download_models(urls)
-
-# using mobile-net 30K checkpoint
-current_model_path = os.path.join(models_path["mobile-net"]["output_path"], "30000")
+models_path = download_models(models_to_download)
 
 
-def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
+def run(image: Image, fast: bool = True) -> Tuple[Image.Image, ndarray]:
     """
     Call the model to return the image without its background
 
@@ -31,35 +30,19 @@ def run(image: Image, fast: bool = True) -> (Image, np.ndarray):
     :return: image without its background
     """
 
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
+    del fast
 
-    sess = tf.Session(config=config)
-
-    INPUT_TENSOR_NAME = "ImageTensor:0"
     INPUT_SIZE = 513
-    FROZEN_GRAPH_NAME = "frozen_inference_graph"
-    OUTPUT_TENSOR_NAME = "SemanticPredictions:0"
+    MODEL_PATH = os.path.join(models_path["mobile-net"]["output_path"], "databuzzword_mobile-net_onnx.onnx")
+    INPUT_TENSOR_NAME = "ImageTensor:0"
 
     width, height = image.size
     resize_ratio = 1.0 * INPUT_SIZE / max(width, height)
     target_size = (int(resize_ratio * width), int(resize_ratio * height))
     resized_image = image.convert("RGB").resize(target_size, Image.ANTIALIAS)
 
-    graph_path = os.path.join(current_model_path, "frozen_inference_graph.pb")
-    slow_graph_def = tf.GraphDef.FromString(open(graph_path, "rb").read())
-
-    tf.import_graph_def(slow_graph_def, name="")
-
-    batch_seg_map = sess.run(
-        sess.graph.get_tensor_by_name(OUTPUT_TENSOR_NAME),
-        feed_dict={INPUT_TENSOR_NAME: [np.asarray(resized_image)]},
-    )
-
-    seg_map = batch_seg_map[0]
-
-    tf.reset_default_graph()
-    sess.close()
+    ort_sess = ort.InferenceSession(MODEL_PATH)
+    seg_map = ort_sess.run(None, {INPUT_TENSOR_NAME: [as_nparray(resized_image)]})[0][0]
 
     return resized_image, seg_map
 
