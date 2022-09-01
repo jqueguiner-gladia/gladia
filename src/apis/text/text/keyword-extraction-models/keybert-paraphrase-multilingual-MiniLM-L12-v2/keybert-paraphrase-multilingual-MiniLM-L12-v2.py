@@ -9,8 +9,11 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     Extract keywords from a given sentence
 
-    :param text: sentence to extract the keywords from
-    :return: keywords founded in the sentence
+    Args:
+        text (str): The sentence to extract keywords from
+
+    Returns:
+        Dict[str, Union[str, Dict[str, float]]]: The keywords extracted from the sentence
     """
 
     NB_RESULTS = 25
