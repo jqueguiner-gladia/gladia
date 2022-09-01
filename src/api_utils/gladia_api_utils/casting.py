@@ -13,10 +13,20 @@ from PIL.PngImagePlugin import PngInfo
 from starlette.responses import StreamingResponse
 
 from .file_management import get_file_type
+from typing import Any
 
 
 class NpEncoder(json.JSONEncoder):
-    def default(self, obj):
+    def default(self, obj: Any) -> Any:
+        """
+        Cast numpy objects to json compatible objects
+
+        Args:
+            obj (Any): Numpy Object to cast
+
+        Returns:
+            Any: JSON compatible object
+        """
         if isinstance(obj, np.integer):
             return int(obj)
         elif isinstance(obj, np.floating):
@@ -31,7 +41,17 @@ class NpEncoder(json.JSONEncoder):
 
 def __convert_pillow_image_response(
     image_response: Image.Image, additional_metadata: dict = dict()
-):
+) -> StreamingResponse:
+    """
+    Convert pillow image response to fastapi StreamingResponse
+
+    Args:
+        image_response (Image.Image): Pillow image response
+        additional_metadata (dict, optional): Additional metadata to add to the response. (default: dict())
+
+    Returns:
+        StreamingResponse: Fastapi response
+    """
     ioresult = io.BytesIO()
 
     image_response.save(ioresult, format="png")
@@ -46,7 +66,21 @@ def __convert_pillow_image_response(
     return returned_response
 
 
-def __convert_ndarray_response(response: np.ndarray, output_type: str):
+def __convert_ndarray_response(response: np.ndarray, output_type: str="") -> JSONResponse:
+    """
+    Convert numpy array response to fastapi JSONresponse
+
+    Args:
+        response (np.ndarray): Numpy array response
+        output_type (str): Output type of the response (image, text) (default: "")
+
+    Returns:
+        JSONResponse: Fastapi response
+
+    Raises:
+        Exception: If output_type is not supported
+    """
+
     if output_type == "image":
         ioresult = io.BytesIO(response.tobytes())
         ioresult.seek(0)
@@ -64,7 +98,20 @@ def __convert_ndarray_response(response: np.ndarray, output_type: str):
         return response
 
 
-def __convert_bytes_response(response: bytes, output_type: str):
+def __convert_bytes_response(response: bytes, output_type: str="image") -> StreamingResponse:
+    """
+    Convert bytes response to fastapi StreamingResponse
+    
+    Args:
+        response (bytes): Bytes response
+        output_type (str): Output type of the response (image) (default: "")
+
+    Returns:
+        StreamingResponse: Fastapi StreamingResponse
+
+    Raises:
+        Exception: If output_type is not supported
+    """
     ioresult = io.BytesIO(response)
     ioresult.seek(0)
 
@@ -79,7 +126,18 @@ def __convert_bytes_response(response: bytes, output_type: str):
     return response
 
 
-def __convert_io_response(response: io.IOBase, output_type: str):
+def __convert_io_response(response: io.IOBase, output_type: str="image") -> StreamingResponse:
+    """
+    Convert io response to fastapi StreamingResponse
+
+    Args:
+        response (io.IOBase): IO response
+        output_type (str): Output type of the response (image) (default: "image")
+
+    Returns:
+        StreamingResponse: Fastapi StreamingResponse
+    """
+
     response.seek(0)
 
     if output_type == "image":
@@ -93,7 +151,19 @@ def __convert_io_response(response: io.IOBase, output_type: str):
     return response
 
 
-def __convert_string_response(response: str):
+def __convert_string_response(response: str) -> JSONResponse:
+    """
+    Convert string response to fastapi JSONResponse
+
+    Args:
+        response (str): String response
+
+    Returns:
+        JSONResponse: Fastapi JSONResponse
+
+    Raises:
+        Exception: If response is not a valid json
+    """
     # if response is a string but not a file path
     # try to load it as a json representation
     # else return it as is
