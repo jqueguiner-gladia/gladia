@@ -1,11 +1,14 @@
 import importlib
+import importlib.util
 import json
 import logging
 import os
 import pkgutil
 from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
-from os.path import normpath, basename
+from os.path import basename, normpath
+from types import ModuleType
+from typing import List
 
 import nltk
 from fastapi import FastAPI
@@ -15,15 +18,11 @@ from fastapi_utils.timing import add_timing_middleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.responses import RedirectResponse
 
-from typing import List
-from types import ModuleType
-import importlib.util
-
 gladia_src_folder = os.get("PATH_TO_GLADIA_SRC", "/app")
 
 # apis path is a path to the folder containing all the APIs
-# directly under the main folder and equivalent to 
-# import apis 
+# directly under the main folder and equivalent to
+# import apis
 # but with a configurable path
 apis_path = os.getenv("PATH_TO_APIS_SRC", os.path.join(gladia_src_folder, "apis"))
 apis_folder_name = basename(normpath(apis_path))
@@ -32,8 +31,6 @@ apis_folder_name = basename(normpath(apis_path))
 spec = importlib.util.spec_from_file_location("apis", apis_path)
 apis = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(apis)
-
-
 
 
 def __init_config() -> dict:
@@ -200,9 +197,9 @@ def __add_router(module: ModuleType, module_path: str) -> None:
     """
 
     # remove the "apis" part of the path
-    module_input, module_output, module_task = module_path.replace(apis_folder_name, "")[
-        1:
-    ].split(".")
+    module_input, module_output, module_task = module_path.replace(
+        apis_folder_name, ""
+    )[1:].split(".")
 
     module_task = singularize(module_task).upper()
     module_config = config["active_tasks"][module_input][module_output]
