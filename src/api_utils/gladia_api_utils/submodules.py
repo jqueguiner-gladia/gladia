@@ -260,7 +260,7 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
         "example": endpoint_param["example"],
         "examples": endpoint_param["examples"] 
         if endpoint_param.get("examples", None) 
-        else [endpoint_param["example"]],
+        else [],
         "description": "",  # TODO: retrieve from {task}.py
     }
 
@@ -367,9 +367,6 @@ class TaskRouter:
                         examples=value[
                             "examples"
                         ],  # NOTE: FastAPI does not use this value
-                        _examples=value[
-                            "examples"
-                        ],  # NOTE: without the '_' character, FastAPI does not display this in the openapi.json
                         data_type=value.get("data_type", ""),
                     ),
                 )

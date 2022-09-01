@@ -5,7 +5,7 @@ inputs = [
     {
         "type": "audio",
         "name": "audio",
-        "example": "http://files.gladia.io/test/test.mp3",
+        "example": "http://files.gladia.io/examples/audio/text/audio-transcription/audio.mp3",
         "examples": [
             "http://files.gladia.io/examples/audio/text/audio-transcription/audio.m4a",
             "http://files.gladia.io/examples/audio/text/audio-transcription/audio.mp3",

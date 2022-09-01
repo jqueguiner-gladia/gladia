@@ -5,7 +5,7 @@ inputs = [
     {
         "type": "image",
         "name": "image",
-        "example": "http://files.gladia.io/test/test.png",
+        "example": "http://files.gladia.io/examples/image/image/face-bluring/face-bluring.png",
         "examples": [
             "http://files.gladia.io/examples/image/image/face-bluring/face-bluring.gif",
             "http://files.gladia.io/examples/image/image/face-bluring/face-bluring.jpg",

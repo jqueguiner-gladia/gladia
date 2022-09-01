@@ -2,6 +2,8 @@ import json
 import os
 import sys
 from time import sleep
+from urllib.request import urlopen, Request
+import re
 
 import click
 import requests
@@ -113,7 +115,6 @@ def add_default_files(initial_files, files_to_add):
         
 
 def get_task_inputs(task_details):
-    
 
     task_inputs = []
     openapi_json_inputs = get_openapi_json_inputs(task_details)
@@ -137,18 +138,15 @@ def get_task_inputs(task_details):
                 else:
                     # URL Image
                     default_url_file_test = config["test_files_config"]["image"]["url"]
-                urls_files.append({key: value.get("_examples", default_url_file_test)})
+                urls_files.append({key: value.get("example", default_url_file_test)})
             else:
-                texts.append({key: ("text", value["_examples"][0])})
+                texts.append({key: ("text", value["example"])})
         else:
-            if "audio" in key or "audio" in value["title"].lower():
-                # Audio
+            if value.get("data_type", None) == "audio":
                 audios.append({key: ("audio", formats_to_test["audio"])})
-            elif "video" in key or "video" in value["title"].lower():
-                # Video
+            elif value.get("data_type", None) == "video":
                 videos.append({key: ("video", formats_to_test["video"])})
             else:
-                # Image
                 images.append({key: ("image", formats_to_test["image"])})
 
     # Create all requests to send for good testing of the model
@@ -180,14 +178,21 @@ def get_task_inputs(task_details):
                 request_files = other_input_files.copy()
                 # Use the same type of format for each file of this type (ex: jpg for all images)
                 for type_file in types_files[1]:
-                    # Retieve the test file in current directory with the good format ...
+                    input_name = list(type_file.keys())[0]
+                    examples_files = openapi_json_inputs[input_name].get("examples", None)
+                    list_files = examples_files if examples_files else os.listdir(CURRENT_DIRECTORY)
+                    # Retieve the test file with good format in examples if exist, in current directory in not
                     file = [
                         file
-                        for file in os.listdir(CURRENT_DIRECTORY)
+                        for file in list_files
                         if file.endswith(format)
                     ][0]
-                    file_path = os.path.join(CURRENT_DIRECTORY, file)
-                    # ... and add it to the request files
+                    if is_url(file):
+                        file_path = file
+                        file = file.split('/')[-1]
+                    else:
+                        file_path = os.path.join(CURRENT_DIRECTORY, file)
+                    # Add the file to the request
                     for key, value in type_file.items():
                         request_files.update({value[0]: (file, file_path)})
                     task_inputs.append({"data": data, "files": request_files})
@@ -260,6 +265,36 @@ def get_error_message(response, details) -> str:
     return output_type_error_message
 
 
+def is_url(string: str) -> bool:
+    regex = re.compile(
+        r'^(?:http|ftp)s?://' # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+        r'localhost|' #localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?' # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    return re.match(regex, string)
+
+
+def open_file_or_url(path_or_url):
+    if is_url(path_or_url):
+        dummy_header = {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) "
+        }
+        req = Request(url=path_or_url, headers=dummy_header)
+        return urlopen(req).read()
+    else:
+        return open(path_or_url, "rb")
+
+
+def get_file_message(data, files) -> str:
+    uploaded_files = [value[0] for value in files.values()]
+    url_files = ["url_field: "+value.split("/")[-1] for key, value in data.items() if key.endswith("_url")]
+    used_files = uploaded_files + url_files
+    files_message = f" ({', '.join(used_files)})"
+    return files_message
+
+
 def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
 
     tries = 1
@@ -271,15 +306,11 @@ def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
             f"{url}{path}",
             params=params,
             data=data,
-            files={key: open(value[1], "rb") for key, value in files.items()},
+            files={key: open_file_or_url(value[1]) for key, value in files.items()},
         )
 
-        uploaded_files = [value[0] for value in files.values()]
-        url_files = [key for key in data.keys() if key.endswith("_url")]
-        used_files = uploaded_files + url_files
-        files_message = f" ({', '.join(used_files)})"
-
-        print(f"|  |       ___ Try : {tries}/{max_retry}{files_message}")
+        file_message = get_file_message(data, files)
+        print(f"|  |       ___ Try : {tries}/{max_retry}{file_message}")
         print(f"|  |      |    |_ Response : {response.status_code} ")
         tries += 1
 

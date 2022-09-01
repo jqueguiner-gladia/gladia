@@ -5,7 +5,7 @@ inputs = [
     {
         "type": "image",
         "name": "image",
-        "example": "http://files.gladia.io/test/test.png",
+        "example": "http://files.gladia.io/examples/image/text/classification/image.png",
         "examples": [
             "http://files.gladia.io/examples/image/text/classification/image.gif",
             "http://files.gladia.io/examples/image/text/classification/image.jpg",

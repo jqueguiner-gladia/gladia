@@ -39,7 +39,7 @@ def predict(image: bytes) -> Image:
 
     render_factor = 30
 
-    image = _open(image)
+    image = _open(image).convert("RGB")
 
     image_colorizer = visualize.get_image_colorizer(
         root_folder=Path(current_model_path).parent,
