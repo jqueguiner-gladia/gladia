@@ -4,7 +4,7 @@ import re
 import sys
 from time import sleep
 from urllib.request import Request, urlopen
-import validators
+from validators import url as is_url
 
 import click
 import requests
@@ -266,19 +266,6 @@ def get_error_message(response, details) -> str:
         else ""
     )
     return output_type_error_message
-
-
-def is_url(string: str) -> bool:
-    regex = re.compile(
-        r"^(?:http|ftp)s?://"  # http:// or https://
-        r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"  # domain...
-        r"localhost|"  # localhost...
-        r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
-        r"(?::\d+)?"  # optional port
-        r"(?:/?|[/?]\S+)$",
-        re.IGNORECASE,
-    )
-    return re.match(regex, string)
 
 
 def open_file_or_url(path_or_url):
