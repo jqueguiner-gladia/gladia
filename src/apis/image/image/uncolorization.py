@@ -9,7 +9,7 @@ inputs = [
         "examples": [
             "http://files.gladia.io/examples/image/image/uncolorization/landscape-pics-wallpapers.gif",
             "http://files.gladia.io/examples/image/image/uncolorization/landscape-pics-wallpapers.jpg",
-            "http://files.gladia.io/examples/image/image/uncolorization/landscape-pics-wallpapers.png"
+            "http://files.gladia.io/examples/image/image/uncolorization/landscape-pics-wallpapers.png",
         ],
         "placeholder": "Image to uncolorize",
     }

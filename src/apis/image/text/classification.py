@@ -9,7 +9,7 @@ inputs = [
         "examples": [
             "http://files.gladia.io/examples/image/text/classification/image.gif",
             "http://files.gladia.io/examples/image/text/classification/image.jpg",
-            "http://files.gladia.io/examples/image/text/classification/image.png"
+            "http://files.gladia.io/examples/image/text/classification/image.png",
         ],
         "placeholder": "Image to classify",
     },

@@ -9,7 +9,7 @@ inputs = [
         "examples": [
             "http://files.gladia.io/examples/image/text/ocr/testocr.gif",
             "http://files.gladia.io/examples/image/text/ocr/testocr.jpg",
-            "http://files.gladia.io/examples/image/text/ocr/testocr.png"
+            "http://files.gladia.io/examples/image/text/ocr/testocr.png",
         ],
         "placeholder": "Image to extract text from",
     },
