@@ -6,6 +6,11 @@ inputs = [
         "type": "image",
         "name": "image",
         "example": "http://files.gladia.io/test/test.png",
+        "examples": [
+            "http://files.gladia.io/examples/image/image/colorization/rsz_paris.gif",
+            "http://files.gladia.io/examples/image/image/colorization/rsz_paris.jpg",
+            "http://files.gladia.io/examples/image/image/colorization/rsz_paris.png"
+        ],
         "placeholder": "Image to colorize",
     }
 ]

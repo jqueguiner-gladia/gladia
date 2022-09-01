@@ -6,6 +6,11 @@ inputs = [
         "type": "audio",
         "name": "audio",
         "example": "http://files.gladia.io/test/test.mp3",
+        "examples": [
+            "http://files.gladia.io/examples/audio/text/audio-transcription/audio.m4a",
+            "http://files.gladia.io/examples/audio/text/audio-transcription/audio.mp3",
+            "http://files.gladia.io/examples/audio/text/audio-transcription/audio.wav",
+        ],
         "placeholder": "Audio to transcribe",
     },
     {

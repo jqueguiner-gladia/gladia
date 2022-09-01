@@ -6,6 +6,11 @@ inputs = [
         "type": "image",
         "name": "image",
         "example": "http://files.gladia.io/test/test.png",
+        "examples": [
+            "http://files.gladia.io/examples/image/text/classification/image.gif",
+            "http://files.gladia.io/examples/image/text/classification/image.jpg",
+            "http://files.gladia.io/examples/image/text/classification/image.png"
+        ],
         "placeholder": "Image to classify",
     },
     {
