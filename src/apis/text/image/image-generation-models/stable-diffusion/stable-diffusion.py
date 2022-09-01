@@ -1,6 +1,8 @@
 from gladia_api_utils import SECRETS
 from PIL import Image
-
+import torch
+from diffusers import StableDiffusionPipeline
+from torch import autocast
 
 def predict(
     prompt="A high tech solarpunk utopia in the Amazon rainforest",
@@ -9,10 +11,22 @@ def predict(
     scale=7.5,
     seed=396916372,
 ) -> Image:
+    """
+    Generate an image using the the stable diffusion model.
+    NSFW filter not implemented yet.
 
-    import torch
-    from diffusers import StableDiffusionPipeline
-    from torch import autocast
+    Args:
+        prompt (str): The prompt to use for the generation
+        samples (int): The number of samples to generate. >1 Not supported so far (default: 1)
+        steps (int): The number of steps to use for the generation (higher is better)
+        scale (float): The scale to use for the generation (recommended between 0.0 and 15.0)
+        seed (int): The seed to use for the generation (default: 396916372)
+    
+    Returns:
+        Image: The generated image
+    """
+
+ 
 
     model_id = "CompVis/stable-diffusion-v1-4"
     device = "cuda"

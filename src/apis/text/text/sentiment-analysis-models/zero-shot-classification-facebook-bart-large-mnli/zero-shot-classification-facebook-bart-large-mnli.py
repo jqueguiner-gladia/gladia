@@ -1,14 +1,18 @@
 import numpy as np
 import truecase
 from transformers import pipeline
+from typing import Dict, Union, List
 
 
-def predict(text: str) -> dict:
+def predict(text: str) -> Dict[str, Union[str, List[float]]]:
     """
     For a given text, predict if it's POSITIVE, NEUTRAL or NEGATIVE
 
-    :param text: text to analyze.
-    :return: Dict formatted dict containing the label (POSITIVE/NEUTRAL/NEGATIVE) with it score
+    Args:
+        text (str): The text to predict the label for.
+
+    Returns:
+        Dict[str, Union[str, List[float]]]: The predicted label and the associated score POSITIVE, NEUTRAL or NEGATIVE.
     """
 
     classifier = pipeline("zero-shot-classification")

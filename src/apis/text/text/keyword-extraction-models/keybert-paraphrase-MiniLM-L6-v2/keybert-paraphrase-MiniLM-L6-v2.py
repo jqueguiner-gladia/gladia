@@ -12,6 +12,18 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 def select_key_words(text_embeddings, vocabulary_embeddings, vocabulary, top_n=1):
+    """
+    Select the top n keywords from the vocabulary
+    
+    Args:
+        text_embeddings (numpy.ndarray): embeddings of the text
+        vocabulary_embeddings (numpy.ndarray): embeddings of the vocabulary
+        vocabulary (list): vocabulary
+        top_n (int): number of keywords to select
+
+    Returns:
+        Dict[str, Union[str, Dict[str, float]]]: The keywords extracted from the text
+    """
 
     distances = cosine_similarity(text_embeddings, vocabulary_embeddings)
     top_n_indexes = distances.argsort()[0][-top_n:]
@@ -28,10 +40,14 @@ def select_key_words(text_embeddings, vocabulary_embeddings, vocabulary, top_n=1
 # TODO : check if num_seq > 128 and raise error if this is the case
 def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
-    Extract keywords from a given sentence
+    Extract keywords from a given sentence. The keywords are selected from the vocabulary.
+    The num_seq must be less than 128 if more needs to be truncated.
 
-    :param text: sentence to extract the keywords from
-    :return: keywords founded in the sentence
+    Args:
+        text (str): The text to be extract keywords from
+
+    Returns:
+        Dict[str, Union[str, Dict[str, float]]]: The keywords extracted from the text
     """
 
     MODEL_NAME = "sentence-transformers_paraphrase-MiniLM-L6-v2_tensorrt_inference"

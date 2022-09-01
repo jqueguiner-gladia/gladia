@@ -2,18 +2,21 @@ import itertools
 from typing import Dict, List, Tuple
 
 import torch
-import transformers
+from transformers import PreTrainedTokenizer, BertModel, BertTokenizer
 
 
 def get_tokens(
-    input_string: str, tokenizer: transformers.PreTrainedTokenizer
+    input_string: str, tokenizer: PreTrainedTokenizer
 ) -> Tuple[List[str], List[List[str]]]:
     """
     Tokenize an input string
 
-    :param input_string: string to tokenize
-    :param tokenizer: tokenizer to use
-    :return: tuple contained the string splited by space and the tokenized string
+    Args:
+        input_string (str): string to tokenize
+        tokenizer (PreTrainedTokenizer): tokenizer to use
+
+    Returns:
+        Tuple[List[str], List[List[str]]]: tuple contained the string splited by space and the tokenized string
     """
 
     sentence = input_string.strip().split()
@@ -23,14 +26,17 @@ def get_tokens(
 
 
 def tokens_to_tensor(
-    tokens: List[List[str]], tokenizer: transformers.PreTrainedTokenizer
+    tokens: List[List[str]], tokenizer: PreTrainedTokenizer
 ) -> torch.Tensor:
     """
     From a given tokenized sentence, return it as a Tensor
+    
+    Args:
+        tokens (List[List[str]]): tokenized sentence
+        tokenizer (PreTrainedTokenizer): tokenizer used to tokenize the text
 
-    :param tokens: tokens to transform
-    :param tokenizer: tokenizer used to tokenize the text
-    :return: tensor containing the tokens
+    Returns:
+        torch.Tensor: tensor containing the tokenized sentence
     """
 
     ids = [tokenizer.convert_tokens_to_ids(t) for t in tokens]
@@ -49,8 +55,11 @@ def map_tokens_to_words(tokens: List[List[str]]) -> List[int]:
     """
     Associate tokens to their respective words.
 
-    :param tokens: tokens to associate to
-    :return: word index for which the token come from
+    Args:
+        tokens (List[List[str]]): tokens to associate to their words
+
+    Returns:
+        List[int]: word index for which the token come from
     """
 
     tok2word_map = []
@@ -71,12 +80,15 @@ def get_words_alignment(
     """
     Associate words from sentence_src to sentence_tgt
 
-    :param sentence_src: splited source sentence
-    :param sentence_tgt: splited target sentence
-    :param tok2word_map_src: map associating tokens to their words for source sentence
-    :param tok2word_map_tgt: map associating tokens to their words for target sentence
-    :param softmax_inter: tell whether or to not add each word
-    :return: word alignment from source to target
+    Args:
+        sentence_src (List[str]): sentence to associate from
+        sentence_tgt (List[str]): sentence to associate to
+        tok2word_map_src (List[int]): word index for which the token come from. Map associating tokens to their words for source sentence
+        tok2word_map_tgt (List[int]): word index for which the token come from. Map associating tokens to their words for target sentence
+        softmax_inter (torch.Tensor): tensor containing the softmax alignment between words from sentence_src to sentence_tgt telling whether or to not add each word
+
+    Returns:
+        List[dict]: word alignment from source to target
     """
 
     align_words = set()
@@ -96,17 +108,20 @@ def predict(
     """
     Associated words from `input_string_language_1` to `input_string_language_2`.
 
-    :param input_string_language_1: sentence to associate from
-    :param input_string_language_2: sentence to associate to
-    :return: list of dict associated each word from source to targe
+    Args:
+        input_string_language_1 (str): string to associate from
+        input_string_language_2 (str): string to associate to
+
+    Returns:
+        Dict[str, List[Dict[str, str]]]: dictionary containing the word alignment from input_string_language_1 to input_string_language_2
     """
 
     threshold = 1e-3
     align_layer = 8
     model_name = "bert-base-multilingual-cased"
 
-    model = transformers.BertModel.from_pretrained(model_name)
-    tokenizer = transformers.BertTokenizer.from_pretrained(model_name)
+    model = BertModel.from_pretrained(model_name)
+    tokenizer = BertTokenizer.from_pretrained(model_name)
 
     model.eval()
 

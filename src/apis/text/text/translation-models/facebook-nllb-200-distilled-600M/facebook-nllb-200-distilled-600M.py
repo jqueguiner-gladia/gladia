@@ -1,5 +1,5 @@
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
-
+from typing import Dict
 TASK = "translation"
 CKPT = "facebook/nllb-200-distilled-600M"
 
@@ -218,16 +218,17 @@ for code in codes_as_string:
     flores_codes_mapping[iso_3] = lang_code
 
 
-def predict(input_string, source_language, target_language) -> str:
+def predict(input_string: str, source_language: str, target_language: str) -> Dict[str, str]:
     """
     Translate the text from source lang to target lang
 
-    :param str input_string: text to translate
-    :param str source_language: 3-letters ISO code representation of the source language to translate from
-    :param str target_language: 3-letters ISO code  representation of the language to translate to
-    :param priority: The priority of the message, can be a number 1-5
-    :return: the translated text
-    :rtype: str
+    Args:
+        input_string (str): the text to translate
+        source_language (str): the language of the text 3-letters ISO code representation of the source language to translate from
+        target_language (str): the language to translate to 3-letters ISO code representation of the source language to translate from
+
+    Returns:
+        str: the translated text
     """
     max_length = 400
 

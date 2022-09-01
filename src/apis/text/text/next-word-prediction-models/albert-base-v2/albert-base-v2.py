@@ -1,15 +1,16 @@
 from typing import Dict, Union
-
+from happytransformer import HappyWordPrediction
 
 def predict(sentence: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     For a given sentence, predict the next word.
 
-    :param sentence: sentence to continue
-    :return: word predicted and score
-    """
+    Args:
+        sentence (str): The sentence to predict the next word from.
 
-    from happytransformer import HappyWordPrediction
+    Returns:
+        Dict[str, Union[str, Dict[str, float]]]: The next word predicted and score from the sentence.
+    """
 
     NB_RESULTS = 25
 
