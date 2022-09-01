@@ -4,6 +4,7 @@ import sys
 from time import sleep
 from urllib.request import urlopen, Request
 import re
+import validators
 
 import click
 import requests
@@ -181,7 +182,7 @@ def get_task_inputs(task_details):
                     input_name = list(type_file.keys())[0]
                     examples_files = openapi_json_inputs[input_name].get("examples", None)
                     list_files = examples_files if examples_files else os.listdir(CURRENT_DIRECTORY)
-                    # Retieve the test file with good format in examples if exist, in current directory in not
+                    # Retieve the test file with good format in examples if exist, in current directory if not
                     file = [
                         file
                         for file in list_files
