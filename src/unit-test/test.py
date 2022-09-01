@@ -1,9 +1,9 @@
 import json
 import os
+import re
 import sys
 from time import sleep
-from urllib.request import urlopen, Request
-import re
+from urllib.request import Request, urlopen
 import validators
 
 import click
@@ -97,23 +97,23 @@ def get_openapi_json_inputs(task_details) -> dict:
 
 
 def add_default_files(initial_files, files_to_add):
-        """ex of files to add:
-            {"Image": ("image", "[.jpg, .png]")}
+    """ex of files to add:
+        {"Image": ("image", "[.jpg, .png]")}
 
-        This fonction will take only the first format in the list
-        and merge it with initial_files to become the new dict
+    This fonction will take only the first format in the list
+    and merge it with initial_files to become the new dict
 
-        result from ex with initial_files = {}:
-            {"Image": ("image", ".jpg")}
-        """
-        dict_to_merge = {
-            key: (value[0], value[1][0])
-            for files in files_to_add
-            for key, value in files.items()
-        }
-        initial_files.update(dict_to_merge)
-        return initial_files
-        
+    result from ex with initial_files = {}:
+        {"Image": ("image", ".jpg")}
+    """
+    dict_to_merge = {
+        key: (value[0], value[1][0])
+        for files in files_to_add
+        for key, value in files.items()
+    }
+    initial_files.update(dict_to_merge)
+    return initial_files
+
 
 def get_task_inputs(task_details):
 
@@ -180,17 +180,19 @@ def get_task_inputs(task_details):
                 # Use the same type of format for each file of this type (ex: jpg for all images)
                 for type_file in types_files[1]:
                     input_name = list(type_file.keys())[0]
-                    examples_files = openapi_json_inputs[input_name].get("examples", None)
-                    list_files = examples_files if examples_files else os.listdir(CURRENT_DIRECTORY)
-                    # Retieve the test file with good format in examples if exist, in current directory if not
-                    file = [
-                        file
-                        for file in list_files
-                        if file.endswith(format)
-                    ][0]
+                    examples_files = openapi_json_inputs[input_name].get(
+                        "examples", None
+                    )
+                    list_files = (
+                        examples_files
+                        if examples_files
+                        else os.listdir(CURRENT_DIRECTORY)
+                    )
+                    # Retieve the test file with good format in examples if exist, in current directory in not
+                    file = [file for file in list_files if file.endswith(format)][0]
                     if is_url(file):
                         file_path = file
-                        file = file.split('/')[-1]
+                        file = file.split("/")[-1]
                     else:
                         file_path = os.path.join(CURRENT_DIRECTORY, file)
                     # Add the file to the request
@@ -268,20 +270,20 @@ def get_error_message(response, details) -> str:
 
 def is_url(string: str) -> bool:
     regex = re.compile(
-        r'^(?:http|ftp)s?://' # http:// or https://
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
-        r'localhost|' #localhost...
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
-        r'(?::\d+)?' # optional port
-        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+        r"^(?:http|ftp)s?://"  # http:// or https://
+        r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"  # domain...
+        r"localhost|"  # localhost...
+        r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
+        r"(?::\d+)?"  # optional port
+        r"(?:/?|[/?]\S+)$",
+        re.IGNORECASE,
+    )
     return re.match(regex, string)
 
 
 def open_file_or_url(path_or_url):
     if is_url(path_or_url):
-        dummy_header = {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) "
-        }
+        dummy_header = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) "}
         req = Request(url=path_or_url, headers=dummy_header)
         return urlopen(req).read()
     else:
@@ -290,7 +292,11 @@ def open_file_or_url(path_or_url):
 
 def get_file_message(data, files) -> str:
     uploaded_files = [value[0] for value in files.values()]
-    url_files = ["url_field: "+value.split("/")[-1] for key, value in data.items() if key.endswith("_url")]
+    url_files = [
+        "url_field: " + value.split("/")[-1]
+        for key, value in data.items()
+        if key.endswith("_url")
+    ]
     used_files = uploaded_files + url_files
     files_message = f" ({', '.join(used_files)})"
     return files_message

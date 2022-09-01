@@ -9,7 +9,7 @@ inputs = [
         "examples": [
             "http://files.gladia.io/examples/image/image/colorization/rsz_paris.gif",
             "http://files.gladia.io/examples/image/image/colorization/rsz_paris.jpg",
-            "http://files.gladia.io/examples/image/image/colorization/rsz_paris.png"
+            "http://files.gladia.io/examples/image/image/colorization/rsz_paris.png",
         ],
         "placeholder": "Image to colorize",
     }

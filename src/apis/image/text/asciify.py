@@ -9,7 +9,7 @@ inputs = [
         "examples": [
             "http://files.gladia.io/examples/image/text/asciify/asciify.gif",
             "http://files.gladia.io/examples/image/text/asciify/asciify.jpg",
-            "http://files.gladia.io/examples/image/text/asciify/asciify.png"
+            "http://files.gladia.io/examples/image/text/asciify/asciify.png",
         ],
         "placeholder": "image url to convert to ascii if no file upload",
     }
