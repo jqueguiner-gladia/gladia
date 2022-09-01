@@ -44,10 +44,36 @@ jobs:
       - name: Push latest to Gladia registry
         run: docker push docker.gladia.io/gladia:latest
 
+  notify-release:
+    needs: promote-DH
+    runs-on: [self-hosted, linux, STD]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Notify Slack DH Release
+        uses: rtCamp/action-slack-notify@v2.2.0
+        env: 
+          SLACK_CHANNEL: #releases
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: gladia-ai-ci
+          SLACK_TITLE: 'New Docker Hub Release :rocket:'
+          SLACK_MESSAGE: ${{ github.event.pull_request.title }} by ${{ github.event.pull_request.user.login }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_ICON_EMOJI: ':rocket:'
+
   deploy-aipi-1:
     needs: promote-gladia
     runs-on: [self-hosted, linux, aipi-1]
     steps:
+      - name: Notify Slack deployment
+        uses: rtCamp/action-slack-notify@v2.2.0
+        env: 
+          SLACK_CHANNEL: #releases
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: gladia-ai-ci
+          SLACK_TITLE: 'New Deployment on aipi1 :rocket:'
+          SLACK_MESSAGE: ${{ github.event.pull_request.title }} by ${{ github.event.pull_request.user.login }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_ICON_EMOJI: ':rocket:'
       - name: Login to Gladia Registry
         uses: docker/login-action@v1
         with:
@@ -82,6 +108,16 @@ jobs:
     needs: deploy-aipi-1
     runs-on: [self-hosted, linux, aipi-2]
     steps:
+      - name: Notify Slack deployment
+        uses: rtCamp/action-slack-notify@v2.2.0
+        env: 
+          SLACK_CHANNEL: #releases
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: gladia-ai-ci
+          SLACK_TITLE: 'New Deployment on aipi2 :rocket:'
+          SLACK_MESSAGE: ${{ github.event.pull_request.title }} by ${{ github.event.pull_request.user.login }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_ICON_EMOJI: ':rocket:'
       - name: Login to Gladia Registry
         uses: docker/login-action@v1
         with:
@@ -112,4 +148,21 @@ jobs:
             -e MODE=server \
             docker.gladia.io/gladia:latest
 
-      # todo : healthcheck, notify failure
+  notify-deployments:
+    needs: [deploy-aipi-2, deploy-aipi-2]
+    runs-on: [self-hosted, linux, STD]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Notify Slack Deployment done
+        uses: rtCamp/action-slack-notify@v2.2.0
+        env: 
+          SLACK_CHANNEL: #releases
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: gladia-ai-ci
+          SLACK_TITLE: 'Deployment done :rocket:'
+          SLACK_MESSAGE: ${{ github.event.pull_request.title }} by ${{ github.event.pull_request.user.login }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_ICON_EMOJI: ':rocket:'
+      
+      
+  # todo : healthcheck, notify failure
