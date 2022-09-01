@@ -129,7 +129,7 @@ def to_pandas(buffer: bytes) -> pd.DataFrame:
     Returns:
         pandas.DataFrame: dataframe
     """
-    
+
     buffer_mime_type = get_buffer_type(buffer)
     get_buffer_category = get_mime_category(buffer_mime_type)
     output = None
