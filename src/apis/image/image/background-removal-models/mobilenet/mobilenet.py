@@ -1,15 +1,13 @@
 import os
-import onnxruntime as ort
-
-from PIL import Image
-from numpy import ndarray
-from numpy import asarray as as_nparray
 from typing import Tuple
 
-from gladia_api_utils.io import _open
+import onnxruntime as ort
 from gladia_api_utils.image_management import draw_segment
+from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
-
+from numpy import asarray as as_nparray
+from numpy import ndarray
+from PIL import Image
 
 models_to_download = {
     "mobile-net": {
@@ -33,7 +31,9 @@ def run(image: Image, fast: bool = True) -> Tuple[Image.Image, ndarray]:
     del fast
 
     INPUT_SIZE = 513
-    MODEL_PATH = os.path.join(models_path["mobile-net"]["output_path"], "databuzzword_mobile-net_onnx.onnx")
+    MODEL_PATH = os.path.join(
+        models_path["mobile-net"]["output_path"], "databuzzword_mobile-net_onnx.onnx"
+    )
     INPUT_TENSOR_NAME = "ImageTensor:0"
 
     width, height = image.size
