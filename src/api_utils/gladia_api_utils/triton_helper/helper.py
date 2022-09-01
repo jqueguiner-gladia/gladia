@@ -4,10 +4,14 @@ from warnings import warn
 
 
 def check_if_model_needs_to_be_preloaded(model_name: str) -> bool:
-    """Check if the model needs to be preloaded according to the GladIA's config file
+    """
+    Check if the model needs to be preloaded according to the GladIA's config file
+
+    Args:
+        model_name (str): name of the model to check
 
     Returns:
-        bool: whether the model needs to be preloaded
+        bool: whether the model needs to be preloaded or not
     """
 
     path_to_config_file = os.getenv("API_CONFIG_FILE", "config.json")

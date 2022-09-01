@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
 
 from .casting import cast_response
-from .file_management import write_tmp_file
+from .file_management import write_tmp_file, is_binary_file
 from .responses import AudioResponse, ImageResponse, VideoResponse
 
 versions = list()
@@ -39,46 +39,72 @@ boolean_types = ["bool", "boolean"]
 singular_types = text_types + number_types + decimal_types + boolean_types
 
 
-def is_binary_file(file_path: str) -> bool:
-    textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
-    is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
-
-    return is_binary_string(open(file_path, "rb").read(1024))
-
-
-def is_valid_path(string: str):
-    if string and isinstance(string, str) and PATTERN.match(string):
-        return True
-    else:
-        return False
-
 
 # take several dictionaries in input and return a merged one
 def merge_dicts(*args: dict) -> dict:
+    """
+    Merge several dictionaries into a single one.
+
+    Args:
+        *args: dictionaries to merge
+
+    Returns:
+        dict: merged dictionaries
+    """
+
     sum_items = list()
+
     for dictionary in args:
         sum_items += list(dictionary.items())
+
     return dict(sum_items)
 
 
-def to_task_name(word) -> str:
+def to_task_name(folder_name: str) -> str:
+    """
+    Convert a folder name to a task name.
+
+    Args:
+        folder_name (str): name of the folder
+
+    Returns:
+        str: name of the task
+    """
+
     # remove the models suffix
     # remove 1 more character to remove the "-"
-    return word[: -(len(models_folder_suffix) + 1)]
+    return folder_name[: -(len(models_folder_suffix) + 1)]
 
 
-def to_models_folder_name(word) -> str:
+def to_models_folder_name(model_name: str) -> str:
     """
     This function is used to find the folder containing all
     related models for a given task.
     We use the -{models_folder_suffix} in order to
     avoid fastapi to be confused with the routing layer
     defined by the task.py
+
+    Args:
+        model_name (str): name of the model
+
+    Returns:
+        str: name of the folder containing all related models
+
     """
-    return f"{word}-{models_folder_suffix}"
+    return f"{model_name}-{models_folder_suffix}"
 
 
-def dict_model(name: str, dict_def: dict):
+def dict_model(name: str, dict_def: dict) -> BaseModel:
+    """
+    Create a model from a dictionary.
+
+    Args:
+        name (str): name of the model
+        dict_def (dict): dictionary defining the model
+
+    Returns:
+        pydantic.BaseModel: model created from the dictionary
+    """
     fields = {}
 
     for field_name, value in dict_def.items():
@@ -93,6 +119,16 @@ def dict_model(name: str, dict_def: dict):
 
 
 def get_module_infos(root_path=None) -> list:
+    """
+    Get the list of available module infos
+
+    Args:
+        root_path (str): path to the root of the project
+
+    Returns:
+        list: list of available module infos
+    """
+
     if root_path:
         caller_file = root_path
     else:
@@ -107,7 +143,19 @@ def get_module_infos(root_path=None) -> list:
     return task, plugin, tags
 
 
-def get_model_versions(root_path=None) -> dict:
+def get_model_versions(root_path: str=None) -> dict:
+    """
+    Get the list of available model versions.
+    We use the -{models_folder_suffix} in order to
+    avoid fastapi to be confused with the routing layer
+
+    Args:
+        root_path (str): path to the root of the project
+
+    Returns:
+        dict: dictionary of available model versions
+    """
+
     # used for relative paths
     if root_path:
         rel_path = root_path
@@ -152,34 +200,72 @@ def get_model_versions(root_path=None) -> dict:
     return versions, package_path
 
 
-def get_task_dir_relpath_from_py_file(py_rel_path):
+def get_task_dir_relpath_from_py_file(py_rel_path: str) -> str:
+    """
+    Get the task dir relative path from a python file.
+
+    Args:
+        py_rel_path (str): relative path to the python file
+
+    Returns:
+        str: relative path to the task dir
+    """
+
     # Remove extension
     rel_path = py_rel_path.replace(".py", "")
     # get the last part corresponding to the task
     rel_path = rel_path.split("/")
     rel_path[-1] = to_models_folder_name(rel_path[-1])
     rel_path = "/".join(rel_path)
+
     return rel_path
 
 
-def get_task_metadata(rel_path):
-    # Retieve metadata from metadata file and push it to versions,
-    # the output of the get road
+def get_task_metadata(rel_path: str) -> dict:
+    """
+    Retieve metadata from metadata file and push it to versions, the output of the get road
+
+    Args:
+        rel_path (str): relative path to the task dir
+    
+    Returns:
+        dict: metadata of the task
+    """
+
     rel_path = get_task_dir_relpath_from_py_file(rel_path)
     metadata_file_name = ".metadata.json"
     metadata_file_path = os.path.join(rel_path, metadata_file_name)
+    
     if not Path(metadata_file_path).exists():
         metadata_file_path = os.path.join("apis", ".metadata_model_template.json")
     else:
         metadata_file_path = os.path.join(rel_path, metadata_file_name)
     with open(metadata_file_path, "r") as metadata_file:
         task_metadata = json.load(metadata_file)
+
     return task_metadata
 
 
 def exec_in_subprocess(
     env_name: str, module_path: str, model: str, output_tmp_result: str, **kwargs
 ):
+    """
+    Execute a model in a subprocess.
+    The subprocess is executed in a separate thread.
+    
+    Args:
+        env_name (str): name of the environment
+        module_path (str): path to the module
+        model (str): name of the model
+        output_tmp_result (str): path to the temporary result file
+        **kwargs: arguments to pass to the model
+
+    Returns:
+        threading.Thread: thread of the subprocess
+
+    Raises:
+        RuntimeError: if the subprocess fails
+    """
 
     HERE = os.path.abspath(Path(__file__).parent)
 
@@ -217,6 +303,15 @@ def exec_in_subprocess(
 
 
 def get_module_env_name(module_path: str) -> str:
+    """
+    Get the name of the environment from the module path.
+
+    Args:
+        module_path (str): path to the module
+
+    Returns:
+        str: name of the associated micromamba environment. None if no environment is found.
+    """
 
     if os.path.isfile(os.path.join(module_path, "env.yaml")):
         path = os.path.join(module_path, "env.yaml").split("/")
@@ -233,7 +328,21 @@ def get_module_env_name(module_path: str) -> str:
         return None
 
 
-def get_endpoint_parameter_type(parameter):
+def get_endpoint_parameter_type(parameter: dict) -> Any:
+    """
+    Get the type of the parameter for the endpoint and map them
+    to a standard python type.
+
+    Args:
+        parameter (dict): parameter of the endpoint
+
+    Returns:
+        Any: type of the parameter for the endpoint
+
+    Raises:
+        TypeError: if the parameter type is not supported.
+    """
+
     type_correspondence = {key: str for key in text_types}
     type_correspondence.update({key: int for key in number_types})
     type_correspondence.update({key: float for key in decimal_types})
@@ -241,12 +350,25 @@ def get_endpoint_parameter_type(parameter):
     type_correspondence.update({key: Optional[UploadFile] for key in file_types})
 
     parameter_type = type_correspondence.get(parameter["type"], None)
+
     if parameter_type == None:
         raise TypeError(f"'{parameter['type']}' is an unknown type")
+
     return parameter_type
 
 
-def create_description_for_the_endpoit_parameter(endpoint_param):
+def create_description_for_the_endpoint_parameter(endpoint_param: dict) -> dict:
+    """
+    Create a description for the endpoint parameters. 
+    The description is a dictionary that will be used to automatically generate 
+    the swagger documentation.
+    
+    Args:
+        endpoint_param (dict): parameter of the endpoint
+    
+    Returns:
+        dict: dict representing the description of the endpoint's parameter
+    """
 
     parameters_to_add = {}
 
@@ -277,12 +399,40 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
     return parameters_to_add
 
 
-def get_error_reponse(code: int, message: str):
+def get_error_reponse(code: int, message: str) -> JSONResponse:
+    """
+    Create a JSONResponse error response
+    
+    Args:
+        code (int): error code
+        message (str): error message
+    
+    Returns:
+        dict: error response
+    """
+
     JSONResponse(status_code=code, content={"message": message})
 
 
 class TaskRouter:
-    def __init__(self, router: APIRouter, input, output, default_model: str):
+    """
+    The TaskRouter class is used to route tasks to the appropriate model.
+    """
+    def __init__(self, router: APIRouter, input: list[dict], output, default_model: str):
+        """
+        Initialize the TaskRouter class
+        It will create a router and all the to the main FastAPI routeur.
+        It will generate 2 routes:
+            - A get route that will give the list of available models and their associated metadata + a task summary
+            - A post route used to "apply" the model to the input (predict endpoint) where the model is a parameter of the query
+            and all other parameters are inherant to input argument from the task.py file.
+
+        Args:
+            router (APIRouter): router of the API user FastAPI engine
+            input (list): a list of the input parameters of the task. input parameters are represented as dictionaries with the following keys: name, type, placeholder, example, default (if applicable)
+            output (dict): a dictionary describing the output standards of the Task with the following keys: name, type, example
+            default_model (str): name of the default model to use
+        """
         self.input = input
         self.output = output
         self.default_model = default_model
@@ -344,7 +494,7 @@ class TaskRouter:
         endpoint_parameters_description = dict()
         for parameter in input:
             endpoint_parameters_description.update(
-                create_description_for_the_endpoit_parameter(parameter)
+                create_description_for_the_endpoint_parameter(parameter)
             )
 
         form_parameters = []
