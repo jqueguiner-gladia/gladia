@@ -124,7 +124,7 @@ def blur_image(
     return im
 
 
-def draw_segment(baseImg: Image, matImg: np.array) -> Image:
+def draw_segment(base_image: Image, image_matrix_representation: np.array) -> Image:
     """
     Draw segment on image
 
@@ -136,18 +136,18 @@ def draw_segment(baseImg: Image, matImg: np.array) -> Image:
         Image: image with segment drawn
     """
 
-    width, height = baseImg.size
-    dummyImg = np.zeros([height, width, 4], dtype=np.uint8)
+    width, height = base_image.size
+    dummy_image = np.zeros([height, width, 4], dtype=np.uint8)
 
     for x in range(width):
         for y in range(height):
-            color = matImg[y, x]
-            (r, g, b) = baseImg.getpixel((x, y))
+            color = image_matrix_representation[y, x]
+            (r, g, b) = base_image.getpixel((x, y))
             if color == 0:
-                dummyImg[y, x, 3] = 0
+                dummy_image[y, x, 3] = 0
             else:
-                dummyImg[y, x] = [r, g, b, 255]
+                dummy_image[y, x] = [r, g, b, 255]
 
-    img = Image.fromarray(dummyImg)
+    img = Image.fromarray(dummy_image)
 
     return img

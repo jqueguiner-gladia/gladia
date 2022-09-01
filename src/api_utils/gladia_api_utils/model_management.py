@@ -41,7 +41,6 @@ def download_model(
     namespace = sys._getframe(1).f_globals
     cwd = os.getcwd()
     rel_path = namespace["__file__"]
-    model_root_path = os.path.dirname(os.path.join(cwd, rel_path))
 
     # check env to see if mutualized_storage had been set
     mutualized_storage_root = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/")
