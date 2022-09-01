@@ -71,7 +71,7 @@ def __convert_ndarray_response(
 
     Args:
         response (np.ndarray): numpy array response
-        output_type (str): output type of the response
+        output_type (str): output type of the response, takes value in {‘image’, ‘text’}
 
     Returns:
         Union[StreamingResponse, JSONResponse]: FastAPI streaming response for an image or JSON response for a table
