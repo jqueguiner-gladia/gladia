@@ -5,6 +5,9 @@ import requests
 
 
 class bcolors:
+    """
+    Colors for terminal output
+    """
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
     OKCYAN = "\033[96m"
@@ -16,7 +19,18 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
-def has_only_pr_with_prefix(response, prefix_to_check, verbose):
+def has_only_pr_with_prefix(response, pr_prefix_to_check: str, verbose: bool = False):
+    """
+    Check if the response contains only PRs with the given prefix
+    
+    Args:
+        response (requests.Response): The Github response
+        pr_prefix_to_check (str): The prefix to check on the PRs
+        verbose (bool): If True, print the PRs that do not have the prefix
+
+    Returns:
+        bool: True if the response contains only PRs with the given prefix, False otherwise
+    """
     only_prs_with_prefix = True
     # check all associated PR with a commit
     # if there is at least 1 PR without the prefix in the title
@@ -36,19 +50,19 @@ def has_only_pr_with_prefix(response, prefix_to_check, verbose):
 
             # if the PR title doesn't contains the prefix
             # in the first characters of the title
-            if not pr["title"].upper().startswith(prefix_to_check.upper()) and not pr[
+            if not pr["title"].upper().startswith(pr_prefix_to_check.upper()) and not pr[
                 "title"
-            ].upper().startswith(f"({prefix_to_check.upper()})"):
+            ].upper().startswith(f"({pr_prefix_to_check.upper()})"):
                 only_prs_with_prefix = False
                 break
         if verbose:
             if only_prs_with_prefix:
                 print(
-                    f"{bcolors.FAIL}Only PRs with prefix {prefix_to_check} found{bcolors.ENDC}"
+                    f"{bcolors.FAIL}Only PRs with prefix {pr_prefix_to_check} found{bcolors.ENDC}"
                 )
             else:
                 print(
-                    f"{bcolors.OKGREEN}PRs without prefix {prefix_to_check} also found{bcolors.ENDC}"
+                    f"{bcolors.OKGREEN}PRs without prefix {pr_prefix_to_check} also found{bcolors.ENDC}"
                 )
 
     else:
@@ -121,18 +135,37 @@ def has_only_pr_with_prefix(response, prefix_to_check, verbose):
     "--verbose", is_flag=True, show_default=False, default=False, help="Verbose output"
 )
 def commit_should_run(
-    commit_short="",
-    repo="gladiaio/gladia",
-    gh_token="",
-    prefix_to_check="WIP",
-    break_when_only_prefix=False,
-    break_if_no_pr=False,
-    return_pr=False,
-    pr_nb_only=False,
-    first_pr_only=False,
-    deploy_message=False,
-    verbose=False,
-):
+    commit_short: str="",
+    repo: str="gladiaio/gladia",
+    gh_token: str="",
+    prefix_to_check: str="WIP",
+    break_when_only_prefix: bool=False,
+    break_if_no_pr: bool=False,
+    return_pr: bool=False,
+    pr_nb_only: bool=False,
+    first_pr_only: bool=False,
+    deploy_message: bool=False,
+    verbose: bool=False,
+) -> bool:
+    """
+    Check if the commit should be run
+
+    Args:
+        commit_short (str): Short Sha of commit.
+        repo (str): Repo to scan.
+        gh_token (str): Github Token.
+        prefix_to_check (str): PR prefix to check e.g. WIP.
+        break_when_only_prefix (bool): Exit 1 when all PR have the prefix.
+        break_if_no_pr (bool): Exit 1 when all PR have the prefix.
+        return_pr (bool): Return the list of PR associated to the commit.
+        pr_nb_only (bool): Return PR ids to the commit.
+        first_pr_only (bool): Return PR the first PR where the commit appears.
+        deploy_message (bool): Return the deploy message associated to the PR.
+        verbose (bool): Verbose output.
+
+    Returns:
+        int: 0 if the commit should be run, 1 otherwise.
+    """
     if deploy_message:
         pr_nb_only = True
         return_pr = True
