@@ -1,16 +1,19 @@
 from typing import Dict
 
+from happytransformer import HappyNextSentence
+
 
 def predict(sentence_1: str, sentence_2: str) -> Dict[str, float]:
     """
     Tell for a given sencence_2, whether or not it follows sentence_1
 
-    :param sentence_1: preceding sentence
-    :param sentence_2: sentence to check
-    :return: confidence score, >= 0.5 if sentence_2 follows sentence_1, else < 0
-    """
+    Args:
+        sentence_1 (str): Preceding sentence
+        sentence_2 (str): Sentence to check
 
-    from happytransformer import HappyNextSentence
+    Returns:
+        Dict[str, float]: confidence score, >= 0.5 if sentence_2 follows sentence_1, else < 0
+    """
 
     happy_ns = HappyNextSentence("BERT", "bert-base-uncased")
 

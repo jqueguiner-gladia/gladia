@@ -10,9 +10,12 @@ def predict(
     """
     Using the given `context`, answer the provided `question`.
 
-    :param context: context to use to answer the question
-    :param question: question to answer
-    :return: JSON formatted str containing both the answer and the confidence score.
+    Args:
+        context (str): The context to use for answering the question.
+        question (str): The question to answer.
+
+    Returns:
+        Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]: The answer to the question, the associated score and the start and end position of the answer.
     """
 
     NB_RESULTS = 25

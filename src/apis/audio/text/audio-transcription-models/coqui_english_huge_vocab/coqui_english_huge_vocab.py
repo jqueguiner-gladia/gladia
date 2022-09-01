@@ -4,6 +4,16 @@ from gladia_api_utils.io import _open
 
 
 def predict(audio: bytes, language: str = "en") -> Dict[str, str]:
+    """
+    Predict the text from the audio: audio -> text for a given language.
+
+    Args:
+        audio (bytes): The bytes audio to be transcribed.
+        language (str): The language of the audio to be transcribed. (default: "en")
+
+    Returns:
+        Dict[str, str]: The text transcription of the audio.
+    """
 
     from gladia_api_utils.CoquiEngineHelper import SpeechToTextEngine
 

@@ -14,6 +14,23 @@ def predict(
     scale=7.0,
     seed=396916372,
 ) -> Image:
+    """
+    Generate an image using the generation service from the dream studio project.
+    Returns a SFW PIL image.
+    if NSFW will return a NSFW Warning PIL image.
+    to be used this function you need to have a valid STABILITY_API_KEY set in the environment variables.
+    get the STABILITY_API_KEY at https://beta.dreamstudio.ai/dream/membership
+
+    Args:
+        prompt (str): The prompt to use for the generation service
+        samples (int): The number of samples to generate from the generation service. >1 Not supported so far (default: 1)
+        steps (int): The number of steps to use for the generation service (higher is better)
+        scale (float): The scale to use for the generation service (recommended between 0.0 and 15.0)
+        seed (int): The seed to use for the generation service (default: 396916372)
+
+    Returns:
+        Image: The generated image
+    """
 
     stability_api = client.StabilityInference(
         key=SECRETS["STABILITY_KEY"],

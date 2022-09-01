@@ -10,8 +10,11 @@ def predict(
     """
     For a given text, predict if it's POSITIVE or NEGATIVE
 
-    :param text: text to analyze.
-    :return: JSON formatted str containing the label (POSITIVE/NEGATIVE) with it score
+    Args:
+        text (str): The text to predict the label for.
+
+    Returns:
+        Dict[str, Union[str, Dict[str, Union[str, List[str], List[float]]]]]: The predicted label and the associated score POSITIVE or NEGATIVE.
     """
 
     happy_tc = HappyTextClassification(
