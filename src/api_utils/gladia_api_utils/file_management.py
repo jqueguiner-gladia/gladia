@@ -29,13 +29,24 @@ def is_binary_file(file_path: str) -> bool:
     Returns:
         bool: True if the file is binary, False otherwise.
     """
+
     textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
     is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
 
     return is_binary_string(open(file_path, "rb").read(1024))
 
 
-def is_valid_path(string: str):
+def is_valid_path(string: str) -> bool:
+    """
+    Check if a string is a valid path.
+
+    Args:
+        string (str): The string to check.
+
+    Returns:
+        bool: True if the string is a valid path, False otherwise.
+    """
+
     if string and isinstance(string, str) and PATTERN.match(string):
         return True
     else:
@@ -148,7 +159,18 @@ def download_file(
     return file_full_path
 
 
-def write_url_content_to_file(file_full_path: Path, url) -> bool:
+def write_url_content_to_file(file_full_path: Path, url: str) -> bool:
+    """
+    Write the content of a url to a file.
+
+    Args:
+        file_full_path (Path): The path to the file to write.
+        url (str): The url to download the content from.
+
+    Returns:
+        bool: True if the file was written, False otherwise.
+    """
+
     data = requests.get(url).content
 
     logger.debug(f"writing {url} to {file_full_path}")
@@ -168,6 +190,7 @@ def write_to_file(file_full_path: str, data: Any, overwrite: bool = False) -> bo
     Returns:
         bool: True if the file was written, False otherwise.
     """
+
     if isinstance(file_full_path, str):
         file_full_path = Path(file_full_path)
 
@@ -185,7 +208,7 @@ def write_to_file(file_full_path: str, data: Any, overwrite: bool = False) -> bo
                 handler.write(data)
 
 
-def generate_random_filename(directory: str, extension: str):
+def generate_random_filename(directory: str, extension: str) -> str:
     """
     Generate a random filename.
 
@@ -196,6 +219,7 @@ def generate_random_filename(directory: str, extension: str):
     Returns:
         str: The random filename.
     """
+
     filename = str(uuid4())
     filename = os.path.join(directory, filename + "." + extension)
     return filename
@@ -211,6 +235,7 @@ def delete_file(filepath: str) -> bool:
     Returns:
         bool: True if the file was deleted, False otherwise.
     """
+
     if os.path.exists(filepath):
         return os.remove(filepath)
     else:
@@ -227,6 +252,7 @@ def delete_all_files(files: list) -> list:
     Returns:
         list: The list of files that were deleted.
     """
+
     out = dict()
     for file in files:
         out[file] = delete_file(file)
@@ -243,6 +269,7 @@ def delete_directory(dirpath: str) -> bool:
     Returns:
         bool: True if the directory was deleted, False otherwise.
     """
+
     delete_file(dirpath)
 
 
@@ -256,6 +283,7 @@ def create_directory(path: str) -> bool:
     Returns:
         bool: True if the directory was created, False otherwise.
     """
+
     if len(os.path.dirname(path)) > 0:
         return os.makedirs(os.path.dirname(path), exist_ok=True)
     else:
@@ -275,7 +303,11 @@ def uncompress(
 
     Returns:
         str: The path to the uncompressed file.
+
+    Raises:
+        Exception: If the file is not a supported compression format.
     """
+
     try:
         logger.debug(f"Extracting archive from {path} to {destination}")
         output = xtract(path, destination=destination, overwrite=True, all=False)
@@ -299,7 +331,7 @@ def compress_directory(
     delete_after_compress: bool = False,
 ) -> str:
     """
-    compress a directory and returns the path of the compressed file.
+    Compress a directory and returns the path of the compressed file.
 
     Args:
         path (str): path to the directory to compress
@@ -811,7 +843,7 @@ def create_random_directory(root_path: str) -> str:
     return full_path
 
 
-def generate_random_filename(root_path: str, extension: str) -> str:
+def generate_random_filename(root_path: str, extension: str) -> list(str, str):
     """
     Generate a random filename in the root_path.
 

@@ -23,7 +23,7 @@ def download_model(
     branch: str = "origin",
 ) -> str:
     """
-    download a model and uncompress it if necessary
+    Download a model and uncompress it if necessary
     reset lets you decide not to force sync between huggingface hub and you local repo (for testing purposes for instance)
 
     Args:
