@@ -193,7 +193,9 @@ def commit_should_run(
                 sys.exit(1)
 
         has_honly_prefix = has_only_pr_with_prefix(
-            response, prefix_to_check=prefix_to_check, verbose=verbose
+            response, 
+            pr_prefix_to_check=prefix_to_check, 
+            verbose=verbose
         )
 
         if return_pr or deploy_message:
