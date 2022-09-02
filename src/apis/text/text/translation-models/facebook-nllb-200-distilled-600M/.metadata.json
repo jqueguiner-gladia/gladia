@@ -60,7 +60,6 @@
   "gladia": {
     "latency": "",
     "format": "Torch",
-    "accelerator": "Local GPU",
-    "example": ""
+    "accelerator": "Local GPU"
   }
 }
