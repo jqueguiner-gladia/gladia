@@ -6,7 +6,7 @@ import sys
 import tempfile
 from logging import getLogger
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Tuple
 
 import gdown
 import magic
@@ -825,7 +825,7 @@ def create_random_directory(root_path: str) -> str:
     return full_path
 
 
-def generate_random_filename(root_path: str, extension: str) -> List[str, str]:
+def generate_random_filename(root_path: str, extension: str) -> Tuple[str, str]:
     """
     Generate a random filename in the root_path.
 
