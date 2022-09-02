@@ -6,7 +6,6 @@ import subprocess
 import sys
 import tempfile
 import urllib.parse
-import yaml
 from logging import getLogger
 from pathlib import Path
 from shlex import quote
@@ -15,6 +14,7 @@ from urllib.request import urlopen
 
 import forge
 import starlette
+import yaml
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
