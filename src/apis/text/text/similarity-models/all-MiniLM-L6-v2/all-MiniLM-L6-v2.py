@@ -9,27 +9,34 @@ from torch import mm, tensor
 from torch.nn.functional import normalize
 
 
-def cos_sim(a: list, b: list):
+def cos_sim(first_sentence_embedding: list, second_sentence_embedding: list) -> float:
     """
     For two given sentences embeddings a and b, computes the cosine similarity
 
-    :param sentence_1: first sentence embeddings to compare
-    :param sentence_2: second sentence embeddings to compare
-    :return: tensor with similarity score (between 0 and 1)
+    Args:
+        first_sentence_embedding (list): first sentence embedding to compare
+        second_sentence_embedding (list): second sentence embedding to compare
+
+    Returns:
+        float: cosine similarity score between 0 and 1
     """
     return mm(
-        normalize(tensor(a), p=2, dim=1),
-        normalize(tensor(b), p=2, dim=1).transpose(0, 1),
+        normalize(tensor(first_sentence_embedding), p=2, dim=1),
+        normalize(tensor(second_sentence_embedding), p=2, dim=1).transpose(0, 1),
     )
 
 
-def predict(sentence_1: str, sentence_2: str) -> Dict[str, float]:
+def predict(sentence_1: str, sentence_2: str) -> Dict[float, float]:
     """
     For two given sentences, say whether they are similar or not.
+    The similarity is computed with the cosine similarity.
 
-    :param sentence_1: first sentence to compare
-    :param sentence_2: second sentence to compare
-    :return: similarity score (between 0 and 1)
+    Args:
+        sentence_1 (str): first sentence to compare
+        sentence_2 (str): second sentence to compare
+
+    Returns:
+        Dict[str, float]: the similarity score between 0 and 1
     """
 
     MODEL_NAME = "sentence-transformers_all-MiniLM-L6-v2_tensorrt_inference"

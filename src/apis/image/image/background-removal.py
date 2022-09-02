@@ -14,4 +14,4 @@ output = {"name": "cleaned_image", "type": "image", "example": "a.png"}
 
 router = APIRouter()
 
-TaskRouter(router=router, input=inputs, output=output, default_model="xception")
+TaskRouter(router=router, input=inputs, output=output, default_model="mobilenet")

@@ -43,7 +43,7 @@ def predict(image: bytes) -> Image:
 
     render_factor = 30
 
-    image = _open(image)
+    image = _open(image).convert("RGB")
     width, height = image.size
 
     image_colorizer = visualize.get_image_colorizer(
