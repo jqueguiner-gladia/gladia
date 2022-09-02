@@ -14,6 +14,7 @@ from urllib.request import urlopen
 
 import forge
 import starlette
+import yaml
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
@@ -127,27 +128,14 @@ def get_model_versions(root_path=None) -> dict:
 
     for fname in os.listdir(package_path):
         if os.path.isdir(os.path.join(package_path, fname)):
-
             if not Path(os.path.join(package_path, fname, "__init__.py")).exists():
                 continue
 
-            versions[fname] = {}
-
             # Retieve metadata from metadata file and push it to versions,
             # the output of the get road
-            metadata_file_name = ".metadata.json"
-            metadata_file_path = os.path.join(package_path, fname, metadata_file_name)
-            if Path(metadata_file_path).exists():
-                with open(metadata_file_path, "r") as metadata_file:
-                    model_metadata = json.load(metadata_file)
-                    versions[fname] = merge_dicts(versions[fname], model_metadata)
-            else:
-                metadata_file_path = os.path.join(
-                    "apis", ".metadata_model_template.json"
-                )
-                with open(metadata_file_path, "r") as metadata_file:
-                    model_metadata = json.load(metadata_file)
-                    versions[fname] = merge_dicts(versions[fname], model_metadata)
+            model_dir_path = os.path.join(package_path, fname)
+            model_metadata = get_model_metadata(model_dir_path)
+            versions[fname] = model_metadata
 
     return versions, package_path
 
@@ -162,18 +150,24 @@ def get_task_dir_relpath_from_py_file(py_rel_path):
     return rel_path
 
 
+def get_model_metadata(rel_path):
+    file_name = ".model_metadata.yaml"
+    fallback_file_name = ".metadata_model_template.yaml"
+    return get_metadata(rel_path, file_name, fallback_file_name)
+
+
 def get_task_metadata(rel_path):
-    # Retieve metadata from metadata file and push it to versions,
-    # the output of the get road
-    rel_path = get_task_dir_relpath_from_py_file(rel_path)
-    metadata_file_name = ".metadata.json"
-    metadata_file_path = os.path.join(rel_path, metadata_file_name)
-    if not Path(metadata_file_path).exists():
-        metadata_file_path = os.path.join("apis", ".metadata_model_template.json")
-    else:
-        metadata_file_path = os.path.join(rel_path, metadata_file_name)
-    with open(metadata_file_path, "r") as metadata_file:
-        task_metadata = json.load(metadata_file)
+    file_name = ".task_metadata.yaml"
+    fallback_file_name = ".metadata_task_template.yaml"
+    return get_metadata(rel_path, file_name, fallback_file_name)
+
+
+def get_metadata(rel_path, file_name, fallback_file_name):
+    file_path = os.path.join(rel_path, file_name)
+    if not Path(file_path).exists():
+        file_path = os.path.join("apis", fallback_file_name)
+    with open(file_path, "r") as metadata_file:
+        task_metadata = yaml.safe_load(metadata_file)
     return task_metadata
 
 
@@ -315,7 +309,8 @@ class TaskRouter:
         )
         # This function send bask the get road content to the caller
         async def get_versions():
-            task_metadata = get_task_metadata(rel_path)
+            task_dir_path = get_task_dir_relpath_from_py_file(rel_path)
+            task_metadata = get_task_metadata(task_dir_path)
             get_content = {"models": dict(sorted(self.versions.items()))}
             # dict(sorted( is used to order
             # the models in alphabetical order
