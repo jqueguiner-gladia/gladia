@@ -38,7 +38,7 @@ def select_key_words(text_embeddings, vocabulary_embeddings, vocabulary, top_n=1
 
 
 # TODO : check if num_seq > 128 and raise error if this is the case
-def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
+def predict(text: str, top_k: int = 10) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     Extract keywords from a given sentence. The keywords are selected from the vocabulary.
     The num_seq must be less than 128 if more needs to be truncated.
