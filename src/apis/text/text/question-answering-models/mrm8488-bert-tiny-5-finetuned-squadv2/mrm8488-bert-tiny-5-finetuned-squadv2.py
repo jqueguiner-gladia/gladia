@@ -5,7 +5,7 @@ from happytransformer import HappyQuestionAnswering
 
 
 def predict(
-    context: str, question: str
+    context: str, question: str, top_k: int = 1
 ) -> Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]:
     """
     Using the given `context`, answer the provided `question`.
@@ -18,13 +18,11 @@ def predict(
         Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]: The answer to the question, the associated score and the start and end position of the answer.
     """
 
-    NB_RESULTS = 25
-
     happy_qa = HappyQuestionAnswering("BERT", "mrm8488/bert-tiny-5-finetuned-squadv2")
     result = happy_qa.answer_question(
         truecase.get_true_case(context),
         truecase.get_true_case(question),
-        top_k=NB_RESULTS,
+        top_k=top_k,
     )
 
     prediction_raw = [

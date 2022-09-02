@@ -5,7 +5,7 @@ from keybert import KeyBERT
 from sentence_transformers import SentenceTransformer
 
 
-def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
+def predict(text: str, top_k: int = 10) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     Extract keywords from a given sentence
 
@@ -16,7 +16,6 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
         Dict[str, Union[str, Dict[str, float]]]: The keywords extracted from the sentence
     """
 
-    NB_RESULTS = 25
     model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
     kw_model = KeyBERT(model=model)
 
@@ -24,7 +23,7 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
         truecase.get_true_case(text),
         keyphrase_ngram_range=(1, 1),
         stop_words=None,
-        top_n=NB_RESULTS,
+        top_n=top_k,
     )
     prediction_raw = {keyword[0]: keyword[1] for keyword in out}
 
