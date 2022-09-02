@@ -13,19 +13,22 @@ def predict(text: str) -> Dict[str, Union[List[Dict[str, Union[str, float]]], st
     """
     Apply NER on the given task and return each token within the sentence associated to its label.
 
-    **Labels**:\n
-    O : Outside of a named entity\n
-    B-MISC : Beginning of a miscellaneous entity right after another miscellaneous entity\n
-    I-MISC : Miscellaneous entity\n
-    B-PER : Beginning of a person's name right after another person's name\n
-    I-PER : Person's name\n
-    B-ORG : Beginning of an organisation right after another organisation\n
-    I-ORG : Organisation\n
-    B-LOC : Beginning of a location right after another location\n
-    I-LOC : Location\n
+    **Labels**:
+    O : Outside of a named entity
+    B-MISC : Beginning of a miscellaneous entity right after another miscellaneous entity
+    I-MISC : Miscellaneous entity
+    B-PER : Beginning of a person's name right after another person's name
+    I-PER : Person's name
+    B-ORG : Beginning of an organisation right after another organisation
+    I-ORG : Organisation
+    B-LOC : Beginning of a location right after another location
+    I-LOC : Location
 
-    :param text: sentence to search the named entities in
-    :return: entities founded in the string
+    Args:
+        text (str): The text to apply NER on
+
+    Returns:
+        Dict[str, Union[List[Dict[str, Union[str, float]]], str]]: The text with the NER applied (O, B-MISC, I-MISC, B-PER, I-PER, B-ORG, I-ORG, B-LOC, I-LOC)
     """
 
     MODEL_NAME = "named-entity-recognition_dbmdz_bert-large-cased-finetuned-conll03-english_tensorrt_inference"
