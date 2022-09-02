@@ -208,23 +208,6 @@ def write_to_file(file_full_path: str, data: Any, overwrite: bool = False) -> bo
                 handler.write(data)
 
 
-def generate_random_filename(directory: str, extension: str) -> str:
-    """
-    Generate a random filename.
-
-    Args:
-        directory (str): The directory to generate the filename in.
-        extension (str): The extension to use.
-
-    Returns:
-        str: The random filename.
-    """
-
-    filename = str(uuid4())
-    filename = os.path.join(directory, filename + "." + extension)
-    return filename
-
-
 def delete_file(filepath: str) -> bool:
     """
     Delete a file.
