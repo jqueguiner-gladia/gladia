@@ -26,4 +26,6 @@ output = {"name": "extracted_text", "type": "string", "example": "extracted_text
 
 router = APIRouter()
 
-TaskRouter(router=router, input=inputs, output=output, default_model="easy-ocr")
+TaskRouter(
+    router=router, input=inputs, output=output, default_model="tesseract-denoising"
+)

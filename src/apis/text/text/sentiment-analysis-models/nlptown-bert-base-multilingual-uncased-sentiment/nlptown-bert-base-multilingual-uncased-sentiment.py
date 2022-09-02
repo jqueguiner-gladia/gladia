@@ -12,8 +12,11 @@ def predict(text: str) -> Dict[str, Union[str, List[float]]]:
     """
     From a given, classify it between 1 (hate) and 5 (love).
 
-    :param text: text to analyze
-    :return: text score [1;5]
+    Args:
+        text (str): The text to predict the label for.
+
+    Returns:
+        Dict[str, Union[str, List[float]]]: The predicted label and the associated score between 0 and 4.
     """
 
     MODEL_NAME = "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_inference"
