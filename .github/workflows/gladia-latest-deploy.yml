@@ -43,6 +43,9 @@ jobs:
 
       - name: Push latest to Gladia registry
         run: docker push docker.gladia.io/gladia:latest
+        
+      - name: clean builder local cache
+        run: docker rmi $(docker images | grep 'ci-${{ github.event.pull_request.number }}') 2>/dev/null
 
   notify-release:
     needs: promote-DH
