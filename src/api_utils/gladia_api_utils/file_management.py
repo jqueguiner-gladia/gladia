@@ -6,7 +6,7 @@ import sys
 import tempfile
 from logging import getLogger
 from pathlib import Path
-from typing import Any, List, Tuple
+from typing import Any, Tuple
 
 import gdown
 import magic
