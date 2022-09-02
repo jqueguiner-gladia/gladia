@@ -179,16 +179,15 @@ def get_task_inputs(task_details):
                 # Use the same type of format for each file of this type (ex: jpg for all images)
                 for type_file in types_files[1]:
                     input_name = list(type_file.keys())[0]
+                    # Retieve the test files in examples
                     examples_files = openapi_json_inputs[input_name].get(
                         "examples", None
                     )
-                    list_files = (
-                        examples_files
-                        if examples_files
-                        else os.listdir(CURRENT_DIRECTORY)
-                    )
-                    # Retieve the test file with good format in examples if exist, in current directory in not
-                    file = [file for file in list_files if file.endswith(format)][0]
+                    # If examples does'nt exist or is empty, retieve it in current directory
+                    if not examples_files:
+                        examples_files = os.listdir(CURRENT_DIRECTORY)
+
+                    file = [file for file in examples_files if file.endswith(format)][0]
                     if is_url(file):
                         file_path = file
                         file = file.split("/")[-1]
