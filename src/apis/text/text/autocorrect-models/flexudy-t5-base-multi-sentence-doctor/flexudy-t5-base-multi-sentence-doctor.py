@@ -7,8 +7,11 @@ def predict(sentence: str) -> Dict[str, str]:
     """
     Remove typos from the given string.
 
-    :param sentence: sentence to correct
-    :return: sentence corrected
+    Args:
+        sentence (str): The sentence to correct.
+
+    Returns:
+        Dict[str, str]: The corrected sentence.
     """
 
     model_name = "flexudy/t5-base-multi-sentence-doctor"

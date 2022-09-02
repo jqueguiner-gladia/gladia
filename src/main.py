@@ -6,6 +6,7 @@ import pkgutil
 from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
 
+import nltk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
@@ -252,6 +253,8 @@ def import_submodules(package: "module", recursive: bool = True) -> None:
         else:
             logger.debug(f"skipping {module_relative_path}")
 
+
+nltk.download("punkt")
 
 os.environ["TRITON_MODELS_PATH"] = os.getenv(
     "TRITON_MODELS_PATH", default="/tmp/gladia/triton"

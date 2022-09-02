@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union
 
 import torch
 from transformers import (
@@ -19,11 +19,14 @@ def generate(
     Takes input code, replaces newline chars with <N>,
     tokenizes, feeds through model, decodes, then reformat the newlines back in.
 
-    :param code: code to continue
-    :param tokenizer: tokenizer to use
-    :param model: model to use
-    :param max_length: maximum length to continue up to
-    :return: generated code
+    Args:
+        code (str): The code to generate the continuation of
+        tokenizer (PreTrainedTokenizer): The tokenizer to use
+        model (PreTrainedModel): The model to use
+        max_length (int): The maximum length of the generated code
+
+    Returns:
+        str: The generated code
     """
 
     new_line_token = "<N>"
@@ -42,12 +45,15 @@ def generate(
     return reformatted, decoded
 
 
-def predict(code_snippet: str) -> Dict[str, str]:
+def predict(code_snippet: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     Generate the continuation of the provided `code_snippet`.
 
-    :param code_snippet:
-    :return:
+    Args:
+        code_snippet (str): The code to generate the continuation of
+
+    Returns:
+        Dict[str, str]: The generated code
     """
 
     model_name = "Sentdex/GPyT"
