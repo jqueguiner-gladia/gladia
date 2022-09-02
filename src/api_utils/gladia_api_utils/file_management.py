@@ -7,7 +7,6 @@ import tempfile
 from logging import getLogger
 from pathlib import Path
 from typing import Any, List
-from uuid import uuid4
 
 import gdown
 import magic
