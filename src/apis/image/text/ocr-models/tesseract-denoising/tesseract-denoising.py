@@ -9,11 +9,15 @@ from gladia_api_utils.io import _open
 
 def predict(image: bytes, source_language: str) -> Dict[str, str]:
     """
-    Call the tesseract ocr, apply a median blurring filter to the input image and return the text detected in the image
+    Call the tesseract ocr, apply a median blurring filter to the input image to remove noise
+    and return the text detected in the image
 
-    :param image: image to provide to the ocr
-    :param source_language: [UNUSED] language of the text to be searched
-    :return: characters found in the image
+    Args:
+        image (bytes): The image to be processed
+        source_language (str): The language of the image (unused)
+
+    Returns:
+        Dict[str, str]: The text detected in the image by the ocr
     """
 
     del source_language

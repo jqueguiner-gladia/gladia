@@ -23,9 +23,12 @@ def run(image: Image, fast: bool = True) -> Tuple[Image.Image, ndarray]:
     """
     Call the model to return the image without its background
 
-    :param image: Image to remove the background from
-    :param fast: unused
-    :return: image without its background
+    Args:
+        image (Image): Image to remove the background from
+        fast (bool): If True, uses a faster but less accurate model
+
+    Returns:
+        Image: Image without its background
     """
 
     del fast
@@ -47,15 +50,19 @@ def run(image: Image, fast: bool = True) -> Tuple[Image.Image, ndarray]:
     return resized_image, seg_map
 
 
-def predict(image) -> Image:
+def predict(image: bytes) -> Image:
     """
     Call the model to return the image without its background
 
-    :param image: Image to remove the background from
-    :return: image without its background
+    Args:
+        image (bytes): Image to remove the background from
+
+    Returns:
+        Image: Image without its background
     """
 
-    image = _open(image)
+    image = _open(image).convert("RGB")
+
     resized_im, seg_map = run(image, True)
 
     img = draw_segment(resized_im, seg_map)
