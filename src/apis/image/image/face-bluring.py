@@ -6,6 +6,11 @@ inputs = [
         "type": "image",
         "name": "image",
         "example": "http://files.gladia.io/examples/image/image/face-bluring/face-bluring.png",
+        "examples": [
+            "http://files.gladia.io/examples/image/image/face-bluring/face-bluring.gif",
+            "http://files.gladia.io/examples/image/image/face-bluring/face-bluring.jpg",
+            "http://files.gladia.io/examples/image/image/face-bluring/face-bluring.png",
+        ],
         "placeholder": "Image to blur face from",
     }
 ]

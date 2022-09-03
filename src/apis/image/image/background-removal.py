@@ -5,7 +5,12 @@ inputs = [
     {
         "type": "image",
         "name": "image",
-        "example": "http://files.gladia.io/test/test.jpg",
+        "example": "http://files.gladia.io/examples/image/image/background-removal/black-and-white-landscape.png",
+        "examples": [
+            "http://files.gladia.io/examples/image/image/background-removal/black-and-white-landscape.gif",
+            "http://files.gladia.io/examples/image/image/background-removal/black-and-white-landscape.jpg",
+            "http://files.gladia.io/examples/image/image/background-removal/black-and-white-landscape.png",
+        ],
         "placeholder": "Image to remove the background from",
     }
 ]

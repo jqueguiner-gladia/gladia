@@ -252,7 +252,9 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
         else endpoint_param.get("default", ...),
         "constructor": File if endpoint_param["type"] in file_types else Form,
         "example": endpoint_param["example"],
-        "examples": [endpoint_param["example"]],
+        "examples": endpoint_param["examples"]
+        if endpoint_param.get("examples", None)
+        else [],
         "description": "",  # TODO: retrieve from {task}.py
     }
 
@@ -264,7 +266,9 @@ def create_description_for_the_endpoit_parameter(endpoint_param):
             "default": None,
             "constructor": Form,
             "example": endpoint_param["example"],
-            "examples": [endpoint_param["example"]],
+            "examples": endpoint_param["examples"]
+            if endpoint_param.get("examples", None)
+            else [],
             "description": "",  # TODO: copy description from above param
         }
 
@@ -358,9 +362,6 @@ class TaskRouter:
                         examples=value[
                             "examples"
                         ],  # NOTE: FastAPI does not use this value
-                        _examples=value[
-                            "examples"
-                        ],  # NOTE: without the '_' character, FastAPI does not display this in the openapi.json
                         data_type=value.get("data_type", ""),
                     ),
                 )
