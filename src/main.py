@@ -9,7 +9,6 @@ from logging.handlers import RotatingFileHandler
 from os.path import basename, normpath
 from types import ModuleType
 from typing import List
-import sys
 
 import nltk
 from fastapi import FastAPI
@@ -19,10 +18,10 @@ from fastapi_utils.timing import add_timing_middleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.responses import RedirectResponse
 
-
 apis_folder_name = "apis"
 
 import apis
+
 
 def __init_config() -> dict:
     """
