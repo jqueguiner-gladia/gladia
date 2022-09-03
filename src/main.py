@@ -9,6 +9,7 @@ from logging.handlers import RotatingFileHandler
 from os.path import basename, normpath
 from types import ModuleType
 from typing import List
+import sys
 
 import nltk
 from fastapi import FastAPI
@@ -18,20 +19,10 @@ from fastapi_utils.timing import add_timing_middleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.responses import RedirectResponse
 
-gladia_src_folder = os.getenv("PATH_TO_GLADIA_SRC", "/app")
 
-# apis path is a path to the folder containing all the APIs
-# directly under the main folder and equivalent to
-# import apis
-# but with a configurable path
-apis_path = os.getenv("PATH_TO_APIS_SRC", os.path.join(gladia_src_folder, "apis"))
-apis_folder_name = basename(normpath(apis_path))
+apis_folder_name = "apis"
 
-# apis is the name to give to the module imported from the apis folder
-spec = importlib.util.spec_from_file_location("apis", apis_path)
-apis = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(apis)
-
+import apis
 
 def __init_config() -> dict:
     """
