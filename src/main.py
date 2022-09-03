@@ -165,16 +165,6 @@ def __set_app_middlewares(api_app: FastAPI, api_config: dict) -> None:
     )
 
 
-def singularize(string: str) -> str:
-    """
-    ! TODO : move to the new task representation
-    """
-    if string[-1] == "s":
-        return string[:-1]
-
-    return string
-
-
 def __add_router(module: ModuleType, module_path: str) -> None:
     """
     Add the module router to the API app
@@ -192,10 +182,10 @@ def __add_router(module: ModuleType, module_path: str) -> None:
         apis_folder_name, ""
     )[1:].split(".")
 
-    module_task = singularize(module_task).upper()
+    module_task = module_task.upper()
     module_config = config["active_tasks"][module_input][module_output]
 
-    active_task_list = list(map(lambda each: singularize(each).upper(), module_config))
+    active_task_list = list(map(lambda each: each.upper(), module_config))
 
     if "NONE" not in active_task_list and (
         module_task in active_task_list or "*" in module_config
@@ -262,6 +252,8 @@ def __module_is_a_model(split_module_path: List[str]) -> bool:
     Args:
         split_module_path (list): module path split by "."
 
+    Returns:
+        bool: True if the module is a model, False otherwise
     """
     return len(split_module_path) == 4
 
