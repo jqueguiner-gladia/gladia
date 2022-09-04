@@ -247,7 +247,7 @@ jobs:
           -e NVIDIA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}}
           -e CUDA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}}
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000
-          -v /data/volumes/models:/tmp/gladia/models
+          -v /data/volumes/:/tmp/gladia/
           -v $PWD:/app
           --name jlmagouille-${{ github.event.pull_request.number	}}
           docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }}
