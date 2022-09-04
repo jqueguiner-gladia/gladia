@@ -237,6 +237,7 @@ jobs:
           --memory 32g
           --gpus all
           --shm-size=5g
+          --user ubuntu
           -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }}
           -e STABILITY_KEY=${{ secrets.STABILITY_KEY }}
           -e IS_CI="True"
