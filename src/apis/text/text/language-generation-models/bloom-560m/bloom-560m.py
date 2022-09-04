@@ -8,8 +8,11 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, str]]]:
     """
     Generate the continuation of the sentence
 
-    :param text: sentence to continue
-    :return: continuation of the sentence
+    Args:
+        text: sentence to continue
+
+    Returns:
+        Dict[str, Union[str, Dict[str, str]]]: continuation of the sentence
     """
 
     generator = pipeline("text-generation", model="bigscience/bloom-560m")
