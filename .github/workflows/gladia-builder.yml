@@ -9,20 +9,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-  # if a pull request is opened, assign it to the creator
-  assignment:
-    if: |-
-      ${{ 
-        (github.event_name == 'pull_request') && 
-        (github.event.action == 'opened')
-      }}
-    runs-on: [self-hosted, linux, STD, tiny]
-    steps:
-      - name: Assign PR to creator
-        uses: thomaseizinger/assign-pr-creator-action@v1.0.0
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
   
   # if a pull request check the title using a pr linter
   lint:
@@ -67,12 +53,50 @@ jobs:
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
 
+      - name: Lint Markdown
+        if: ${{ steps.filter.outputs.markdown == 'true' }}
+        run: npx textlint ${{ steps.filter.outputs.markdown_files }}
+
       - name: Set default env vars
         id: set-default-env
         run: |
           echo "DOCKER_BUILD_CACHE=" >> $GITHUB_ENV &&
           echo "DOCKER_BUILD_TAG=ci-${{ github.event.pull_request.number }}" >> $GITHUB_ENV &&
           echo "DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE=gladiaio/gladia-base:latest" >> $GITHUB_ENV
+          echo "DOCKER_GLADIA_BUILD_NEEDED=false" >> $GITHUB_ENV
+          echo "DOCKER_BASE_BUILD_NEEDED=false" >> $GITHUB_ENV
+
+      # if env.yaml was changed we need to rebuild micromamba envs
+      # if *.Dockefile changed we need to rebuild the image (either base or gladia)
+      - name: Looking for env.yaml or Dockerfile changed files
+        uses: dorny/paths-filter@v2
+        id: found-env_or_docker-changes
+        with:
+          # Enable listing of files matching each filter.
+          # Paths to files will be available in `${FILTER_NAME}_files` output variable.
+          # Paths will be escaped and space-delimited.
+          # Output is usable as command line argument list in linux shell
+          list-files: shell
+
+          # return true if any of the files match the filter
+          filters: |
+            env_yaml:
+              - added|modified|deleted: '*env.yaml'
+            gladia_dockerfile:
+              - added|modified|deleted: '*gpu.Dockerfile'
+            base_dockerfile:
+              - added|modified|deleted: '*base.Dockerfile'
+
+      - name: Setup computed build conditions 
+        run: |
+          if [[ "${{ steps.found-env_or_docker-changes.outputs.env_yaml }}" == "true" || "${{ steps.found-env_or_docker-changes.outputs.gladia_dockerfile }}" == "true" ]]; then
+            echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
+            echo "Gladia will be forced build based on changes files"
+          fi
+          if [[ "${{ steps.found-env_or_docker-changes.outputs.base_dockerfile }}" == "true" ]]; then
+            echo "DOCKER_BASE_BUILD_NEEDED=true" >> $GITHUB_ENV
+            echo "Gladia-base will be build based on changed files"
+          fi
 
       # override DOCKER_BUILD_TAG to "latest" if the PR is merged
       # override DOCKER_REGISTRY to "hub" if the PR is merged
@@ -91,41 +115,58 @@ jobs:
         run: |
           echo "DOCKER_BUILD_CACHE=--no-cache" >> $GITHUB_ENV
 
-      - name: Build Gladia Base image if label is force-build-base
+      # if label is force-build-base or base.Dockerfile changed :
+      # build the base image
+      # push the base image to the gladia registry
+      # change: DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE to the new base image
+      - name: Build, Push and Tag Gladia Base image if label is force-build-base or base.Dockerfile changed
         id: build-base
         if: |
-          contains(github.event.pull_request.labels.*.name, 'ci: force-build-base')
+          contains(github.event.pull_request.labels.*.name, 'ci: force-build-base') ||
+          env.DOCKER_BASE_BUILD_NEEDED == 'true'
         env:
           DOCKER_BUILDKIT: 1
         working-directory: ./src
         run: >-
           docker build
           ${{env.DOCKER_BUILD_CACHE}}
-          -t gladia-base:${{env.DOCKER_BUILD_BASE_TAG}}
+          -t docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}}
           -f base.Dockerfile
-          .
-      
-      # if label is force-build-base and pull request is merged, push the base image to the registry
-      - name: Push base to registry
-        id: push-base-to-gladiaregistry
-        if: |
-          contains(github.event.pull_request.labels.*.name, 'ci: force-build-base')
-        run: |
-          echo "DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE=docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_BASE_TAG}}" >> $GITHUB_ENV
+          . &&
+          docker push docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} &&
+          echo "DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE=docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}}" >> $GITHUB_ENV
 
-      - name: Build Gladia image
-        id: build-gladia
+      # if label is force-build-gladia or gpu.Dockerfile or *env.yaml changed :
+      # build the gladia image
+      # push the gladia image to the gladia registry
+      - name: Build, Push and Tag Gladia image if label is force-build-gladia or gpu.Dockerfile or env.yaml changed
+        id: build-force-gladia
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'ci: force-build-gladia') ||
+          env.DOCKER_GLADIA_BUILD_NEEDED == 'true'
         env:
           DOCKER_BUILDKIT: 1
         working-directory: ./src
-        run: |
-          docker build ${{env.DOCKER_BUILD_CACHE}} --build-arg GLADIA_BASE_IMAGE=${{env.DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE}} -t docker.gladia.io/gladia:${{env.DOCKER_BUILD_TAG}} -f gpu.Dockerfile .
-
-      - name: Push Gladia build Registry
-        id: push-gladia
-        run: |
+        run: >-
+          docker build ${{env.DOCKER_BUILD_CACHE}}
+          --build-arg GLADIA_BASE_IMAGE=${{env.DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE}}
+          -t docker.gladia.io/gladia:${{env.DOCKER_BUILD_TAG}}
+          -f gpu.Dockerfile
+          . &&
           docker push docker.gladia.io/gladia:${{env.DOCKER_BUILD_TAG}}
-      
+
+      # if label is not force-build-gladia and n gpu.Dockerfile nor *env.yaml changed :
+      - name: Push and Tag Gladia image if label is not force-build-gladia nor gpu.Dockerfile nor env.yaml changed
+        id: build-noforce-gladia
+        if: |
+          !contains(github.event.pull_request.labels.*.name, 'ci: force-build-gladia') &&
+          env.DOCKER_GLADIA_BUILD_NEEDED == 'false'
+        env:
+          DOCKER_BUILDKIT: 1
+        working-directory: ./src
+        run: >-
+          echo "DOCKER_BUILD_TAG=latest" >> $GITHUB_ENV
+
       - name: Set output for later jobs
         id: setoutput
         run: |
@@ -138,6 +179,10 @@ jobs:
         !contains(github.event.pull_request.labels.*.name, 'doc')
     runs-on: [self-hosted, linux, GPU, tester]
     steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v2
+
       # retrieve the image built in the previous job
       - name: Retrieve image built in previous job
         id: retrieve-image
@@ -178,9 +223,13 @@ jobs:
             exit 1
           fi
 
-      # Start the container
+      # Start the container and link the /app
+      # to the current directory
+      # this will help non necessary build to
+      # be run in the container
       - name: Start Gladia Container
         id: start-gladia
+        working-directory: ./src
         run: >-
           docker run -d
           --cpus 14
@@ -194,6 +243,7 @@ jobs:
           -e CUDA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}}
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000
           -v /data/volumes/models:/tmp/gladia/models
+          -v $PWD:/app
           --name jlmagouille-${{ github.event.pull_request.number	}}
           docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }}
 
@@ -248,48 +298,3 @@ jobs:
         run: |
           docker stop jlmagouille-${{ github.event.pull_request.number }}
           docker rm jlmagouille-${{ github.event.pull_request.number }}
-
-  promote-DH:
-    needs: [build, test]
-    if: github.event.pull_request.merged == true
-    runs-on: [self-hosted, linux, STD]
-    steps:
-
-      - name: Login to DockerHub Registry
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Login to Gladia Registry
-        id: login-gladia
-        uses: docker/login-action@v1
-        with:
-          registry: docker.gladia.io
-          username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
-          password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
-
-      - name: Promote Gladia-base image to Gladia Registry
-        id: tag-gladia-base-gladiaregistry
-        run: |
-          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} docker.gladia.io/gladia-base:latest &&
-          docker push docker.gladia.io/gladia-base:latest
-
-      - name: Promote Gladia-base image to Dockerhub Registry
-        id: tag-gladia-base-dockerregistry
-        run: |
-          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} gladiaio/gladia-base:latest &&
-          docker push gladiaio/gladia-base:latest
-
-      - name: Promote Gladia image to Gladia Registry
-        id: tag-gladia-gladiaregistry
-        run: |
-          docker tag docker.gladia.io/gladia:${{env.DOCKER_BUILD_TAG}} docker.gladia.io/gladia:latest &&
-          docker push docker.gladia.io/gladia:latest
-
-      - name: Promote Gladia image to Dockerhub Registry
-        id: tag-gladia-dockerregistry
-        run: |
-          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} gladiaio/gladia-base:latest &&
-          docker push gladiaio/gladia-base:latest
-    
