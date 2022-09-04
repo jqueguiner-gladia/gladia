@@ -22,7 +22,7 @@ def predict(image: bytes, source_language: str) -> Dict[str, str]:
 
     del source_language
 
-    image = _open(image)
+    image = _open(image).convert("RGB")
 
     np_image = np.array(image)
 

@@ -1,0 +1,58 @@
+api:
+  content: ''
+  tags: []
+gladia:
+  accelerator: Local GPU
+  format: Torch
+  latency: ''
+huggingface:
+  link: https://huggingface.co/facebook/nllb-200-600M
+license:
+  content: This work is licensed under a Creative Commons Attribution-NonCommercial
+    4.0 International License.
+  link: https://creativecommons.org/licenses/by-nc/4.0/
+  title: cc-by-nc-4.0
+paper:
+  authors:
+  - NLLB Team
+  - "Marta R. Costa-juss\xE0"
+  - James Cross
+  - "Onur \xC7elebi"
+  - Maha Elbayad
+  - Kenneth Heafield
+  - Kevin Heffernan
+  - Elahe Kalbassi
+  - Janice Lam
+  - Daniel Licht
+  - Jean Maillard
+  - Anna Sun
+  - Skyler Wang
+  - Guillaume Wenzek
+  - Al Youngblood
+  - Bapi Akula
+  - Loic Barrault
+  - Gabriel Mejia Gonzalez
+  - Prangthip Hansanti
+  - John Hoffman
+  - Semarley Jarrett
+  - Kaushik Ram Sadagopan
+  - Dirk Rowe
+  - Shannon Spruit
+  - Chau Tran
+  - Pierre Andrews
+  - Necip Fazil Ayan
+  - Shruti Bhosale
+  - Sergey Edunov
+  - Angela Fan
+  - Cynthia Gao
+  - Vedanuj Goswami
+  - "Francisco Guzm\xE1n"
+  - Philipp Koehn
+  - Alexandre Mourachko
+  - Christophe Ropers
+  - Safiyyah Saleem
+  - Holger Schwenk
+  - Jeff Wang
+  citation: http://dx.doi.org/10.1038/nrd842
+  link: https://arxiv.org/abs/2207.04672
+  title: 'No Language Left Behind: Scaling Human-Centered Machine Translation'

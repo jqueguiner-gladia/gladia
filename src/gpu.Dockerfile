@@ -1,4 +1,5 @@
-FROM gladiaio/gladia-base
+ARG GLADIA_BASE_IMAGE=gladiaio/gladia-base:latest
+FROM $GLADIA_BASE_IMAGE
 
 ARG SKIP_CUSTOM_ENV_BUILD="false"
 ARG SKIP_ROOT_CACHE_CLEANING="false"

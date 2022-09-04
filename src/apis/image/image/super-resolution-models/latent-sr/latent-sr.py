@@ -5,10 +5,7 @@ import torchvision
 from einops import rearrange, repeat
 from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
-from ldm.models.diffusion.ddim import DDIMSampler
-from ldm.util import instantiate_from_config, ismap
-from notebook_helpers import instantiate_from_config, load_model_from_config, run
-from numpy import asarray
+from notebook_helpers import load_model_from_config, run
 from omegaconf import OmegaConf
 from PIL import Image
 
@@ -47,7 +44,12 @@ def predict(image: Image, steps: int = 10) -> Image:
     config = OmegaConf.load(path_conf)
     model, step = load_model_from_config(config, path_ckpt)
 
-    logs = run(model["model"], _open(image), "superresolution", custom_steps=steps)
+    logs = run(
+        model["model"],
+        _open(image).convert("RGB"),
+        "superresolution",
+        custom_steps=steps,
+    )
 
     sample = logs["sample"]
     sample = sample.detach().cpu()

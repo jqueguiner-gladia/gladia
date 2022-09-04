@@ -8,7 +8,6 @@ import torchvision
 from einops import rearrange, repeat
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.util import instantiate_from_config, ismap
-from numpy import asarray
 from omegaconf import OmegaConf
 from PIL import Image
 

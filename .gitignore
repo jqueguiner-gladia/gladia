@@ -153,9 +153,6 @@ cython_debug/
 #pipenv
 Pipfile
 
-#models
-models
-
 # GO
 go.sum
 go.mod

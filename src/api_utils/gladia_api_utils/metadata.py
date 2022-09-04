@@ -59,30 +59,31 @@ def manage_metadata_files(argv):
                                             os.remove(to_delete_path)
 
     source_task_metadata_path = os.path.join(
-        root_path, "apis/.metadata_task_template.json"
+        root_path, "apis/.metadata_task_template.yaml"
     )
     source_model_metadata_path = os.path.join(
-        root_path, "apis/.metadata_model_template.json"
+        root_path, "apis/.metadata_model_template.yaml"
     )
-    destination_file_name = ".metadata.json"
+    destination_model_file_name = ".model_metadata.yaml"
+    destination_task_file_name = ".task_metadata.yaml"
 
     # Create or delete task metadata files
     for task_path in task_paths:
-        destination_file = os.path.join(task_path, destination_file_name)
+        destination_file = os.path.join(task_path, destination_task_file_name)
         if not delete:
             shutil.copy(source_task_metadata_path, destination_file)
         else:
-            to_delete_file_path = os.path.join(task_path, destination_file_name)
+            to_delete_file_path = os.path.join(task_path, destination_task_file_name)
             if pathlib.Path(to_delete_file_path).exists():
                 os.remove(to_delete_file_path)
 
     # Create or delete model metadata files
     for model_path in model_paths:
-        destination_file = os.path.join(model_path, destination_file_name)
+        destination_file = os.path.join(model_path, destination_model_file_name)
         if not delete:
             shutil.copy(source_model_metadata_path, destination_file)
         else:
-            to_delete_file_path = os.path.join(model_path, destination_file_name)
+            to_delete_file_path = os.path.join(model_path, destination_model_file_name)
             if pathlib.Path(to_delete_file_path).exists():
                 os.remove(to_delete_file_path)
 
