@@ -228,6 +228,9 @@ jobs:
       # to the current directory
       # this will help non necessary build to
       # be run in the container
+      # PYTHONDONTWRITEBYTECODE=1 is used to 
+      # avoid root:root file creation on
+      # mounted directory
       - name: Start Gladia Container
         id: start-gladia
         working-directory: ./src
@@ -237,7 +240,7 @@ jobs:
           --memory 32g
           --gpus all
           --shm-size=5g
-          --user ubuntu
+          -e PYTHONDONTWRITEBYTECODE=1
           -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }}
           -e STABILITY_KEY=${{ secrets.STABILITY_KEY }}
           -e IS_CI="True"
