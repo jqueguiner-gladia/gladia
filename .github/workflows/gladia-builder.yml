@@ -178,7 +178,7 @@ jobs:
         !contains(github.event.pull_request.labels.*.name, 'ci') &&
         !contains(github.event.pull_request.labels.*.name, 'doc')
     runs-on: [self-hosted, linux, GPU, tester]
-    timeout-minutes: 30
+    timeout-minutes: 90
     steps:
       - name: Checkout
         id: checkout
