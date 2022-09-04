@@ -18,7 +18,7 @@ jobs:
         !contains(github.event.pull_request.labels.*.name, 'ci') &&
         !contains(github.event.pull_request.labels.*.name, 'doc')
     runs-on: [self-hosted, linux, STD, builder]
-    timeout-minutes: 15
+    timeout-minutes: 90
     # map steps output to job output
     outputs:
       dockerimage: ${{ steps.setoutput.outputs.dockerimage }}
