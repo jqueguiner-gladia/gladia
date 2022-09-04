@@ -31,9 +31,12 @@ def convert_image_to_ascii(
     """
     Replace every pixel with a character whose intensity is similar
 
-    :param image: image to convert to ascii
-    :param buckets: range of pixels associated to each ascii character
-    :return: the ascii image converted to ascii characters
+    Args:
+        image (Image): Image to convert to ascii
+        buckets (int): range of pixels associated to each ascii character (default: 255 // (len(ASCII_CHARS) - 1))
+
+    Returns:
+        str: ascii characters representation of the image
     """
 
     (width, _) = image.size
@@ -58,8 +61,11 @@ def predict(image: bytes) -> Dict[str, str]:
     """
     Transform an image to ascii characters
 
-    :param image: image to transform
-    :return: image in ascii characters
+    Args:
+        image (bytes): image to convert to ascii
+
+    Returns:
+        Dict[str, str]: ascii characters representation of the image
     """
 
     new_width = 100

@@ -5,23 +5,24 @@ from happytransformer import HappyQuestionAnswering
 
 
 def predict(
-    context: str, question: str
+    context: str, question: str, top_k: int = 1
 ) -> Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]:
     """
     Using the given `context`, answer the provided `question`.
 
-    :param context: context to use to answer the question
-    :param question: question to answer
-    :return: JSON formatted str containing both the answer and the confidence score.
-    """
+    Args:
+        context (str): The context to use for answering the question.
+        question (str): The question to answer.
 
-    NB_RESULTS = 25
+    Returns:
+        Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]: The answer to the question, the associated score and the start and end position of the answer.
+    """
 
     happy_qa = HappyQuestionAnswering("ROBERTA", "deepset/roberta-base-squad2")
     result = happy_qa.answer_question(
         truecase.get_true_case(context),
         truecase.get_true_case(question),
-        top_k=NB_RESULTS,
+        top_k=top_k,
     )
 
     prediction_raw = [

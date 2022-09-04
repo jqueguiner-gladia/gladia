@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Tuple, Union
 
 import torch
 import truecase
@@ -10,9 +10,10 @@ from transformers import (
 )
 
 
-def load_model() -> (PreTrainedTokenizer, PreTrainedModel):
+def load_model() -> Tuple[PreTrainedTokenizer, PreTrainedModel]:
     """
     Load `deepset/bert-base-cased-squad2` tokenizer and model.
+
 
     :return: tuple containing both the tokenizer and the model
     """
@@ -26,16 +27,19 @@ def load_model() -> (PreTrainedTokenizer, PreTrainedModel):
 
 
 def predict(
-    context: str, question: str
+    context: str, question: str, top_k: int = 1
 ) -> Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]:
     """
     Using the given `context`, answer the provided `question`.
 
     Note: The score is not provided in the return value.
 
-    :param context: context to use to answer the question
-    :param question: question to answer
-    :return: answer of the question
+    Args:
+        context (str): The context to answer the question in
+        question (str): The question to answer
+
+    Returns:
+       Dict[str, Union[str, List[Dict[str, Union[str, float, int]]]]]: The answer to the question
     """
 
     tokenizer, model = load_model()

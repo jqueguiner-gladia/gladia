@@ -12,7 +12,7 @@ concurrency:
 jobs:
 
   build:
-    runs-on: [self-hosted, linux, STD]
+    runs-on: [self-hosted, linux, GPU, builder]
     steps:
       - name: Checkout
         uses: actions/checkout@v2

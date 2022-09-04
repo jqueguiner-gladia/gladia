@@ -11,12 +11,232 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+
+  # build the gladia image for the pull request breanch
+  build:
+    if: |
+        !contains(github.event.pull_request.labels.*.name, 'ci') &&
+        !contains(github.event.pull_request.labels.*.name, 'doc')
+    runs-on: [self-hosted, linux, STD, builder]
+    timeout-minutes: 90
+    # map steps output to job output
+    outputs:
+      dockerimage: ${{ steps.setoutput.outputs.dockerimage }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v2
+
+      - name: Login to DockerHub Registry
+        id: login-dockerhub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Login to NVCR Registry
+        id: login-nvcr
+        uses: docker/login-action@v2
+        with:
+          registry: nvcr.io
+          username: ${{ secrets.NVCR_USERNAME }}
+          password: ${{ secrets.NVCR_ACCESS_TOKEN }}
+          
+      - name: Login to Gladia Registry
+        id: login-gladia
+        uses: docker/login-action@v1
+        with:
+          registry: docker.gladia.io
+          username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
+          password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
+
+      - name: Set default env vars
+        id: set-default-env
+        run: |
+          echo "DOCKER_BUILD_CACHE=" >> $GITHUB_ENV &&
+          echo "DOCKER_BUILD_TAG=ci-${{ github.event.pull_request.number }}" >> $GITHUB_ENV &&
+          echo "DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE=gladiaio/gladia-base:latest" >> $GITHUB_ENV
+
+      # override DOCKER_BUILD_TAG to "latest" if the PR is merged
+      # override DOCKER_REGISTRY to "hub" if the PR is merged
+      - name: Set image tag for build if push to main in env vars 
+        id: set-image-tag-main
+        if: |
+          github.event.pull_request.merged == true
+        run: |
+          echo "DOCKER_BUILD_TAG=staging" >> $GITHUB_ENV
+
+      # override DOCKER_BUILD_CACHE if "ci: force-no-cache" in labels
+      - name: Set cache option env vars for build
+        id: set-cache-option
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'ci: force-no-cache')
+        run: |
+          echo "DOCKER_BUILD_CACHE=--no-cache" >> $GITHUB_ENV
+
+      - name: Build Gladia Base image if label is force-build-base
+        id: build-base
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'ci: force-build-base')
+        env:
+          DOCKER_BUILDKIT: 1
+        working-directory: ./src
+        run: >-
+          docker build
+          ${{env.DOCKER_BUILD_CACHE}}
+          -t gladia-base:${{env.DOCKER_BUILD_BASE_TAG}}
+          -f base.Dockerfile
+          .
+      
+      # if label is force-build-base and pull request is merged, push the base image to the registry
+      - name: Push base to registry
+        id: push-base-to-gladiaregistry
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'ci: force-build-base')
+        run: |
+          echo "DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE=docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_BASE_TAG}}" >> $GITHUB_ENV
+
+      - name: Build Gladia image
+        id: build-gladia
+        env:
+          DOCKER_BUILDKIT: 1
+        working-directory: ./src
+        run: |
+          docker build ${{env.DOCKER_BUILD_CACHE}} --build-arg GLADIA_BASE_IMAGE=${{env.DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE}} -t docker.gladia.io/gladia:${{env.DOCKER_BUILD_TAG}} -f gpu.Dockerfile .
+
+      - name: Push Gladia build Registry
+        id: push-gladia
+        run: |
+          docker push docker.gladia.io/gladia:${{env.DOCKER_BUILD_TAG}}
+      
+      - name: Set output for later jobs
+        id: setoutput
+        run: |
+          echo ::set-output name=dockerimage::${{env.DOCKER_BUILD_TAG}}
+
+  test:
+    needs: build
+    if: |
+        !contains(github.event.pull_request.labels.*.name, 'ci') &&
+        !contains(github.event.pull_request.labels.*.name, 'doc')
+    runs-on: [self-hosted, linux, GPU, tester]
+    steps:
+      # retrieve the image built in the previous job
+      - name: Retrieve image built in previous job
+        id: retrieve-image
+        run: echo ${{ needs.build.outputs.dockerimage }}
+
+      - name: Login to DockerHub Registry
+        id: login-dockerhub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Login to NVCR Registry
+        id: login-nvcr
+        uses: docker/login-action@v2
+        with:
+          registry: nvcr.io
+          username: ${{ secrets.NVCR_USERNAME }}
+          password: ${{ secrets.NVCR_ACCESS_TOKEN }}
+          
+      - name: Login to Gladia Registry
+        id: login-gladia
+        uses: docker/login-action@v1
+        with:
+          registry: docker.gladia.io
+          username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
+          password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
+          
+      # set the GPU device to use based on the runner label
+      - name: Get GPU ID
+        id: gpuid
+        run: |
+          N=$(echo ${{ runner.name }} )
+          if [[ ${N: -1} =~ [0-9] ]]; then 
+            echo ::set-output name=gpuid::$(echo ${N: -1} )
+          else 
+            echo "Error : unexpected GPU ID"
+            exit 1
+          fi
+
+      # Start the container
+      - name: Start Gladia Container
+        id: start-gladia
+        run: >-
+          docker run -d
+          --cpus 14
+          --memory 32g
+          --gpus all
+          --shm-size=5g
+          -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }}
+          -e STABILITY_KEY=${{ secrets.STABILITY_KEY }}
+          -e IS_CI="True"
+          -e NVIDIA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}}
+          -e CUDA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}}
+          -p ${{steps.gpuid.outputs.gpuid}}8000:8000
+          -v /data/volumes/models:/tmp/gladia/models
+          --name jlmagouille-${{ github.event.pull_request.number	}}
+          docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }}
+
+      - name: Gladia container readiness
+        id: gladia-ready
+        uses: nick-fields/retry@v2
+        with:
+          timeout_seconds: 10
+          max_attempts: 36
+          retry_on: error
+          command: curl http://localhost:${{steps.gpuid.outputs.gpuid}}8000/v2/health/ready --connect-timeout 5
+
+      - name: Give it 5s to make sure it is ready
+        id: wait-5s
+        run: sleep 5s
+
+      - name: Set env variables for tests break conditions
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'ci: test-continue-when-fail')
+        id: set-test-env-continue
+        run: |
+          echo "GLADIA_TEST_CONTINUE_WHEN_FAILED="-c" >> $GITHUB_ENV
+
+      - name: Set env variables for depth of tests
+        if: |
+          !contains(github.event.pull_request.labels.*.name, 'ci: force-test-all-models')
+        id: set-test-env-all
+        run: |
+          echo "GLADIA_TEST_ALL_MODELS=-d" >> $GITHUB_ENV
+        
+      - name: Tests
+        id: test
+        run: >-
+          docker exec -i
+          -e PR=${{ github.event.pull_request.number }}
+          -e GLADIA_TEST_CONTINUE_WHEN_FAILED=${{ env.GLADIA_TEST_CONTINUE_WHEN_FAILED }}
+          -e GLADIA_TEST_ALL_MODELS=${{ env.GLADIA_TEST_ALL_MODELS }}
+          -e GHT=${{ secrets.GITHUB_TOKEN }}
+          jlmagouille-${{ github.event.pull_request.number }}
+          /bin/bash -c 'echo $PR; eval "$(micromamba shell hook --shell=bash)" && micromamba activate server && cd /app/unit-test/ && python3 test.py $GLADIA_TEST_CONTINUE_WHEN_FAILED $GLADIA_TEST_ALL_MODELS'
+
+      - name: Logs
+        id: logs
+        if: always()
+        run: |
+           docker logs jlmagouille-${{ github.event.pull_request.number }}
+
+      - name: Clean Docker Test Env
+        id: clean
+        if: always()
+        continue-on-error: True
+        run: |
+          docker stop jlmagouille-${{ github.event.pull_request.number }}
+          docker rm jlmagouille-${{ github.event.pull_request.number }}
+
   promote-DH:
+    needs: [build, test]
     if: github.event.pull_request.merged == true
     runs-on: [self-hosted, linux, STD]
     steps:
-      - name: Tag image for Docker Hub latest
-        run: docker tag docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }} gladiaio/gladia:latest
 
       - name: Login to DockerHub Registry
         uses: docker/login-action@v1
@@ -24,92 +244,35 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Push latest to Docker Hub
-        run: docker push gladiaio/gladia:latest
-
-  promote-gladia:
-    if: github.event.pull_request.merged == true
-    runs-on: [self-hosted, linux, STD]
-    steps:
-      - name: Tag image for Docker Gladia latest
-        run: docker tag docker.gladia.io/gladia:ci-${{ github.event.pull_request.number }} docker.gladia.io/gladia:latest
-
       - name: Login to Gladia Registry
+        id: login-gladia
         uses: docker/login-action@v1
         with:
           registry: docker.gladia.io
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
 
-      - name: Push latest to Gladia registry
-        run: docker push docker.gladia.io/gladia:latest
+      - name: Promote Gladia-base image to Gladia Registry
+        id: tag-gladia-base-gladiaregistry
+        run: |
+          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} docker.gladia.io/gladia-base:latest &&
+          docker push docker.gladia.io/gladia-base:latest
 
-  deploy-aipi-1:
-    needs: promote-gladia
-    runs-on: [self-hosted, linux, aipi-1]
-    steps:
-      - name: Login to Gladia Registry
-        uses: docker/login-action@v1
-        with:
-          registry: docker.gladia.io
-          username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
-          password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
-      
-      - name: pull latest
-        run: docker pull docker.gladia.io/gladia:latest
+      - name: Promote Gladia-base image to Dockerhub Registry
+        id: tag-gladia-base-dockerregistry
+        run: |
+          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} gladiaio/gladia-base:latest &&
+          docker push gladiaio/gladia-base:latest
 
-      - name: stop docker gladia
-        run: docker kill gladia-aipi && docker rm gladia-aipi
+      - name: Promote Gladia image to Gladia Registry
+        id: tag-gladia-gladiaregistry
+        run: |
+          docker tag docker.gladia.io/gladia:${{env.DOCKER_BUILD_TAG}} docker.gladia.io/gladia:latest &&
+          docker push docker.gladia.io/gladia:latest
 
-      - name: start docker gladia
-        run: | 
-            docker run -d --name gladia-aipi \
-            --gpus all --shm-size=5g \
-            -p 80:8080 \
-            -v /tmp/gladia:/tmp/gladia \
-            -e TRITON_SERVER_PORT_HTTP=8000 \
-            -e TRITON_SERVER_URL=${{ secrets.TRITON_SERVER_URL }} \
-            -e TRITON_LAZY_DOWNLOAD=false \
-            -e TRITON_MODELS_PATH=/tmp/gladia/triton \
-            -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }} \
-            -e STABILITY_KEY=${{ secrets.STABILITY_KEY }} \
-            -e MODE=server \
-            docker.gladia.io/gladia:latest
-
-      # todo : healthcheck, notify failure
-
-  deploy-aipi-2:
-    needs: deploy-aipi-1
-    runs-on: [self-hosted, linux, aipi-2]
-    steps:
-      - name: Login to Gladia Registry
-        uses: docker/login-action@v1
-        with:
-          registry: docker.gladia.io
-          username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
-          password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
-      
-      - name: pull latest
-        run: docker pull docker.gladia.io/gladia:latest
-
-      - name: stop docker gladia
-        run: docker kill gladia-aipi && docker rm gladia-aipi
-
-      - name: start docker gladia
-        run: | 
-            docker run -d \
-            --name gladia-aipi \
-            --gpus all \
-            --shm-size=5g \
-            -p 80:8080 \
-            -v /tmp/gladia:/tmp/gladia \
-            -e TRITON_SERVER_PORT_HTTP=8000 \
-            -e TRITON_SERVER_URL=${{ secrets.TRITON_SERVER_URL }} \
-            -e TRITON_LAZY_DOWNLOAD=false \
-            -e TRITON_MODELS_PATH=/tmp/gladia/triton \
-            -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }} \
-            -e STABILITY_KEY=${{ secrets.STABILITY_KEY }} \
-            -e MODE=server \
-            docker.gladia.io/gladia:latest
-
-      # todo : healthcheck, notify failure
+      - name: Promote Gladia image to Dockerhub Registry
+        id: tag-gladia-dockerregistry
+        run: |
+          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} gladiaio/gladia-base:latest &&
+          docker push gladiaio/gladia-base:latest
+    

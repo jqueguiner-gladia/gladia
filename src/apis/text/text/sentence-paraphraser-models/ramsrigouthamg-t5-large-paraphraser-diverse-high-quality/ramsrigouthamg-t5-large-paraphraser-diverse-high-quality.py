@@ -9,8 +9,11 @@ def predict(context: str) -> Dict[str, str]:
     """
     Generates paraphrases of the given sentence
 
-    :param context: sentence to paraphrase
-    :return: list of paraphrases
+    Args:
+        context (str): The context to paraphrase
+
+    Returns:
+        Dict[str, str]: The paraphrases of the given sentence
     """
 
     model_name = "ramsrigouthamg/t5-large-paraphraser-diverse-high-quality"

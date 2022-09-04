@@ -16,6 +16,13 @@ inputs = [
         "example": "What's my name?",
         "placeholder": "Insert the question to be answered",
     },
+    {
+        "type": "integer",
+        "name": "top_k",
+        "default": 1,
+        "example": 1,
+        "placeholder": "Top K",
+    },
 ]
 
 output = {"name": "answer", "type": "string", "example": "answer"}
@@ -25,5 +32,5 @@ TaskRouter(
     router=router,
     input=inputs,
     output=output,
-    default_model="deepset_bert-base-cased-squad2",
+    default_model="distilbert-base-cased-distilled-squad",
 )

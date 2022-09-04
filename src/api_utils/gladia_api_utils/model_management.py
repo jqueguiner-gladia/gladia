@@ -148,4 +148,7 @@ def download_models(model_list: dict) -> dict:
             threads.append(t)
             t.start()
 
+    for t in threads:
+        t.join()
+
     return output
