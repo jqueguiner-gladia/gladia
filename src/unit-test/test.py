@@ -2,9 +2,11 @@ import json
 import os
 import sys
 from time import sleep
+from urllib.request import Request, urlopen
 
 import click
 import requests
+from validators import url as is_url
 
 global nb_total_tests
 global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
@@ -18,6 +20,13 @@ STATUS_FAILED = "🔴"
 EXIT_STATUS_SUCCESS = 0
 EXIT_STATUS_FAILURE = 1
 CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+
+output_content_type_asserts = {
+    "image/*": "image/png",
+    "application/json": "application/json",
+    "audio/*": "",  # TODO: define the casting content type for audio output
+    "video/*": "",  # TODO: define the casting content type for video output
+}
 
 
 def get_nb_tests(
@@ -58,20 +67,224 @@ def get_endpoints_models(url, path, header):
     return response.json()["models"]
 
 
+def get_task_models_to_test(
+    url, path, header={}, specific_models=[], default_models_only=False
+):
+    global endpoints
+
+    task_response = requests.get(f"{url}{path}", headers=header).json()
+    if specific_models != []:
+        models = [
+            model for model in task_response["models"] if model in specific_models
+        ]
+    elif default_models_only:
+        details = endpoints["paths"][path]
+        models = [details["post"]["parameters"][0]["schema"]["default"]]
+    else:
+        models = [key for key in task_response["models"].keys()]
+    return models
+
+
+def get_openapi_json_inputs(task_details) -> dict:
+    media_type = list(task_details["post"]["requestBody"]["content"].keys())[0]
+    request_body_info = task_details["post"]["requestBody"]["content"][media_type][
+        "schema"
+    ]
+    schema = request_body_info["$ref"].split("/")[-1]
+    openapi_json_inputs = endpoints["components"]["schemas"][schema]["properties"]
+    return openapi_json_inputs
+
+
+def add_default_files(initial_files, files_to_add):
+    """ex of files to add:
+        {"Image": ("image", "[.jpg, .png]")}
+
+    This fonction will take only the first format in the list
+    and merge it with initial_files to become the new dict
+
+    result from ex with initial_files = {}:
+        {"Image": ("image", ".jpg")}
+    """
+    dict_to_merge = {
+        key: (value[0], value[1][0])
+        for files in files_to_add
+        for key, value in files.items()
+    }
+    initial_files.update(dict_to_merge)
+    return initial_files
+
+
+def get_task_inputs(task_details):
+
+    task_inputs = []
+    openapi_json_inputs = get_openapi_json_inputs(task_details)
+    config = get_config()
+
+    # List all kinds of inputs
+    urls_files = []
+    texts = []
+    audios = []
+    videos = []
+    images = []
+    for key, value in openapi_json_inputs.items():
+        if value.get("format", None) != "binary":
+            if value.get("data_type", None) == "url":
+                if "audio" in key or "audio" in value["title"].lower():
+                    # URL audio
+                    default_url_file_test = config["test_files_config"]["audio"]["url"]
+                elif "video" in key or "video" in value["title"].lower():
+                    # URL Video
+                    default_url_file_test = config["test_files_config"]["video"]["url"]
+                else:
+                    # URL Image
+                    default_url_file_test = config["test_files_config"]["image"]["url"]
+                urls_files.append({key: value.get("example", default_url_file_test)})
+            else:
+                texts.append({key: ("text", value["example"])})
+        else:
+            if value.get("data_type", None) == "audio":
+                audios.append({key: ("audio", formats_to_test["audio"])})
+            elif value.get("data_type", None) == "video":
+                videos.append({key: ("video", formats_to_test["video"])})
+            else:
+                images.append({key: ("image", formats_to_test["image"])})
+
+    # Create all requests to send for good testing of the model
+    data = {key: value[1] for text in texts for key, value in text.items()}
+
+    if urls_files:
+        # Create a first request testing url version of files
+        url_data = data.copy()
+        for url_file in urls_files:
+            url_data.update(url_file)
+        task_inputs.append({"data": url_data, "files": {}})
+
+        # Then, for each input type (audio, video, image),
+        # create requests testing each file format,
+        # using first one by default for the other input type
+        # ex: .mp3 audio format will be tested using .jpg format for images
+        all_files = [("audio", audios), ("image", images), ("video", videos)]
+        for types_files in all_files:
+            # Keep only other types files (ex: 'audio' and 'video' if 'image')
+            other_types_file = [item for item in all_files if item != types_files]
+            other_input_files = {}
+            # Add a file with default type format (fist one) for each other file to send
+            for other_type_file in other_types_file:
+                other_input_files = add_default_files(
+                    other_input_files, other_type_file[1]
+                )
+            # Add a new set of request files for each format to test
+            for format in formats_to_test[types_files[0]]:
+                request_files = other_input_files.copy()
+                # Use the same type of format for each file of this type (ex: jpg for all images)
+                for type_file in types_files[1]:
+                    input_name = list(type_file.keys())[0]
+                    # Retieve the test files in examples
+                    examples_files = openapi_json_inputs[input_name].get(
+                        "examples", None
+                    )
+                    # If examples does'nt exist or is empty, retieve it in current directory
+                    if not examples_files:
+                        examples_files = os.listdir(CURRENT_DIRECTORY)
+
+                    file = [file for file in examples_files if file.endswith(format)][0]
+                    if is_url(file):
+                        file_path = file
+                        file = file.split("/")[-1]
+                    else:
+                        file_path = os.path.join(CURRENT_DIRECTORY, file)
+                    # Add the file to the request
+                    for key, value in type_file.items():
+                        request_files.update({value[0]: (file, file_path)})
+                    task_inputs.append({"data": data, "files": request_files})
+
+    else:
+        task_inputs.append({"data": data, "files": {}})
+
+    return task_inputs
+
+
+def is_file_in_inputs(task_inputs):
+    for request_inputs in task_inputs:
+        if request_inputs["files"]:
+            return True
+    return False
+
+
+def is_header_output_type_ok(response, expected_response_output_type):
+    return (
+        output_content_type_asserts[expected_response_output_type]
+        == response.headers["content-type"]
+    )
+
+
+def is_response_valid(response, details):
+    expected_response_output_type = list(
+        details["post"]["responses"]["200"]["content"].keys()
+    )[0]
+    if (
+        response.status_code != 200
+        or is_header_output_type_ok(response, expected_response_output_type) is False
+    ):
+        return False
+    else:
+        return True
+
+
 def reorder_endpoints(endpoints):
     # Reorder the enpoints in order to pass fastest test in first
     input_order = ["text", "image", "audio", "video"]
+    output_order = ["text", "image", "audio", "video"]
     reorder_paths = {}
     for input_order_item in input_order:
-        reorder_paths.update(
-            {
-                key: value
-                for key, value in endpoints["paths"].items()
-                if key.split("/")[1] == input_order_item
-            }
-        )
+        for output_order_item in output_order:
+            reorder_paths.update(
+                {
+                    key: value
+                    for key, value in endpoints["paths"].items()
+                    if key.split("/")[1] == input_order_item
+                    and key.split("/")[2] == output_order_item
+                }
+            )
     endpoints["paths"] = reorder_paths
     return endpoints
+
+
+def get_error_message(response, details) -> str:
+    expected_response_output_type = list(
+        details["post"]["responses"]["200"]["content"].keys()
+    )[0]
+    output_type_error_message = (
+        " ({} instead of {})".format(
+            response.headers["content-type"],
+            output_content_type_asserts[expected_response_output_type],
+        )
+        if response.status_code == 200
+        and is_header_output_type_ok(response, expected_response_output_type) is False
+        else ""
+    )
+    return output_type_error_message
+
+
+def open_file_or_url(path_or_url):
+    if is_url(path_or_url):
+        dummy_header = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) "}
+        req = Request(url=path_or_url, headers=dummy_header)
+        return urlopen(req).read()
+    else:
+        return open(path_or_url, "rb")
+
+
+def get_file_message(data, files) -> str:
+    uploaded_files = [value[0] for value in files.values()]
+    url_files = [
+        "url_field: " + value.split("/")[-1]
+        for key, value in data.items()
+        if key.endswith("_url")
+    ]
+    used_files = uploaded_files + url_files
+    files_message = f" ({', '.join(used_files)})"
+    return files_message
 
 
 def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
@@ -85,15 +298,11 @@ def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
             f"{url}{path}",
             params=params,
             data=data,
-            files={key: open(value[1], "rb") for key, value in files.items()},
+            files={key: open_file_or_url(value[1]) for key, value in files.items()},
         )
 
-        uploaded_files = [value[0] for value in files.values()]
-        url_files = [key for key in data.keys() if key.endswith("_url")]
-        used_files = uploaded_files + url_files
-        files_message = f" ({', '.join(used_files)})"
-
-        print(f"|  |       ___ Try : {tries}/{max_retry}{files_message}")
+        file_message = get_file_message(data, files)
+        print(f"|  |       ___ Try : {tries}/{max_retry}{file_message}")
         print(f"|  |      |    |_ Response : {response.status_code} ")
         tries += 1
 
@@ -120,144 +329,10 @@ def perform_test(
     global endpoints
     global formats_to_test
 
-    output_content_type_asserts = {
-        "image/*": "image/png",
-        "application/json": "application/json",
-        "audio/*": "",  # TODO: define the casting content type for audio output
-        "video/*": "",  # TODO: define the casting content type for video output
-    }
-
-    # Create a list a inputs to make requests needed to test the model properly
-    def get_requests_inputs():
-        requests_inputs = []
-
-        media_type = list(details["post"]["requestBody"]["content"].keys())[0]
-        request_body_info = details["post"]["requestBody"]["content"][media_type][
-            "schema"
-        ]
-
-        schema = request_body_info["$ref"].split("/")[-1]
-        properties = endpoints["components"]["schemas"][schema]["properties"]
-
-        # List all kinds of inputs
-        urls_files = []
-        texts = []
-        audios = []
-        videos = []
-        images = []
-        for key, value in properties.items():
-            if value.get("format", None) != "binary":
-                if value.get("data_type", None) == "url":
-                    if "audio" in key or "audio" in value["title"].lower():
-                        # URL audio
-                        default_url_file_test = "http://files.gladia.io/test/test.mp3"
-                    elif "video" in key or "video" in value["title"].lower():
-                        # URL Video
-                        default_url_file_test = "http://files.gladia.io/test/test.webm"
-                    else:
-                        # URL Image
-                        default_url_file_test = "http://files.gladia.io/test/test.png"
-                    urls_files.append(
-                        {key: value.get("_examples", default_url_file_test)}
-                    )
-                else:
-                    texts.append({key: ("text", value["_examples"][0])})
-            else:
-                if "audio" in key or "audio" in value["title"].lower():
-                    # Audio
-                    audios.append({key: ("audio", formats_to_test["audio"])})
-                elif "video" in key or "video" in value["title"].lower():
-                    # Video
-                    videos.append({key: ("video", formats_to_test["video"])})
-                else:
-                    # Image
-                    images.append({key: ("image", formats_to_test["image"])})
-
-        # Create all requests to send for good testing of the model
-        data = {key: value[1] for text in texts for key, value in text.items()}
-
-        if urls_files:
-            # Create a first request testing url version of files
-            url_data = data.copy()
-            for url_file in urls_files:
-                url_data.update(url_file)
-            requests_inputs.append({"data": url_data, "files": {}})
-
-            # Then, for each input type (audio, video, image),
-            # create requests testing each file format,
-            # using first one by default for the other input type
-            # ex: .mp3 audio format will be tested using .jpg format for images
-            all_files = [("audio", audios), ("image", images), ("video", videos)]
-            for types_files in all_files:
-                # Keep only other types files (ex: 'audio' and 'video' if 'image')
-                other_types_file = [item for item in all_files if item != types_files]
-                other_input_files = {}
-                # Add a file with default type format (fist one) for each other file to send
-                for other_type_file in other_types_file:
-                    other_input_files = add_default_files(
-                        other_input_files, other_type_file[1]
-                    )
-                # Add a new set of request files for each format to test
-                for format in formats_to_test[types_files[0]]:
-                    request_files = other_input_files.copy()
-                    # Use the same type of format for each file of this type (ex: jpg for all images)
-                    for type_file in types_files[1]:
-                        # Retieve the test file in current directory with the good format ...
-                        file = [
-                            file
-                            for file in os.listdir(CURRENT_DIRECTORY)
-                            if file.endswith(format)
-                        ][0]
-                        file_path = os.path.join(CURRENT_DIRECTORY, file)
-                        # ... and add it to the request files
-                        for key, value in type_file.items():
-                            request_files.update({value[0]: (file, file_path)})
-                        requests_inputs.append({"data": data, "files": request_files})
-
-        else:
-            requests_inputs.append({"data": data, "files": {}})
-
-        return requests_inputs
-
-    def add_default_files(initial_files, files_to_add):
-        """ex of files to add:
-            {"Image": ("image", "[.jpg, .png]")}
-
-        This fonction will take only the first format in the list
-        and merge it with initial_files to become the new dict
-
-        result from ex with initial_files = {}:
-            {"Image": ("image", ".jpg")}
-        """
-        dict_to_merge = {
-            key: (value[0], value[1][0])
-            for files in files_to_add
-            for key, value in files.items()
-        }
-        initial_files.update(dict_to_merge)
-        return initial_files
-
-    def is_file_in_inputs(requests_inputs):
-        for request_inputs in requests_inputs:
-            if request_inputs["files"]:
-                return True
-        return False
-
-    requests_inputs = get_requests_inputs()
-
-    response_output_type = list(details["post"]["responses"]["200"]["content"].keys())[
-        0
-    ]
-
-    response = requests.get(f"{url}{path}", headers=header)
-    if specific_models != []:
-        models = [
-            model for model in response.json()["models"] if model in specific_models
-        ]
-    elif default_models_only:
-        models = [details["post"]["parameters"][0]["schema"]["default"]]
-    else:
-        models = response.json()["models"]
+    task_inputs = get_task_inputs(details)
+    models = get_task_models_to_test(
+        url, path, header, specific_models, default_models_only
+    )
 
     for model in models:
         if IS_CI:
@@ -265,9 +340,8 @@ def perform_test(
 
         params = {"model": model}
 
-        valid = True
-        output_type_ok = True
-        for request in requests_inputs:
+        is_model_valid = True
+        for request in task_inputs:
             response = request_endpoint(
                 url=url,
                 path=path,
@@ -277,37 +351,25 @@ def perform_test(
                 max_retry=max_retry,
             )
 
-            output_type_ok = (
-                output_content_type_asserts[response_output_type]
-                == response.headers["content-type"]
-            )
+            if not is_response_valid(response, details):
+                is_model_valid = False
 
-            if response.status_code != 200 or output_type_ok is False:
-                valid = False
-
-        if valid:
+        if is_model_valid:
             nb_test_passed += 1
             status = STATUS_PASSED
         else:
             nb_test_failed += 1
             status = STATUS_FAILED
             test_final_status = EXIT_STATUS_FAILURE
-            if IS_CI and not is_file_in_inputs(requests_inputs):
+            if IS_CI and not is_file_in_inputs(task_inputs):
                 sleep(2)
 
         nb_test_ran += 1
-
         progress = round((nb_test_ran / nb_total_tests) * 100, 2)
-        output_type_message = (
-            " ({} instead of {})".format(
-                response.headers["content-type"],
-                output_content_type_asserts[response_output_type],
-            )
-            if response.status_code == 200 and not output_type_ok
-            else ""
-        )
+        error_message = get_error_message(response, details)
+
         print(
-            f"|  |__ {status} {model} ({progress}%)  <{response.status_code}>{output_type_message}"
+            f"|  |__ {status} {model} ({progress}%)  <{response.status_code}>{error_message}"
         )
         print(f"|  |")
         if skip_when_failed:
@@ -333,6 +395,35 @@ def write_github_comment(github_token, github_pull_request, output):
         return response.status_code
     else:
         return "ok"
+
+
+def get_config():
+    config_path = os.path.join(CURRENT_DIRECTORY, "config.json")
+    with open(config_path, "r") as config_file:
+        config = json.load(config_file)
+        return config
+
+
+def get_formats_to_test(audio_file, image_file, video_file):
+    formats_to_test = {}
+    formats_args = [{"audio": audio_file}, {"image": image_file}, {"video": video_file}]
+    config = get_config()
+
+    for file_type in formats_args:
+        format_to_test = list(file_type.values())[0]
+        file_type_name = list(file_type.keys())[0]
+        file_config = config["test_files_config"][file_type_name]["formats"]
+        if format_to_test:
+            if format_to_test in file_config:
+                formats_to_test[file_type_name] = [format_to_test]
+            else:
+                print(f"{format_to_test} is not an accepted format for audio file")
+                print("Try one of these ", file_config)
+                sys.exit(1)
+        else:
+            formats_to_test[file_type_name] = file_config
+
+    return formats_to_test
 
 
 @click.command()
@@ -459,43 +550,7 @@ def main(
     global endpoints
     global formats_to_test
 
-    formats_to_test = {}
-    config_path = os.path.join(CURRENT_DIRECTORY, "config.json")
-    with open(config_path, "r") as config_file:
-        config = json.load(config_file)
-
-        # Set audio files to use in test
-        if audio_file:
-            if audio_file in config["formats_to_test"]["audio"]:
-                formats_to_test["audio"] = [audio_file]
-            else:
-                print(f"{audio_file} is not an accepted format for audio file")
-                print("Try one of these ", config["formats_to_test"]["audio"])
-                sys.exit(1)
-        else:
-            formats_to_test["audio"] = config["formats_to_test"]["audio"]
-
-        # Set image files to use in test
-        if image_file:
-            if image_file in config["formats_to_test"]["image"]:
-                formats_to_test["image"] = [image_file]
-            else:
-                print(f"{image_file} is not accepted format for image file")
-                print("Try one of these ", config["formats_to_test"]["image"])
-                sys.exit(1)
-        else:
-            formats_to_test["image"] = config["formats_to_test"]["image"]
-
-        # Set video files to use in test
-        if video_file:
-            if video_file in config["formats_to_test"]["video"]:
-                formats_to_test["video"] = [video_file]
-            else:
-                print(f"{video_file} is not accepted format for video file")
-                print("Try one of these ", config["formats_to_test"]["video"])
-                sys.exit(1)
-        else:
-            formats_to_test["video"] = config["formats_to_test"]["video"]
+    formats_to_test = get_formats_to_test(audio_file, image_file, video_file)
 
     skip_when_failed = not continue_when_failed
     if specific_endpoints:
@@ -535,10 +590,7 @@ def main(
     global nb_total_tests, nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
 
-    nb_test_skipped = 0
-    nb_test_passed = 0
-    nb_test_failed = 0
-    nb_test_ran = 0
+    nb_test_skipped, nb_test_passed, nb_test_failed, nb_test_ran = 0, 0, 0, 0
     nb_total_tests = get_nb_tests(
         url, header, endpoints, specific_endpoints, specific_models, default_models
     )

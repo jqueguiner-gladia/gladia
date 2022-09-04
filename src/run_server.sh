@@ -26,6 +26,7 @@ then
     --worker-class uvicorn.workers.UvicornWorker \
     --timeout ${API_SERVER_TIMEOUT}
     --preload
+
 elif [ $MODE = "server" ]
 then
   micromamba run -n server gunicorn main:app \

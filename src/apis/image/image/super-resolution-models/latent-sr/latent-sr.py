@@ -5,15 +5,21 @@ import torchvision
 from einops import rearrange, repeat
 from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
-from ldm.models.diffusion.ddim import DDIMSampler
-from ldm.util import instantiate_from_config, ismap
-from notebook_helpers import instantiate_from_config, load_model_from_config, run
-from numpy import asarray
+from notebook_helpers import load_model_from_config, run
 from omegaconf import OmegaConf
 from PIL import Image
 
 
 def predict(image: Image, steps: int = 10) -> Image:
+    """
+    Returns the image with a resolution twice the original one.
+
+    Args:
+        image (Image): Image to upscale
+        steps (int): Number of steps to upscale the image
+    Returns:
+        Image: Upscaled image
+    """
     # Adapted from https://colab.research.google.com/drive/1xqzUi2iXQXDqXBHQGP9Mqt2YrYW6cx-J?usp=sharing#scrollTo=frCfhXDtegZj
 
     ckpt_url = {

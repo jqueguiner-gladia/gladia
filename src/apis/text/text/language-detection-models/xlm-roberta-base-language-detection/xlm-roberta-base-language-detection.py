@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Dict, Union
 
 import numpy as np
 from gladia_api_utils.triton_helper import (
@@ -12,12 +12,15 @@ def softmax(x):
     return np.exp(x) / np.sum(np.exp(x), axis=0)
 
 
-def predict(text: str) -> List[Dict[str, Any]]:
+def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     From a given text, return a json scoring the probability of the given text to be of a certain language
 
-    :param text: text to analyze
-    :return: json scoring the chance of the text to be in each language
+    Args:
+        text (str): The text to detect the language of
+
+    Returns:
+        Dict[str, Union[str, Dict[str, float]]]: The language of the text and the probability of the text to be of that language
     """
 
     MODEL_NAME = "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_inference"

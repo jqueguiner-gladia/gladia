@@ -6,10 +6,19 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 def predict(text: str) -> Dict[str, str]:
     """
-    From a given sentence, return the emotion detected in it
+    From a given sentence, return the emotion detected in it with the following possible emotions:
+        - sadness
+        - joy
+        - love
+        - anger
+        - fear
+        - surprise
 
-    :param text: sentence to analyse emotion from
-    :return: emotion contained in the sentence
+    Args:
+        text (str): The sentence to analyze.
+
+    Returns:
+        Dict[str, str]: The detected emotion (sadness, joy, love, anger, fear, surprise).
     """
 
     model_name = "mrm8488/t5-base-finetuned-emotion"

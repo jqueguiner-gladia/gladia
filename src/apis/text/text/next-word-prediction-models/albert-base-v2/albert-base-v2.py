@@ -1,21 +1,22 @@
 from typing import Dict, Union
 
+from happytransformer import HappyWordPrediction
 
-def predict(sentence: str) -> Dict[str, Union[str, Dict[str, float]]]:
+
+def predict(sentence: str, top_k: int = 3) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     For a given sentence, predict the next word.
 
-    :param sentence: sentence to continue
-    :return: word predicted and score
+    Args:
+        sentence (str): The sentence to predict the next word from.
+
+    Returns:
+        Dict[str, Union[str, Dict[str, float]]]: The next word predicted and score from the sentence.
     """
-
-    from happytransformer import HappyWordPrediction
-
-    NB_RESULTS = 25
 
     happy_wp = HappyWordPrediction(model_type="ALBERT", model_name="albert-base-v2")
 
-    result = happy_wp.predict_mask(f"{sentence} [MASK]", top_k=NB_RESULTS)
+    result = happy_wp.predict_mask(f"{sentence} [MASK]", top_k=top_k)
 
     prediction_raw = {word.token: word.score for word in result}
     prediction = result[0].token

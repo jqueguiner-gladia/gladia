@@ -11,14 +11,17 @@ def predict(image: bytes, source_language: str) -> Dict[str, str]:
     """
     Call the tesseract ocr and return the text detected in the image
 
-    :param image: image to provide to the ocr
-    :param source_language: [UNUSED] language of the text to be searched
-    :return: characters found in the image
+    Args:
+        image (bytes): The image to be processed
+        source_language (str): The language of the image (unused)
+
+    Returns:
+        Dict[str, str]: The text detected in the image by the ocr
     """
 
     del source_language
 
-    image = _open(image)
+    image = _open(image).convert("RGB")
 
     np_image = np.array(image)
 

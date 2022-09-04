@@ -13,8 +13,11 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     Detect hate from a given text
 
-    :param text: text to analyze
-    :return: normal, hate-speech or offensive regarding the level of hate in the text
+    Args:
+        text (str): The text to be detect hate in
+
+    Returns:
+        Dict[str, Union[str, Dict[str, float]]]: The level of hate in the text (normal, hate-speech, offensive)
     """
 
     LABELS = ["hate-speech", "normal", "offensive"]

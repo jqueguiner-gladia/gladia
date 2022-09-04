@@ -9,9 +9,12 @@ def predict(image: bytes, source_language: str) -> Dict[str, Union[str, List[str
     """
     Call the EasyOcr package and return the text detected in the image by the ocr
 
-    :param image: image to provide to the ocr
-    :param source_language: language of the text to be searched
-    :return: characters found in the image
+    Args:
+        image (bytes): The image to be processed
+        source_language (str): The language of the image
+
+    Returns:
+        Dict[str, Union[str, List[str]]]: The text detected in the image by the ocr
     """
 
     image = _open(image)
