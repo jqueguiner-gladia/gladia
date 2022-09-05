@@ -3,7 +3,11 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: Text to correct.
+      prediction_raw: Text to correct.
+  examples: {}
   format: ''
   latency: ''
 huggingface:

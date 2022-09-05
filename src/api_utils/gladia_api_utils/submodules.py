@@ -163,12 +163,13 @@ def get_task_metadata(rel_path):
 
 
 def get_metadata(rel_path, file_name, fallback_file_name):
+    print('model_relpath', rel_path)
     file_path = os.path.join(rel_path, file_name)
     if not Path(file_path).exists():
         file_path = os.path.join("apis", fallback_file_name)
     with open(file_path, "r") as metadata_file:
-        task_metadata = yaml.safe_load(metadata_file)
-    return task_metadata
+        metadata = yaml.safe_load(metadata_file)
+    return metadata
 
 
 def exec_in_subprocess(

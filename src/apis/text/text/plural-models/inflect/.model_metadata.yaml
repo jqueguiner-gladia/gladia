@@ -3,7 +3,11 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: cats
+      prediction_raw: cats
+  examples: {}
   format: ''
   latency: ''
 huggingface:

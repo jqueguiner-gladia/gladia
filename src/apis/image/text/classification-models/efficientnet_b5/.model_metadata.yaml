@@ -3,7 +3,12 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: lakeside
+      prediction_raw:
+        lakeside: 0.2900703251361847
+  examples: {}
   format: ''
   latency: ''
 huggingface:

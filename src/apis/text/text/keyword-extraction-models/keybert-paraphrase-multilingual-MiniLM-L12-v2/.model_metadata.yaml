@@ -3,7 +3,21 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: crown
+      prediction_raw:
+        created: 0.2019
+        crown: 0.4796
+        drama: 0.2053
+        elizabeth: 0.3004
+        netflix: 0.4155
+        produced: 0.2005
+        queen: 0.4424
+        reign: 0.2205
+        streaming: 0.2295
+        television: 0.3308
+  examples: {}
   format: ''
   latency: ''
 huggingface:

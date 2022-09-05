@@ -7,6 +7,7 @@ import tempfile
 from logging import getLogger
 from pathlib import Path
 from uuid import uuid4
+from typing import List
 
 import gdown
 import magic
@@ -544,3 +545,16 @@ def generate_random_filename(root_path: str, extension: str) -> str:
     full_path = os.path.join(root_path, filename)
 
     return full_path, filename
+
+
+def update_or_create_task_input_examples(task: str, examples_path: List[str]):
+    from gladia_api_utils.OvhObjectStorageHelper import OVH_file_manager
+    file_manager = OVH_file_manager()
+    prefix_old_files = f"examples{task}"
+    old_files = file_manager.get_objects(prefix_old_files)
+    for file in old_files:
+        file_manager.delete_file(file)
+    for file_path in examples_path:
+        file_name = os.path.basename(file_path)
+        ovh_path = f"examples{task}{file_name}"
+        file_manager.upload_file(file_path, ovh_path)

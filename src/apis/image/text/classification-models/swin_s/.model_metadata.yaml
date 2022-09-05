@@ -3,7 +3,12 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: tripod
+      prediction_raw:
+        tripod: 0.37666431069374084
+  examples: {}
   format: ''
   latency: ''
 huggingface:

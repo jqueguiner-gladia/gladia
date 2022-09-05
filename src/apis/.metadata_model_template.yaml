@@ -3,7 +3,8 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example: {}
+  examples: {}
   format: ''
   latency: ''
 huggingface:

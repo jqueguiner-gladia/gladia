@@ -3,7 +3,12 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: volcano
+      prediction_raw:
+        volcano: 0.30405619740486145
+  examples: {}
   format: ''
   latency: ''
 huggingface:

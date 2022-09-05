@@ -3,7 +3,11 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    from_png: http://files.gladia.io/output/image/image/uncolorization/v1/example/from_landscape-pics-wallpapers_png.png
+  examples:
+    from_jpg: http://files.gladia.io/output/image/image/uncolorization/v1/examples/from_landscape-pics-wallpapers_jpg.png
+    from_png: http://files.gladia.io/output/image/image/uncolorization/v1/examples/from_landscape-pics-wallpapers_png.png
   format: ''
   latency: ''
 huggingface:

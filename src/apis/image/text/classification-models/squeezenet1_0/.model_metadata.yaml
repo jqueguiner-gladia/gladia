@@ -3,7 +3,12 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: snowmobile
+      prediction_raw:
+        snowmobile: 0.09909936785697937
+  examples: {}
   format: ''
   latency: ''
 huggingface:

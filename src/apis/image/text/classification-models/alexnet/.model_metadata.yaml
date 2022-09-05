@@ -3,7 +3,12 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: oystercatcher
+      prediction_raw:
+        oystercatcher: 0.20533981919288635
+  examples: {}
   format: ''
   latency: ''
 huggingface:

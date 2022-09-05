@@ -3,7 +3,9 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output: http://files.gladia.io/output/text/image/image-generation/dream-studio/example/output.png
+  examples: {}
   format: ''
   latency: ''
 huggingface:
