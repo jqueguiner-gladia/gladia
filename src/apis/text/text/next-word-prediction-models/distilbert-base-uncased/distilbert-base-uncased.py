@@ -1,6 +1,25 @@
-from typing import Dict, Union
+from typing import Dict, Tuple, Union, Optional, List
+from transformers import FillMaskPipeline, AutoModelForMaskedLM, DistilBertTokenizerFast
 
-from happytransformer import HappyWordPrediction
+def predict_mask(pipeline, text: str, targets: Optional[List[str]] = None, top_k: int = 1) -> List[Tuple[str, float]]:
+    """
+    Predict [MASK] tokens in a string.
+    targets limit possible guesses if supplied.
+    top_k describes number of targets to return*
+    *top_k does not apply if targets is supplied
+    """
+
+    answers = pipeline(
+        text,
+        targets=targets, top_k=top_k
+    )
+
+    return [
+        (
+            answer["token_str"],
+            answer["score"]
+        ) for answer in answers
+    ]
 
 
 def predict(sentence: str, top_k: int = 3) -> Dict[str, Union[str, Dict[str, float]]]:
@@ -14,13 +33,16 @@ def predict(sentence: str, top_k: int = 3) -> Dict[str, Union[str, Dict[str, flo
         Dict[str, Union[str, Dict[str, float]]]: The next word predicted and score from the sentence.
     """
 
-    happy_wp = HappyWordPrediction("DISTILBERT", "distilbert-base-uncased")
+    model_checkpoint = "distilbert-base-uncased"
 
-    result = happy_wp.predict_mask(f"{sentence} [MASK]", top_k=top_k)
+    pipeline = FillMaskPipeline(
+        model=AutoModelForMaskedLM.from_pretrained(model_checkpoint),
+        tokenizer=DistilBertTokenizerFast.from_pretrained(model_checkpoint),
+    )
 
-    prediction_raw = {word.token: word.score for word in result}
-    prediction = result[0].token
+    predictions = predict_mask(pipeline, f"{sentence} [MASK]", top_k=top_k)
 
-    del happy_wp
-
-    return {"prediction": prediction, "prediction_raw": prediction_raw}
+    return {
+        "prediction": predictions[0][0],
+        "prediction_raw": predictions,
+    }
