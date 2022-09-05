@@ -1,5 +1,6 @@
 from typing import Dict, Union
-from transformers import FillMaskPipeline, AutoModelForMaskedLM, DistilBertTokenizerFast
+
+from transformers import AutoModelForMaskedLM, DistilBertTokenizerFast, FillMaskPipeline
 
 
 def predict(sentence: str, top_k: int = 3) -> Dict[str, Union[str, Dict[str, float]]]:
@@ -25,9 +26,6 @@ def predict(sentence: str, top_k: int = 3) -> Dict[str, Union[str, Dict[str, flo
     return {
         "prediction": answers[0]["token_str"],
         "prediction_raw": [
-            (
-                answer["token_str"],
-                answer["score"]
-            ) for answer in answers
+            (answer["token_str"], answer["score"]) for answer in answers
         ],
     }
