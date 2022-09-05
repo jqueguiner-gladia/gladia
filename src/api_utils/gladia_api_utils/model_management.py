@@ -1,7 +1,5 @@
 import os
-import shutil
 import sys
-import tempfile
 import threading
 from logging import getLogger
 from pathlib import Path
@@ -9,7 +7,13 @@ from urllib.parse import urlparse
 
 from git import Repo
 
-from .file_management import download_file, is_uncompressable, uncompress, get_tmp_filename, delete_directory
+from .file_management import (
+    delete_directory,
+    download_file,
+    get_tmp_filename,
+    is_uncompressable,
+    uncompress,
+)
 
 logger = getLogger(__name__)
 
@@ -39,7 +43,7 @@ def download_model(
     """
 
     namespace = sys._getframe(1).f_globals
-    
+
     rel_path = namespace["__file__"]
 
     # check env to see if mutualized_storage had been set
@@ -83,13 +87,22 @@ def download_model(
         uncompress_tmp_dirpath = get_tmp_filename()
 
         logger.debug(f"Temporary directory for download: {dl_tmp_dirpath}")
-        
-        downloaded_full_path = download_file(url=url, file_full_path=dl_tmp_dirpath, force_create_dir=True, force_redownload=False)
+
+        downloaded_full_path = download_file(
+            url=url,
+            file_full_path=dl_tmp_dirpath,
+            force_create_dir=True,
+            force_redownload=False,
+        )
         logger.debug(f"Downloaded model to {downloaded_full_path}")
         # if the model is uncompressable uncompress it
         if uncompress_after_download and is_uncompressable(str(downloaded_full_path)):
             logger.debug("Uncompressing {downloaded_full_path} to {output_path}")
-            uncompress(path=downloaded_full_path, destination=uncompress_tmp_dirpath, delete_after_uncompress=True)
+            uncompress(
+                path=downloaded_full_path,
+                destination=uncompress_tmp_dirpath,
+                delete_after_uncompress=True,
+            )
             os.system(f"mv {uncompress_tmp_dirpath}/* {output_path}")
         else:
             os.system(f"mv {dl_tmp_dirpath}/* {output_path}")
