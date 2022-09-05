@@ -34,6 +34,4 @@ inputs = [
 
 output = {"name": "summarized_text", "type": "string", "example": "summarized_text"}
 
-TaskRouter(
-    router=router, input=inputs, output=output, default_model="all-MiniLM-L6-v2"
-)
+TaskRouter(router=router, input=inputs, output=output, default_model="all-MiniLM-L6-v2")
