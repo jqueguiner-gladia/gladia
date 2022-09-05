@@ -220,6 +220,12 @@ jobs:
             echo "Error : unexpected GPU ID"
             exit 1
           fi
+          
+      - name: Set log debug Level
+        id: set-log-debug-lvl
+        working-directory: ./src
+        run: >-
+          sed -i 's/"log_level": "info",/"log_level": "debug",/' config.json
 
       # Start the container and link the /app
       # to the current directory

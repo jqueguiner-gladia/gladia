@@ -1,5 +1,6 @@
-from typing import Dict, Tuple, Union, Optional, List
+from typing import Dict, Union
 from transformers import FillMaskPipeline, AutoModelForMaskedLM, DistilBertTokenizerFast
+
 
 def predict(sentence: str, top_k: int = 3) -> Dict[str, Union[str, Dict[str, float]]]:
     """
