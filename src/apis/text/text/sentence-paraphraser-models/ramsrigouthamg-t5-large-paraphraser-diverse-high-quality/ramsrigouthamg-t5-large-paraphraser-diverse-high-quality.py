@@ -5,12 +5,13 @@ import truecase
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
-def predict(context: str) -> Dict[str, str]:
+def predict(context: str, top_k: int = 1) -> Dict[str, str]:
     """
     Generates paraphrases of the given sentence
 
     Args:
         context (str): The context to paraphrase
+        top_k (int): Number of sequences to return
 
     Returns:
         Dict[str, str]: The paraphrases of the given sentence
@@ -42,7 +43,7 @@ def predict(context: str) -> Dict[str, str]:
         early_stopping=True,
         num_beams=15,
         num_beam_groups=5,
-        num_return_sequences=5,
+        num_return_sequences=top_k,
         diversity_penalty=0.70,
     )
 
