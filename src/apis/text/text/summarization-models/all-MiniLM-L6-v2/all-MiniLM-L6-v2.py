@@ -7,34 +7,6 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForTokenClassification, AutoTokenizer, pipeline
 
 
-def get_sentence_embedding_model():
-    """
-    Returns a sentence embedding model
-
-    Returns:
-      sentence_embedding_model (SentenceTransformer): sentence embedding model
-    """
-    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-
-
-def get_transformer_pipeline():
-    """
-    Returns a transformer pipeline
-
-    Returns:
-      transformer_pipeline (pipeline): transformer pipeline
-    """
-
-    tokenizer = AutoTokenizer.from_pretrained(
-        "xlm-roberta-large-finetuned-conll03-english"
-    )
-    model = AutoModelForTokenClassification.from_pretrained(
-        "xlm-roberta-large-finetuned-conll03-english"
-    )
-
-    return pipeline("ner", model=model, tokenizer=tokenizer, grouped_entities=True)
-
-
 def get_summarizer_model():
     """
     Returns a summarizer model
