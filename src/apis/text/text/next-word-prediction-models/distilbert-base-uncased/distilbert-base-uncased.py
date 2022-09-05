@@ -19,7 +19,7 @@ def predict(sentence: str, top_k: int = 3) -> Dict[str, Union[str, Dict[str, flo
         tokenizer=DistilBertTokenizerFast.from_pretrained(model_checkpoint),
     )
 
-    answers = pipeline(f"{sentence} [MASK]")
+    answers = pipeline(f"{sentence} [MASK]", top_k=top_k)
 
     return {
         "prediction": answers[0]["token_str"],
