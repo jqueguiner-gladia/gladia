@@ -33,7 +33,7 @@ def __init_config() -> dict:
     config_file = os.getenv("API_CONFIG_FILE", "config.json")
 
     if os.path.isfile(config_file):
-        with open("config.json", "r") as f:  # FIXME: config_file is unused
+        with open(config_file, "r") as f:
             return json.load(f)
 
 
