@@ -1,7 +1,8 @@
 from typing import Dict
 
-import torch
 import truecase
+from torch import device as get_device
+from torch.cuda import is_available as is_cuda_available
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
@@ -17,9 +18,9 @@ def predict(context: str, top_k: int = 1) -> Dict[str, str]:
         Dict[str, str]: The paraphrases of the given sentence
     """
 
-    model_name = "ramsrigouthamg/t5-large-paraphraser-diverse-high-quality"
+    model_name = "ramsrigouthamg/t5_sentence_paraphraser"
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = get_device("cuda" if is_cuda_available() else "cpu")
 
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
     model.eval()
@@ -39,7 +40,7 @@ def predict(context: str, top_k: int = 1) -> Dict[str, str]:
     beam_outputs = model.generate(
         input_ids=input_ids,
         attention_mask=attention_mask,
-        max_length=128,
+        max_new_tokens=128,
         early_stopping=True,
         num_beams=15,
         num_beam_groups=5,
@@ -54,6 +55,7 @@ def predict(context: str, top_k: int = 1) -> Dict[str, str]:
             beam_output, skip_special_tokens=True, clean_up_tokenization_spaces=True
         )
         output.append(sent.replace("paraphrasedoutput: ", ""))
+
     del tokenizer
     del model
     del encoding
