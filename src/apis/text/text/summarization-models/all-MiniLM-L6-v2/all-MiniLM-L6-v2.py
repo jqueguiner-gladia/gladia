@@ -89,7 +89,7 @@ def generate_abstractive_summary(
             truncation=True,
             **kwargs
         )
-    elif type == "greedy":
+    elif type in ["greedy", "beam"]:
         text = summarization_model(
             text,
             min_length=min_len,
@@ -108,15 +108,7 @@ def generate_abstractive_summary(
             truncation=True,
             **kwargs
         )
-    elif type == "beam":
-        text = summarization_model(
-            text,
-            min_length=min_len,
-            max_length=max_len,
-            clean_up_tokenization_spaces=True,
-            truncation=True,
-            **kwargs
-        )
+
     summary = text[0]["summary_text"].replace("<n>", " ")
 
     return summary
