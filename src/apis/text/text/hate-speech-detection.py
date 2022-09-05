@@ -18,5 +18,5 @@ TaskRouter(
     router=router,
     input=inputs,
     output=output,
-    default_model="Hate-speech-CNERG-dehatebert-mono-english",
+    default_model="byt5-base-tweet-hate-detection",
 )
