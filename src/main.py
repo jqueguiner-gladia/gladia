@@ -4,20 +4,20 @@ import json
 import logging
 import os
 import pkgutil
+import sys
+from distutils.command.clean import clean
 from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
 from os.path import basename, normpath
 from types import ModuleType
 from typing import List
-import sys
-from distutils.command.clean import clean
-from gladia_api_utils.submodules import to_task_name
 
 import nltk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
 from fastapi_utils.timing import add_timing_middleware
+from gladia_api_utils.submodules import to_task_name
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.responses import RedirectResponse
 
@@ -215,6 +215,7 @@ def __clean_package_import(module_path: str) -> ModuleType:
     if clean_key not in sys.modules:
         sys.modules[clean_key] = sys.modules[module_path]
     return module
+
 
 def __module_is_an_input_type(split_module_path: list) -> bool:
     """
