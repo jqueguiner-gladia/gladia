@@ -1,27 +1,6 @@
 from typing import Dict, Tuple, Union, Optional, List
 from transformers import FillMaskPipeline, AutoModelForMaskedLM, DistilBertTokenizerFast
 
-def predict_mask(pipeline, text: str, targets: Optional[List[str]] = None, top_k: int = 1) -> List[Tuple[str, float]]:
-    """
-    Predict [MASK] tokens in a string.
-    targets limit possible guesses if supplied.
-    top_k describes number of targets to return*
-    *top_k does not apply if targets is supplied
-    """
-
-    answers = pipeline(
-        text,
-        targets=targets, top_k=top_k
-    )
-
-    return [
-        (
-            answer["token_str"],
-            answer["score"]
-        ) for answer in answers
-    ]
-
-
 def predict(sentence: str, top_k: int = 3) -> Dict[str, Union[str, Dict[str, float]]]:
     """
     For a given sentence, predict the next word.
@@ -40,9 +19,14 @@ def predict(sentence: str, top_k: int = 3) -> Dict[str, Union[str, Dict[str, flo
         tokenizer=DistilBertTokenizerFast.from_pretrained(model_checkpoint),
     )
 
-    predictions = predict_mask(pipeline, f"{sentence} [MASK]", top_k=top_k)
+    answers = pipeline(f"{sentence} [MASK]")
 
     return {
-        "prediction": predictions[0][0],
-        "prediction_raw": predictions,
+        "prediction": answers[0]["token_str"],
+        "prediction_raw": [
+            (
+                answer["token_str"],
+                answer["score"]
+            ) for answer in answers
+        ],
     }
