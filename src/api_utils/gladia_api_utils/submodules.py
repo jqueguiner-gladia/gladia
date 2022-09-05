@@ -18,7 +18,7 @@ import yaml
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, create_model
-from Typing import List
+from typing import List
 
 from .casting import cast_response
 from .file_management import is_binary_file, is_valid_path, write_tmp_file
