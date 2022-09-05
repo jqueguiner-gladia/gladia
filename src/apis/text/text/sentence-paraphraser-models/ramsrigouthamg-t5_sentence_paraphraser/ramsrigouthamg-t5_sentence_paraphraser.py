@@ -1,6 +1,6 @@
-import truecase
-
 from typing import Dict
+
+import truecase
 from torch import device as get_device
 from torch.cuda import is_available as is_cuda_available
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
@@ -62,5 +62,6 @@ def predict(context: str, top_k: int = 1) -> Dict[str, str]:
     del beam_outputs
 
     return {"prediction": output[0], "prediction_raw": output}
+
 
 print(predict("I like to eat potato while driving home."))
