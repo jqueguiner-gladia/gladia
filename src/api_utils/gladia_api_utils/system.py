@@ -76,7 +76,7 @@ def path_to_absolute(path: str) -> str:
     return path
 
 
-def run(*argv) -> str:
+def run(*argv) -> subprocess.CompletedProcess:
     """
     Run a command on the system.
 

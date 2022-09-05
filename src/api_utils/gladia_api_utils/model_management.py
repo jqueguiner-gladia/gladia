@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 from git import Repo
 
-from .file_management import download_file, is_uncompressable, uncompress
+from .file_management import download_file, is_uncompressable, uncompress, get_tmp_filename, delete_directory
 
 logger = getLogger(__name__)
 
@@ -39,7 +39,7 @@ def download_model(
     """
 
     namespace = sys._getframe(1).f_globals
-    cwd = os.getcwd()
+    
     rel_path = namespace["__file__"]
 
     # check env to see if mutualized_storage had been set
@@ -75,27 +75,28 @@ def download_model(
         logger.debug(f"Downloading {url}")
 
         # if the output_path is not an existing directory create it
-        if not os.path.isdir(Path(output_path)):
-            os.makedirs(output_path)
+        if not os.path.exists(Path(output_path)):
+            os.makedirs(output_path, exist_ok=True)
 
         # create a temporary folder to download the model to
-        dl_tmp_dirpath = tempfile.mkdtemp()
-        uncompress_tmp_dirpath = tempfile.mkdtemp()
+        dl_tmp_dirpath = get_tmp_filename()
+        uncompress_tmp_dirpath = get_tmp_filename()
 
-        # download the model to the temporary folder
-        downloaded_full_path = download_file(url, dl_tmp_dirpath)
-
+        logger.debug(f"Temporary directory for download: {dl_tmp_dirpath}")
+        
+        downloaded_full_path = download_file(url=url, file_full_path=dl_tmp_dirpath, force_create_dir=True, force_redownload=False)
+        logger.debug(f"Downloaded model to {downloaded_full_path}")
         # if the model is uncompressable uncompress it
-        if uncompress_after_download and is_uncompressable(downloaded_full_path):
+        if uncompress_after_download and is_uncompressable(str(downloaded_full_path)):
             logger.debug("Uncompressing {downloaded_full_path} to {output_path}")
-            uncompress(path=downloaded_full_path, destination=uncompress_tmp_dirpath)
+            uncompress(path=downloaded_full_path, destination=uncompress_tmp_dirpath, delete_after_uncompress=True)
             os.system(f"mv {uncompress_tmp_dirpath}/* {output_path}")
         else:
             os.system(f"mv {dl_tmp_dirpath}/* {output_path}")
 
         # clean up temporary folder
-        shutil.rmtree(dl_tmp_dirpath)
-        shutil.rmtree(uncompress_tmp_dirpath)
+        delete_directory(dl_tmp_dirpath)
+        delete_directory(uncompress_tmp_dirpath)
 
     return output_path
 

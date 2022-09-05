@@ -1,6 +1,7 @@
 import io
 import os
 import random
+import re
 import string
 import sys
 import tempfile
@@ -50,6 +51,16 @@ def is_valid_path(string: str) -> bool:
         return True
     else:
         return False
+
+
+def get_tmp_filename() -> str:
+    """
+    Get a random temporary fullpath.
+
+    Returns:
+        str: The random filepath.
+    """
+    return os.path.join(tempfile._get_default_tempdir(), next(tempfile._get_candidate_names()))
 
 
 def write_tmp_file(content: Any) -> str:
@@ -149,7 +160,7 @@ def download_file(
         else:
             write_url_content_to_file(file_full_path, url)
 
-    elif file_full_path.exists() and force_redownload:
+    elif force_redownload:
         if is_gdrivefile:
             gdown.download(url, file_full_path, quiet=False)
         else:
