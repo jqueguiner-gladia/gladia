@@ -1,21 +1,27 @@
 import importlib
+import importlib.util
 import json
 import logging
 import os
 import pkgutil
-import sys
-from distutils.command.clean import clean
 from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
+from os.path import basename, normpath
 from types import ModuleType
+from typing import List
+import sys
+from distutils.command.clean import clean
+from gladia_api_utils.submodules import to_task_name
 
+import nltk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
 from fastapi_utils.timing import add_timing_middleware
-from gladia_api_utils.submodules import to_task_name
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.responses import RedirectResponse
+
+apis_folder_name = "apis"
 
 import apis
 
@@ -24,8 +30,10 @@ def __init_config() -> dict:
     """
     Load config file and return it as a dict.
     Default path is `config.json`, use API_CONFIG_FILE varenv to change it.
+
     Args:
         None
+
     Returns:
         dict: config dict
     """
@@ -40,8 +48,10 @@ def __init_config() -> dict:
 def __init_logging(api_config: dict) -> logging.Logger:
     """
     Create a logging.Logger with it format set to config["logs"]["log_format"] f exist, else default.
+
     Args:
-        api_config (dict): api config dict
+        api_config (dict): config dict
+
     Returns:
         logging.Logger: logger
     """
@@ -106,10 +116,12 @@ def __init_logging(api_config: dict) -> logging.Logger:
 def __init_prometheus_instrumentator(instrumentator_config: dict) -> Instrumentator:
     """
     Initialize the prometheus_fastapi_instrumentator.Instrumentator using api config dict
+
     Args:
-        instrumentator_config (dict): instrumentator config
+        instrumentator_config (dict): config dict
+
     Returns:
-        Instrumentator: initialized prometheus instrumentator
+        Instrumentator: Initialized Instrumentator
     """
 
     return Instrumentator(
@@ -134,9 +146,11 @@ def __init_prometheus_instrumentator(instrumentator_config: dict) -> Instrumenta
 def __set_app_middlewares(api_app: FastAPI, api_config: dict) -> None:
     """
     Set up the api middlewares
+
     Args:
         api_app (FastAPI): FastAPI representing the API
-        api_config (dict): config telling which middlewares to use
+        api_config (dict): config dict telling which middlewares to use
+
     Returns:
         None
     """
@@ -151,6 +165,36 @@ def __set_app_middlewares(api_app: FastAPI, api_config: dict) -> None:
         allow_methods=api_config["CORS"]["allow_methods"],
         allow_headers=api_config["CORS"]["allow_headers"],
     )
+
+
+def __add_router(module: ModuleType, module_path: str) -> None:
+    """
+    Add the module router to the API app
+
+    Args:
+        module (ModuleType): module to add to the API app
+        module_path (str): module path
+
+    Returns:
+        None
+    """
+
+    # remove the "apis" part of the path
+    module_input, module_output, module_task = module_path.replace(
+        apis_folder_name, ""
+    )[1:].split(".")
+
+    module_task = to_task_name(module_task).upper()
+    module_config = config["active_tasks"][module_input][module_output]
+
+    active_task_list = list(map(lambda each: to_task_name(each).upper(), module_config))
+
+    if "NONE" not in active_task_list and (
+        module_task in active_task_list or "*" in module_config
+    ):
+        # remove the "apis" part of the path
+        module_prefix = module_path.replace(".", "/").replace(apis_folder_name, "")
+        app.include_router(module.router, prefix=module_prefix)
 
 
 def __clean_package_import(module_path: str) -> ModuleType:
@@ -172,39 +216,14 @@ def __clean_package_import(module_path: str) -> ModuleType:
         sys.modules[clean_key] = sys.modules[module_path]
     return module
 
-
-def __add_router(module: str = "module", module_path: str = ".") -> None:
-    """
-    Add the module router to the API app
-    Args:
-        module(str): module to get the router from (default: "module")
-        module_path(str): module path to get the router from (default: ".")
-    Returns:
-        None
-    """
-
-    module_input, module_output, module_task = module_path.replace("apis", "")[
-        1:
-    ].split(".")
-
-    module_task = to_task_name(module_task).upper()
-    module_config = config["active_tasks"][module_input][module_output]
-
-    active_task_list = list(map(lambda each: to_task_name(each).upper(), module_config))
-
-    if "NONE" not in active_task_list and (
-        module_task in active_task_list or "*" in module_config
-    ):
-        module_prefix = module_path.replace(".", "/").replace("apis", "")
-        app.include_router(module.router, prefix=module_prefix)
-
-
 def __module_is_an_input_type(split_module_path: list) -> bool:
     """
     Check if the parsed module_path is an input type (Image/Audio/Video/Text)
     (meaning length is 1)
+
     Args:
-        split_module_path (list): splited module path
+        split_module_path (list): module path split by "."
+
     Returns:
         bool: True if the module is an input type, False otherwise
     """
@@ -213,11 +232,13 @@ def __module_is_an_input_type(split_module_path: list) -> bool:
 
 def __module_is_a_modality(split_module_path: list, module_config: dict) -> bool:
     """
-    Check if the parsed module_path is a modality (meaning length is 2)
-    and if the modality is active for associated tasks in the config
+    Check if the module is a modality could be an input or output type
+    with values like image, text, etc.
+
     Args:
-        split_module_path (list): splited module path
-        module_config (dict): module config
+        split_module_path (list): module path split by "."
+        module_config (dict): module config dict
+
     Returns:
         bool: True if the module is a modality, False otherwise
     """
@@ -228,13 +249,14 @@ def __module_is_a_modality(split_module_path: list, module_config: dict) -> bool
     )
 
 
-def __module_is_a_task(split_module_path: list, module_config: dict) -> bool:
+def __module_is_a_task(split_module_path: List[str], module_config: dict) -> bool:
     """
-    Check if the parsed module_path is a task (meaning length is 3)
-    and if the task is active in the config
+    Check if the module is a task with values like classification, detection, etc.
+
     Args:
-        split_module_path (list): splited module path
-        module_config (dict): module config
+        split_module_path (list): module path split by "."
+        module_config (dict): module config dict
+
     Returns:
         bool: True if the module is a task, False otherwise
     """
@@ -245,11 +267,13 @@ def __module_is_a_task(split_module_path: list, module_config: dict) -> bool:
     )
 
 
-def __module_is_a_model(split_module_path: list) -> bool:
+def __module_is_a_model(split_module_path: List[str]) -> bool:
     """
-    Check if the parsed module_path is a model (meaning length is 4)
+    Check if the module is a model with values like inception, resnet, etc.
+
     Args:
-        split_module_path (list): splited module path
+        split_module_path (list): module path split by "."
+
     Returns:
         bool: True if the module is a model, False otherwise
     """
@@ -258,9 +282,12 @@ def __module_is_a_model(split_module_path: list) -> bool:
 
 def __module_is_subprocess(module_path: str) -> bool:
     """
-    Check if the parsed module_path is a subprocess (meaning it contains a "env.yaml" file)
+    Check if the module is a subprocess looking for env.yaml file within
+    the module path
+
     Args:
         module_path (str): module path
+
     Returns:
         bool: True if the module is a subprocess, False otherwise
     """
@@ -269,12 +296,14 @@ def __module_is_subprocess(module_path: str) -> bool:
     return os.path.exists(os.path.join(module_path, "env.yaml"))
 
 
-def import_submodules(package: str = "module", recursive: bool = True) -> None:
+def import_submodules(package: ModuleType, recursive: bool = True) -> None:
     """
     Import every task presents in the API by loading each submodule (recursively by default)
+
     Args:
-        package (str): root package to import every submodule from in dot notation (default: "module")
-        recursive (bool): if True, import submodules recursively (default: True)
+        package (module): root package to import every submodule from (usually: apis)
+        recursive (bool): if True, import every submodule recursively (default True)
+
     Returns:
         None
     """
@@ -319,6 +348,8 @@ def import_submodules(package: str = "module", recursive: bool = True) -> None:
         else:
             logger.debug(f"skipping {module_relative_path}")
 
+
+nltk.download("punkt")
 
 os.environ["TRITON_MODELS_PATH"] = os.getenv(
     "TRITON_MODELS_PATH", default="/tmp/gladia/triton"
