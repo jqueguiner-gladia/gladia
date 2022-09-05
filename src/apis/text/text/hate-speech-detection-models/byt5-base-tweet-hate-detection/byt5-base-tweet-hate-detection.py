@@ -1,7 +1,7 @@
-import truecase
-
 from typing import Dict, Union
-from torch import device, cuda
+
+import truecase
+from torch import cuda, device
 from transformers import ByT5Tokenizer, T5ForConditionalGeneration
 
 
@@ -16,9 +16,9 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
         Dict[str, Union[str, Dict[str, float]]]: The level of hate in the text (normal, hate-speech, offensive)
     """
 
-    device_to_use = device('cuda' if cuda.is_available() else 'cpu')
+    device_to_use = device("cuda" if cuda.is_available() else "cpu")
 
-    ckpt = 'Narrativa/byt5-base-tweet-hate-detection'
+    ckpt = "Narrativa/byt5-base-tweet-hate-detection"
 
     tokenizer = ByT5Tokenizer.from_pretrained(ckpt)
     model = T5ForConditionalGeneration.from_pretrained(ckpt).to(device_to_use)
@@ -39,5 +39,5 @@ def predict(text: str) -> Dict[str, Union[str, Dict[str, float]]]:
 
     return {
         "prediction": "normal" if output == "no-hate-speech" else output,
-        "prediction_raw": output
+        "prediction_raw": output,
     }
