@@ -53,10 +53,6 @@ jobs:
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
 
-      - name: Lint Markdown
-        if: ${{ steps.filter.outputs.markdown == 'true' }}
-        run: npx textlint ${{ steps.filter.outputs.markdown_files }}
-
       - name: Set default env vars
         id: set-default-env
         run: |
