@@ -26,8 +26,7 @@ def predict(image: bytes) -> BytesIO:
     locations = face_recognition.face_locations(image)
 
     for location in locations:
-        (startY, endY) = location[0:2]
-        (startX, endX) = location[2:4]
+        (startY, endX, endY, startX) = location
 
         image = blur_image(image, startX, endX, startY, endY, sigma=sigma)
 
