@@ -17,6 +17,10 @@
     "latency": "",
     "format": "",
     "engine": "triton",
+    "params": {
+      "main_model": "named-entity-recognition_dbmdz_bert-large-cased-finetuned-conll03-english_tensorrt_inference",
+      "git": "https://huggingface.co/Gladiaio/named-entity-recognition_dbmdz_bert-large-cased-finetuned-conll03-english_tensorrt"
+    },
     "accelerator": "",
     "dependencies": ["named-entity-recognition_dbmdz_bert-large-cased-finetuned-conll03-english_tensorrt_model"]
   }

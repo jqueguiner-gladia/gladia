@@ -1,16 +1,15 @@
 import os
 import pathlib
 import sys
+from logging import getLogger
+from time import sleep
+from typing import Any, List
+from warnings import warn
+
 import requests
 import tritonclient.http as tritonclient
 
-from typing import Any, List
-from time import sleep
-from warnings import warn
-from logging import getLogger
-
 from .download_active_models import download_triton_model
-
 
 logger = getLogger(__name__)
 
@@ -31,7 +30,6 @@ class TritonClient:
             model_name (str): name of the model to communicate with
             current_path (str, optional): current path (allows to download model if needed). Defaults to "".
         """
-
 
         self.__triton_server_url = kwargs.get(
             "triton_server_url",

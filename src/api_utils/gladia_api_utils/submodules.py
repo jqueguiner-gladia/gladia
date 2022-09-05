@@ -1,22 +1,20 @@
+import importlib
+import json
 import os
 import re
-import sys
-import json
-import requests
-import tempfile
-import importlib
 import subprocess
+import sys
+import tempfile
 import urllib.parse
-
-from time import sleep
 from logging import getLogger
 from pathlib import Path
 from shlex import quote
+from time import sleep, time
 from typing import Optional
 from urllib.request import urlopen
 
 import forge
-from .memory_management.dto import ModelStatus
+import requests
 import starlette
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
@@ -24,6 +22,7 @@ from pydantic import BaseModel, create_model
 
 from .casting import cast_response
 from .file_management import write_tmp_file
+from .memory_management.dto import ModelStatus
 from .responses import AudioResponse, ImageResponse, VideoResponse
 
 versions = list()
@@ -297,23 +296,34 @@ class TaskRouter:
             namespace["__file__"].split("/")[-1],
         )
 
-
         self.task, self.plugin, self.tags = get_module_infos(root_path=rel_path)
         self.versions, self.root_package_path = get_model_versions(rel_path)
 
-        self.__models = {model: model_informations["gladia"] for (model, model_informations) in self.versions.items()}
-        self.__memory_manager_url = f"http://{os.getenv('MEMORY_MANAGER_HOST', 'localhost')}:{os.getenv('MEMORY_MANAGER_PORT', '8010')}/"
+        self.__models = {
+            model: model_informations["gladia"]
+            for (model, model_informations) in self.versions.items()
+        }
+        self.__memory_manager_url = f"http://{os.getenv('MEMORY_MANAGER_HOST', 'localhost')}:{os.getenv('MEMORY_MANAGER_PORT', '8010')}"
 
         for model in self.__models.keys():
-            if self.__models[model]["format"] == "triton":
-                requests.post(
+            if self.__models[model].get("engine", None) == "triton":
+
+                response = requests.post(
                     url=f"{self.__memory_manager_url}/{model}/register/",
-                    data={
-                        "dependencies": self.__models[model].get('dependencies', []),
-                        "type": self.__models[model]['engine'],
-                        "locked_in_memory": self.__models[model].get('locked_in_memory', False),
-                    }
+                    json={
+                        "dependencies": self.__models[model].get("dependencies", []),
+                        "type": self.__models[model]["engine"],
+                        "locked_in_memory": self.__models[model].get(
+                            "locked_in_memory", False
+                        ),
+                        "params": self.__models[model].get("params", {}),
+                    },
                 )
+
+                if response.status_code != 200:
+                    raise RuntimeError(
+                        f"Couldn't register model {model}: {response.status_code}, {response.content}"
+                    )
 
         if not self.__check_if_model_exist(self.root_package_path, default_model):
             return
@@ -414,34 +424,37 @@ class TaskRouter:
             model = kwargs["model"]
             # remove it from kwargs to avoid passing it to the predict function
             del kwargs["model"]
-            
+
             def wait_until_model_is_ready_and_loaded():
 
                 response = requests.get(
                     url=f"{self.__memory_manager_url}/{model}/init/",
                     params={
-                        "type": self.__models[model]['engine'],
-                        "dependencies": self.__models[model]['dependencies'],
-                    }
+                        "type": self.__models[model]["engine"],
+                        "dependencies": self.__models[model].get("dependencies", []),
+                    },
                 )
 
-                while response.json["status"] != ModelStatus.READY:
-
+                while response.json()["status"] != ModelStatus.READY:
                     sleep(0.05)
 
                     # TODO: provide dependencies & model_type
+                    before = time()
+
                     response = requests.get(
                         url=f"{self.__memory_manager_url}/{model}/status/",
                         params={
-                            "type": self.__models[model]['engine'],
-                            "dependencies": self.__models[model]['dependencies'],
-                        }
+                            "type": self.__models[model]["engine"],
+                            "dependencies": self.__models[model].get(
+                                "dependencies", []
+                            ),
+                        },
                     )
+                    print(time() - before)
 
             call_memory_manager = False
-            if self.__models[model]["format"] == "triton":
+            if self.__models[model].get("engine", None) == "triton":
                 call_memory_manager = True
-                print("A" * 100)
                 wait_until_model_is_ready_and_loaded()
 
             module_path = f"{self.root_package_path}/{model}/"
@@ -558,9 +571,9 @@ class TaskRouter:
                     requests.get(
                         url=f"{self.__memory_manager_url}/{model}/free/",
                         params={
-                            "type": self.__models[model]['engine'],
-                            "dependencies": self.__models[model]['dependencies'],
-                        }
+                            "type": self.__models[model]["engine"],
+                            "dependencies": self.__models[model]["dependencies"],
+                        },
                     )
 
                 if isinstance(result, str):

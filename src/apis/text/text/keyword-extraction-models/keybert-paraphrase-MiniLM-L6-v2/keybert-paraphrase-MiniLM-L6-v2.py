@@ -1,4 +1,5 @@
 from typing import Tuple
+
 from gladia_api_utils.triton_helper import (
     TritonClient,
     check_if_model_needs_to_be_preloaded,

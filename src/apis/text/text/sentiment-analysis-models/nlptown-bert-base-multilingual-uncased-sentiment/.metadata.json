@@ -17,6 +17,10 @@
     "latency": "",
     "format": "",
     "engine": "triton",
+    "params": {
+      "main_model": "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_inference",
+      "git": "https://huggingface.co/Gladiaio/sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt"
+    },
     "accelerator": "",
     "dependencies": [
       "sentiment-analyses_nlptown_bert-base-multilingual-uncased-sentiment_tensorrt_model",

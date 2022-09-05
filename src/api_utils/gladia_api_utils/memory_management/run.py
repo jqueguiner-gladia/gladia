@@ -1,11 +1,15 @@
 import uvicorn
-
 from MemoryManager import MemoryManager
-
 
 if __name__ == "__main__":
     uvicorn.run(
-        "MemoryManager:app", host="0.0.0.0", port=8000,
-        reload=False, log_level="debug", debug=True,
-        workers=1, limit_concurrency=1, limit_max_requests=1
+        "MemoryManager:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=False,
+        log_level="debug",
+        debug=True,
+        workers=1,
+        limit_concurrency=1,
+        limit_max_requests=1,
     )

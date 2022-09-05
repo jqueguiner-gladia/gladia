@@ -16,7 +16,12 @@
   "gladia": {
     "latency": "",
     "format": "",
+    "engine": "triton",
     "accelerator": "",
+    "params": {
+      "main_model": "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_inference",
+      "git": "https://huggingface.co/Gladiaio/language-detection_papluca_xlm-roberta-base-language-detection_tensorrt"
+    },
     "locked_in_memory": true,
     "dependencies": [
       "language-detection_papluca_xlm-roberta-base-language-detection_tensorrt_model",

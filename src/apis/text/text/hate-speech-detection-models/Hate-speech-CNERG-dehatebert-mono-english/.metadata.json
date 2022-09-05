@@ -17,6 +17,11 @@
     "latency": "",
     "format": "",
     "engine": "triton",
+    "params": {
+      "main_model": "hate-speech-detection_bert-base-uncased-hatexplain_base_traced",
+      "git": "https://huggingface.co/Thytu/hate-speech-detection_bert-base-uncased-hatexplain_base_traced"
+    },
+    "dependencies": [],
     "accelerator": ""
   }
 }

@@ -17,6 +17,10 @@
     "latency": "",
     "format": "",
     "engine": "triton",
+    "params": {
+      "main_model": "sentence-transformers_all-MiniLM-L6-v2_tensorrt_inference",
+      "git": "https://huggingface.co/Gladiaio/sentence-transformers_all-MiniLM-L6-v2_tensorrt"
+    },
     "accelerator": "",
     "dependencies": [
       "sentence-transformers_all-MiniLM-L6-v2_tensorrt_model",
