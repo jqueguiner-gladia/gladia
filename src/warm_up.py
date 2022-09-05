@@ -4,6 +4,9 @@ from gladia_api_utils.triton_helper import download_active_triton_models
 
 
 def main():
+    """
+    In this script we download the active models from the Triton server.
+    """
     os.environ["TRITON_MODELS_PATH"] = os.getenv(
         "TRITON_MODELS_PATH", default="/tmp/gladia/triton"
     )
