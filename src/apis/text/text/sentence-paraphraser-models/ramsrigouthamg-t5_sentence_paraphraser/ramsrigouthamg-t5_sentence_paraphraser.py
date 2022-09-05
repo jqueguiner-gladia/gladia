@@ -62,6 +62,3 @@ def predict(context: str, top_k: int = 1) -> Dict[str, str]:
     del beam_outputs
 
     return {"prediction": output[0], "prediction_raw": output}
-
-
-print(predict("I like to eat potato while driving home."))
