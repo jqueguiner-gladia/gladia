@@ -5,11 +5,11 @@ inputs = [
     {
         "type": "image",
         "name": "image",
-        "example": "http://files.gladia.io/examples/image/image/background-removal/black-and-white-landscape.png",
+        "example": "http://files.gladia.io/examples/image/image/background-removal/owl2.png",
         "examples": [
-            "http://files.gladia.io/examples/image/image/background-removal/black-and-white-landscape.gif",
-            "http://files.gladia.io/examples/image/image/background-removal/black-and-white-landscape.jpg",
-            "http://files.gladia.io/examples/image/image/background-removal/black-and-white-landscape.png",
+            "http://files.gladia.io/examples/image/image/background-removal/owl2.gif",
+            "http://files.gladia.io/examples/image/image/background-removal/owl2.jpg",
+            "http://files.gladia.io/examples/image/image/background-removal/owl2.png",
         ],
         "placeholder": "Image to remove the background from",
     }

@@ -53,10 +53,6 @@ jobs:
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
 
-      - name: Lint Markdown
-        if: ${{ steps.filter.outputs.markdown == 'true' }}
-        run: npx textlint ${{ steps.filter.outputs.markdown_files }}
-
       - name: Set default env vars
         id: set-default-env
         run: |
@@ -95,6 +91,7 @@ jobs:
           fi
           if [[ "${{ steps.found-env_or_docker-changes.outputs.base_dockerfile }}" == "true" ]]; then
             echo "DOCKER_BASE_BUILD_NEEDED=true" >> $GITHUB_ENV
+            echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
             echo "Gladia-base will be build based on changed files"
           fi
 
@@ -249,7 +246,7 @@ jobs:
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000
           -v /data/volumes/:/tmp/gladia/
           -v $PWD:/app
-          --name jlmagouille-${{ github.event.pull_request.number	}}
+          --name jlmagouille-${{ github.event.pull_request.number }}
           docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }}
 
       - name: Gladia container readiness
