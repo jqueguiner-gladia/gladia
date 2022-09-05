@@ -16,9 +16,9 @@ inputs = [
     {
         "type": "string",
         "name": "source_language",
-        "default": "en",
-        "example": "en",
-        "placeholder": "Source language",
+        "default": "eng",
+        "example": "eng",
+        "placeholder": "ISO 639-2 Source language (3 letters)",
     },
 ]
 
