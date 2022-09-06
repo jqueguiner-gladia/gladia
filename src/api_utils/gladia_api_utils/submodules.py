@@ -190,7 +190,9 @@ def get_model_versions(root_path: str = None) -> dict:
 
 def get_model_metadata(endpoint, model):
     splited_endpoint = endpoint.split("/")
-    endpoint = f"/{splited_endpoint[1]}/{splited_endpoint[2]}/{splited_endpoint[3]}-models/"
+    endpoint = (
+        f"/{splited_endpoint[1]}/{splited_endpoint[2]}/{splited_endpoint[3]}-models/"
+    )
     path = f"apis{endpoint}{model}"
     file_name = ".model_metadata.yaml"
     fallback_file_name = ".metadata_model_template.yaml"
@@ -396,6 +398,7 @@ def get_task_examples(endpoint, models):
         task_examples.update({model: model_examples})
     return task_example, task_examples
 
+
 class TaskRouter:
     """
     The TaskRouter class is used to route tasks to the appropriate model.
@@ -432,7 +435,9 @@ class TaskRouter:
 
         self.task_name, self.plugin, self.tags = get_module_infos(root_path=rel_path)
         self.versions, self.root_package_path = get_model_versions(rel_path)
-        self.endpoint = f"/{rel_path.split('/')[1]}/{rel_path.split('/')[2]}/{self.task_name}/"
+        self.endpoint = (
+            f"/{rel_path.split('/')[1]}/{rel_path.split('/')[2]}/{self.task_name}/"
+        )
 
         if not self.__check_if_model_exist(self.root_package_path, default_model):
             return
@@ -480,8 +485,8 @@ class TaskRouter:
             200: {
                 "content": {response_class.media_type: {"schema": response_schema}},
                 "example": task_example,
-                "examples": task_examples
-                }
+                "examples": task_examples,
+            }
         }
 
         endpoint_parameters_description = dict()
@@ -697,7 +702,9 @@ class TaskRouter:
             return False
 
         elif not os.path.exists(model_dir):
-            logger.warn(f"model_dir ({model_dir}) does not exist, skipping {self.task_name}")
+            logger.warn(
+                f"model_dir ({model_dir}) does not exist, skipping {self.task_name}"
+            )
             return False
 
         elif not os.path.exists(model_file):

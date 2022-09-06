@@ -1,7 +1,9 @@
 import os
+
 import swiftclient
 
-class OVH_file_manager():
+
+class OVH_file_manager:
     def __init__(self):
         self.USERNAME = os.getenv("OVH_OBJECT_STORAGE_USERNAME")
         self.KEY = os.getenv("OVH_OBJECT_STORAGE_KEY")
@@ -17,9 +19,8 @@ class OVH_file_manager():
             ".png": "image/png",
             ".mp3": "audio/mpeg",
             ".wav": "audio/wav",
-            ".m4a": "audio/x-m4a"
+            ".m4a": "audio/x-m4a",
         }
-
 
     def get_connexion(self):
         conn = swiftclient.Connection(
@@ -30,32 +31,29 @@ class OVH_file_manager():
             auth_version=self.AUTH_URL[-1:],
             os_options={
                 "region_name": self.REGION_NAME,
-            }
+            },
         )
         return conn
-
 
     def get_objects(self, prefix="examples/"):
         raw_result = self.conn.get_container(self.CONTAINER_NAME, prefix=prefix)[1]
         list_objects = [res["name"] for res in raw_result]
         return list_objects
 
-
     def upload_file_from_path(self, file_path, ovh_file_name):
         file_extension = os.path.splitext(file_path)[-1]
-        with open(file_path, 'rb') as file:
+        with open(file_path, "rb") as file:
             try:
                 self.conn.put_object(
-                    self.CONTAINER_NAME, 
+                    self.CONTAINER_NAME,
                     ovh_file_name,
                     contents=file.read(),
-                    content_type=self.content_type[file_extension]
+                    content_type=self.content_type[file_extension],
                 )
             except Exception as e:
                 print("error uploading file on ovh:", file_path)
                 print("Error message:", e)
 
-            
     def delete_file(self, ovh_file_name):
         try:
             self.conn.delete_object(self.CONTAINER_NAME, ovh_file_name)
