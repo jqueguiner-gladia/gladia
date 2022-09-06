@@ -2,7 +2,8 @@ import numpy as np
 
 
 def text_to_numpy(text: str) -> np.array:
-    """Cast text into np byte array
+    """
+    Cast text into np byte array
 
     Args:
         text (str): text to cast

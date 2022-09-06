@@ -8,6 +8,15 @@ root_path = os.getcwd()
 
 
 def manage_metadata_files(argv):
+    """
+    Manage metadata files for a model
+
+    Args:
+        argv (list): list of arguments
+
+    Returns:
+        None
+    """
 
     delete = True if "delete" in argv else False
 

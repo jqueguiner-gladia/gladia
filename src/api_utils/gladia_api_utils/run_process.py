@@ -14,7 +14,6 @@ python <PATH_TO_FILE>/run_process.py <module_path> <model> <output_tmp_result> <
     - kwargs : a dictionary encoded with `urllib.parse.quote()`. Keywords argument are needed for the `predict` function (for instance `{'image': '/tmp/tmp342by415'}` is encoded into `%257B%2522image%2522%253A%2520%2522/tmp/tmp342by415%2522%257D`)
 """
 
-
 if __name__ == "__main__":
 
     if len(sys.argv) < 5:

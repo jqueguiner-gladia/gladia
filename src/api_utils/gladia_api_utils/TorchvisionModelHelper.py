@@ -7,7 +7,9 @@ from torchvision.models import quantization as torchvision_quantized_models
 
 
 class TorchvisionModel:
-    """Wrapping class for torchvision.models"""
+    """
+    Wrapping class for torchvision.models
+    """
 
     def __init__(
         self,
@@ -16,12 +18,16 @@ class TorchvisionModel:
         weights_version: str = "DEFAULT",
         quantized: bool = False,
     ) -> None:
-        """Initialize the TorchvisionModel class
+        """
+        Initialize the TorchvisionModel class
 
         Args:
             model_name (str): name of the model to load (must be the same named as in torchvision.models)
             weights (str): weights to load (must be the same named as in torchvision.models)
             weights_version (str, optional): version of the weights to load. Defaults to "DEFAULT".
+
+        Returns:
+            None
         """
         if quantized:
             self.__weights = getattr(torchvision_quantized_models, weights)
@@ -44,11 +50,12 @@ class TorchvisionModel:
         self.__preprocessing = self.__weights.transforms()
 
     def __call__(self, image, top_k: int = 1) -> List[Dict[str, int]]:
-        """Apply the preprocessing associated with the loaded weights and apply the forward pass to the input value.
+        """
+        Apply the preprocessing associated with the loaded weights and apply the forward pass to the input value.
 
         Args:
             image (PIL.Image): Input value to preprocess and use in the forward pass
-            top_k (int, optional): Number of classes to return. Defaults to 1.
+            top_k (int, optional): Number of classes to return. (default: 1)
 
         Returns:
             List[Dict[str, int]]: List of the predicted classes associated with it score
