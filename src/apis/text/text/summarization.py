@@ -13,15 +13,8 @@ inputs = [
     {
         "type": "string",
         "name": "source_language",
-        "example": "en",
-        "placeholder": "Use the ISO 2 letters representation for source language",
-    },
-    {
-        "type": "integer",
-        "name": "max_length",
-        "default": 512,
-        "example": 512,
-        "placeholder": "Maximum lenght of the summary",
+        "example": "eng",
+        "placeholder": "Use the ISO 3 letters representation for source language",
     },
     {
         "type": "integer",
@@ -30,10 +23,15 @@ inputs = [
         "example": 40,
         "placeholder": "Minimum lenght of the summary",
     },
+    {
+        "type": "integer",
+        "name": "max_length",
+        "default": 512,
+        "example": 512,
+        "placeholder": "Maximum lenght of the summary",
+    },
 ]
 
 output = {"name": "summarized_text", "type": "string", "example": "summarized_text"}
 
-TaskRouter(
-    router=router, input=inputs, output=output, default_model="distilbart-cnn-12-6"
-)
+TaskRouter(router=router, input=inputs, output=output, default_model="all-MiniLM-L6-v2")
