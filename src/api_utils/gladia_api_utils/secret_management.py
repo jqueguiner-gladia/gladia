@@ -6,6 +6,17 @@ logger = getLogger(__name__)
 
 
 class SecretManager:
+    """
+    SecretManager is a class that allows to access secrets in a safe way.
+
+    Args:
+        secrets (dict): Dictionary of secrets.
+
+    Examples:
+        >>> SECRETS['SECRET_KEY']
+        'secret'
+
+    """
 
     __secrets = {
         "HUGGINGFACE_ACCESS_TOKEN": {
@@ -19,6 +30,19 @@ class SecretManager:
     }
 
     def __getitem__(self, item):
+        """
+        Get a secret value.
+
+        Args:
+            item (str): Name of the secret to retrive.
+
+        Returns:
+            str: Value of the secret.
+
+        Raises:
+            RuntimeError: If the secret is not found.
+        """
+
         if item not in self.__secrets:
             error_message = f"{item} is not set in the SecretManager."
 

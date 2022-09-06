@@ -3,6 +3,7 @@ import json
 import os
 import pathlib
 import re
+from typing import Union
 from warnings import warn
 
 import numpy as np
@@ -16,6 +17,11 @@ from .file_management import get_file_type
 
 
 class NpEncoder(json.JSONEncoder):
+    """
+    Custom JSON encoder for numpy arrays and other types
+    will map numpy types to python types
+    """
+
     def default(self, obj):
         if isinstance(obj, np.integer):
             return int(obj)
@@ -31,7 +37,16 @@ class NpEncoder(json.JSONEncoder):
 
 def __convert_pillow_image_response(
     image_response: Image.Image, additional_metadata: dict = dict()
-):
+) -> StreamingResponse:
+    """
+    Convert a Pillow image response to a JSON response
+
+    Args:
+        image_response (Image.Image): Pillow image response
+
+    Returns:
+        StreamingResponse: FastAPI streaming response for the image
+    """
     ioresult = io.BytesIO()
 
     image_response.save(ioresult, format="png")
@@ -46,7 +61,21 @@ def __convert_pillow_image_response(
     return returned_response
 
 
-def __convert_ndarray_response(response: np.ndarray, output_type: str):
+def __convert_ndarray_response(
+    response: np.ndarray, output_type: str
+) -> Union[StreamingResponse, JSONResponse]:
+    """
+    Convert a numpy array into Fastapi response
+    returns Streaming response if the ndarray is an image
+    returns JSON response if the ndarray is a array
+
+    Args:
+        response (np.ndarray): numpy array response
+        output_type (str): output type of the response, takes value in {‘image’, ‘text’}
+
+    Returns:
+        Union[StreamingResponse, JSONResponse]: FastAPI streaming response for an image or JSON response for a table
+    """
     if output_type == "image":
         ioresult = io.BytesIO(response.tobytes())
         ioresult.seek(0)
@@ -64,7 +93,17 @@ def __convert_ndarray_response(response: np.ndarray, output_type: str):
         return response
 
 
-def __convert_bytes_response(response: bytes, output_type: str):
+def __convert_bytes_response(response: bytes, output_type: str) -> StreamingResponse:
+    """
+    Convert a bytes response to a Streaming response
+
+    Args:
+        response (bytes): bytes response
+        output_type (str): output type of the response, only supported value is `image`
+
+    Returns:
+        StreamingResponse: FastAPI streaming response for an image
+    """
     ioresult = io.BytesIO(response)
     ioresult.seek(0)
 
@@ -79,7 +118,17 @@ def __convert_bytes_response(response: bytes, output_type: str):
     return response
 
 
-def __convert_io_response(response: io.IOBase, output_type: str):
+def __convert_io_response(response: io.IOBase, output_type: str) -> StreamingResponse:
+    """
+    Convert a io.IOBase response to a Streaming response
+
+    Args:
+        response (io.IOBase): io.IOBase response
+        output_type (str): output type of the response image, text, audio, video, etc.
+
+    Returns:
+        StreamingResponse: FastAPI streaming response for the output type defined
+    """
     response.seek(0)
 
     if output_type == "image":
@@ -93,7 +142,21 @@ def __convert_io_response(response: io.IOBase, output_type: str):
     return response
 
 
-def __convert_string_response(response: str):
+def __convert_string_response(
+    response: str,
+) -> Union[JSONResponse, StreamingResponse, str]:
+    """
+    Convert a string response to a JSON response
+
+    Args:
+        response (str): string response
+
+    Returns:
+        JSONResponse: FastAPI JSON response for the input string,
+        if the string is not interpretable JSON response the plain string is returned
+        if the string is a path to a file, a StreamingResponse is returned
+
+    """
     # if response is a string but not a file path
     # try to load it as a json representation
     # else return it as is
@@ -113,10 +176,16 @@ def __convert_string_response(response: str):
             for replacement in replace_map:
                 this_response.replace(replacement[0], replacement[1])
             return json.loads(this_response)
+
         except Exception as e:
             warn(f"Couldn't interpret response returning plain response: {e}")
             try:
-                return {"prediction": str(response), "prediction_raw": str(response)}
+                return JSONResponse(
+                    content={
+                        "prediction": str(response),
+                        "prediction_raw": str(response),
+                    }
+                )
             except Exception as e:
                 warn(f"Couldn't interpret response returning plain response: {e}")
                 return response
@@ -144,7 +213,9 @@ def __convert_string_response(response: str):
             return response
 
 
-def cast_response(response, expected_output: dict):
+def cast_response(
+    response, expected_output: dict
+) -> Union[StreamingResponse, JSONResponse, str]:
     """Cast model response to the expected output type
 
     Args:
@@ -152,44 +223,75 @@ def cast_response(response, expected_output: dict):
         expected_output (dict): dict describing the expected output
 
     Returns:
-        Any: Casted response
+        Union[StreamingResponse, JSONResponse, str]: FastAPI streaming response for an bytes or JSON response for a table or plain string
     """
     if isinstance(response, tuple):
+        # if the response is a tuple, it means that the model
+        # returned a tuple of predictions and additional metadata
         if list(map(type, response)) == [Image.Image, dict]:
             image, addition_exif = response
+            # if the image is a Pillow image
+            # convert it to a StreamingResponse
             return __convert_pillow_image_response(image, addition_exif)
         else:
-            return json.loads(json.dumps(response, cls=NpEncoder, ensure_ascii=False))
+            return JSONResponse(
+                content=json.loads(
+                    json.dumps(response, cls=NpEncoder, ensure_ascii=False)
+                )
+            )
 
     elif isinstance(response, Image.Image):
+        # if the response is a pillow image
+        # convert it to a streaming response
         return __convert_pillow_image_response(response)
 
     elif isinstance(response, np.ndarray):
+        # if the response is a numpy array
+        # check if the output type is an image or a table
+        # if it is an image, convert it to a StreamingResponse
+        # if it is a table, convert it to a JSONResponse
         return __convert_ndarray_response(response, expected_output["type"])
 
     elif isinstance(response, (bytes, bytearray)):
+        # if the response is a bytes or bytearray
+        # convert it to a StreamingResponse
         return __convert_bytes_response(response, expected_output["type"])
 
     elif isinstance(response, io.IOBase):
+        # if the response is a io.IOBase
+        # convert it to a StreamingResponse
         return __convert_io_response(response, expected_output["type"])
 
     elif isinstance(response, (list, dict)):
-        return json.loads(
-            json.dumps(response, cls=NpEncoder, ensure_ascii=False).encode("utf8")
+        # if the response is a list or dict
+        # convert it to a JSONResponse
+        return JSONResponse(
+            json.loads(
+                json.dumps(response, cls=NpEncoder, ensure_ascii=False).encode("utf8")
+            )
         )
 
     elif isinstance(response, str):
+        # if the response is a string
+        # convert it to a JSONResponse if it is a json or a json interpretable string
+        # convert it to a StreamingResponse if it is a file path with a bytes representation
+        # otherwise return it as is
         return __convert_string_response(response)
 
-    elif isinstance(response, bool) or isinstance(response, float):
-        return {"prediction": str(response)}
+    elif isinstance(response, (bool, float)):
+        # if the response is a bool or a float
+        # convert it to a JSONResponse
+        return JSONResponse({"prediction": str(response)})
 
     elif isinstance(response, int):
-        return {"prediction": response}
+        # if the response is an int
+        # convert it to a JSONResponse
+        return JSONResponse({"prediction": response})
 
-    warn(f"Response type not supported ({type(response)}), returning a stream")
+    else:
+        warn(f"Response type not supported ({type(response)}), returning a stream")
 
-    ioresult = response
-    ioresult.seek(0)
+        ioresult = response
+        ioresult.seek(0)
 
-    return StreamingResponse(ioresult, media_type="image/png")
+        return StreamingResponse(ioresult, media_type="image/png")

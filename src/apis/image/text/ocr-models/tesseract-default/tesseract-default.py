@@ -1,5 +1,5 @@
 import re
-from typing import Dict
+from typing import Dict, List, Union
 
 import cv2
 import numpy as np
@@ -7,7 +7,7 @@ import pytesseract
 from gladia_api_utils.io import _open
 
 
-def predict(image: bytes, source_language: str) -> Dict[str, str]:
+def predict(image: bytes, source_language: str) -> Dict[str, Union[str, List[str]]]:
     """
     Call the tesseract ocr and return the text detected in the image
 
@@ -37,4 +37,4 @@ def predict(image: bytes, source_language: str) -> Dict[str, str]:
 
     result = out.strip()
 
-    return {"prediction": result, "prediction_raw": text}
+    return {"prediction": result, "prediction_raw": result.split("\n")}

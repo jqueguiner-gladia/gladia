@@ -3,6 +3,8 @@ name: Gladia Docker Hub Push
 on:
   workflow_dispatch:
   pull_request:
+    branches:
+      - main
     types:
       - closed
 
@@ -16,7 +18,8 @@ jobs:
   build:
     if: |
         !contains(github.event.pull_request.labels.*.name, 'ci') &&
-        !contains(github.event.pull_request.labels.*.name, 'doc')
+        !contains(github.event.pull_request.labels.*.name, 'doc') &&
+        (github.event.pull_request.merged == true)
     runs-on: [self-hosted, linux, STD, builder]
     timeout-minutes: 90
     # map steps output to job output
@@ -118,7 +121,8 @@ jobs:
     needs: build
     if: |
         !contains(github.event.pull_request.labels.*.name, 'ci') &&
-        !contains(github.event.pull_request.labels.*.name, 'doc')
+        !contains(github.event.pull_request.labels.*.name, 'doc') &&
+        (github.event.pull_request.merged == true)
     runs-on: [self-hosted, linux, GPU, tester]
     steps:
       # retrieve the image built in the previous job
@@ -177,7 +181,7 @@ jobs:
           -e CUDA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}}
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000
           -v /data/volumes/models:/tmp/gladia/models
-          --name jlmagouille-${{ github.event.pull_request.number	}}
+          --name jlmagouille-${{ github.event.pull_request.number }}
           docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }}
 
       - name: Gladia container readiness
@@ -255,24 +259,24 @@ jobs:
       - name: Promote Gladia-base image to Gladia Registry
         id: tag-gladia-base-gladiaregistry
         run: |
-          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} docker.gladia.io/gladia-base:latest &&
+          docker tag docker.gladia.io/gladia-base:${{ needs.build.outputs.dockerimage }} docker.gladia.io/gladia-base:latest &&
           docker push docker.gladia.io/gladia-base:latest
 
       - name: Promote Gladia-base image to Dockerhub Registry
         id: tag-gladia-base-dockerregistry
         run: |
-          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} gladiaio/gladia-base:latest &&
+          docker tag docker.gladia.io/gladia-base:${{ needs.build.outputs.dockerimage }} gladiaio/gladia-base:latest &&
           docker push gladiaio/gladia-base:latest
 
       - name: Promote Gladia image to Gladia Registry
         id: tag-gladia-gladiaregistry
         run: |
-          docker tag docker.gladia.io/gladia:${{env.DOCKER_BUILD_TAG}} docker.gladia.io/gladia:latest &&
+          docker tag docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }} docker.gladia.io/gladia:latest &&
           docker push docker.gladia.io/gladia:latest
 
       - name: Promote Gladia image to Dockerhub Registry
         id: tag-gladia-dockerregistry
         run: |
-          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} gladiaio/gladia-base:latest &&
+          docker tag docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }} gladiaio/gladia-base:latest &&
           docker push gladiaio/gladia-base:latest
     

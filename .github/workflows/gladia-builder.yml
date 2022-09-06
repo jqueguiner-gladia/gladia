@@ -53,10 +53,6 @@ jobs:
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
 
-      - name: Lint Markdown
-        if: ${{ steps.filter.outputs.markdown == 'true' }}
-        run: npx textlint ${{ steps.filter.outputs.markdown_files }}
-
       - name: Set default env vars
         id: set-default-env
         run: |
@@ -95,6 +91,7 @@ jobs:
           fi
           if [[ "${{ steps.found-env_or_docker-changes.outputs.base_dockerfile }}" == "true" ]]; then
             echo "DOCKER_BASE_BUILD_NEEDED=true" >> $GITHUB_ENV
+            echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
             echo "Gladia-base will be build based on changed files"
           fi
 
@@ -223,6 +220,12 @@ jobs:
             echo "Error : unexpected GPU ID"
             exit 1
           fi
+          
+      - name: Set log debug Level
+        id: set-log-debug-lvl
+        working-directory: ./src
+        run: >-
+          sed -i 's/"log_level": "info",/"log_level": "debug",/' config.json
 
       # Start the container and link the /app
       # to the current directory
@@ -249,7 +252,7 @@ jobs:
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000
           -v /data/volumes/:/tmp/gladia/
           -v $PWD:/app
-          --name jlmagouille-${{ github.event.pull_request.number	}}
+          --name jlmagouille-${{ github.event.pull_request.number }}
           docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }}
 
       - name: Gladia container readiness
@@ -296,10 +299,13 @@ jobs:
         run: |
            docker logs jlmagouille-${{ github.event.pull_request.number }}
 
+      # we need to docker run to remove root artefact directories
+      # this should be done better in the future.
       - name: Clean Docker Test Env
         id: clean
         if: always()
         continue-on-error: True
-        run: |
-          docker stop jlmagouille-${{ github.event.pull_request.number }}
+        run: >-
+          docker stop jlmagouille-${{ github.event.pull_request.number }} &&
+          docker run -d -v $PWD:/app docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }} bash -c 'rm -rf /app' &&
           docker rm jlmagouille-${{ github.event.pull_request.number }}

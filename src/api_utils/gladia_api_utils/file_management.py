@@ -6,7 +6,7 @@ import sys
 import tempfile
 from logging import getLogger
 from pathlib import Path
-from uuid import uuid4
+from typing import Any, Tuple
 
 import gdown
 import magic
@@ -18,7 +18,63 @@ from xtract.utils import get_file_type
 logger = getLogger(__name__)
 
 
-def write_tmp_file(content):
+def is_binary_file(file_path: str) -> bool:
+    """
+    Check if a file is binary or not.
+
+    Args:
+        file_path (str): The path to the file to check.
+
+    Returns:
+        bool: True if the file is binary, False otherwise.
+    """
+
+    textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
+    is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
+
+    return is_binary_string(open(file_path, "rb").read(1024))
+
+
+def is_valid_path(string: str) -> bool:
+    """
+    Check if a string is a valid path.
+
+    Args:
+        string (str): The string to check.
+
+    Returns:
+        bool: True if the string is a valid path, False otherwise.
+    """
+
+    if string and isinstance(string, str) and PATTERN.match(string):
+        return True
+    else:
+        return False
+
+
+def get_tmp_filename() -> str:
+    """
+    Get a random temporary fullpath.
+
+    Returns:
+        str: The random filepath.
+    """
+    return os.path.join(
+        tempfile._get_default_tempdir(), next(tempfile._get_candidate_names())
+    )
+
+
+def write_tmp_file(content: Any) -> str:
+    """
+    Write content to a temporary file.
+
+    Args:
+        content (Any): The content to write.
+
+    Returns:
+        str: The path to the temporary file.
+    """
+
     tmp = tempfile.NamedTemporaryFile(delete=False)
     tmp.write(content)
     tmp.close()
@@ -26,13 +82,28 @@ def write_tmp_file(content):
     return tmp.name
 
 
-def remove_all_tmp_file(tmp_files):
-    for tmp_file in tmp_files:
-        os.unlink(tmp_file)
-
-
 def input_to_files(func):
-    def inner(*args, **kwargs):
+    """
+    Decorator that converts input to a list of files.
+
+    Args:
+        func (function): The function to decorate.
+
+    Returns:
+        function: The decorated function.
+    """
+
+    def inner(*args, **kwargs) -> Any:
+        """
+        Wrapper for the decorated function.
+
+        Args:
+            *args: The arguments to the function.
+            **kwargs: The keyword arguments to the function.
+
+        Returns:
+            Any: The return value of the function.
+        """
         tmp_files = list()
 
         for keyword, arg in kwargs.items():
@@ -44,7 +115,7 @@ def input_to_files(func):
         result = func(*args, **kwargs)
 
         try:
-            remove_all_tmp_file(tmp_files)
+            delete_all_files(tmp_files)
         except Exception as e:
             logger.error(f"Couldn't delete tmp files: {e}")
 
@@ -54,8 +125,23 @@ def input_to_files(func):
 
 
 def download_file(
-    url: str, file_full_path: str, force_create_dir=True, force_redownload=False
+    url: str,
+    file_full_path: str,
+    force_create_dir: bool = True,
+    force_redownload: bool = False,
 ) -> Path:
+    """
+    Download a file from a url.
+
+    Args:
+        url (str): The url to download the file from.
+        file_full_path (str): The path to the file to download.
+        force_create_dir (bool): Create the directory if it doesn't exist. (default: True)
+        force_redownload (bool): Redownload the file if it already exists. (default: False)
+
+    Returns:
+        Path: The path to the downloaded file.
+    """
 
     is_gdrivefile = "https://drive.google.com/" in url
 
@@ -70,13 +156,12 @@ def download_file(
             )
 
     if not file_full_path.exists():
-
         if is_gdrivefile:
             gdown.download(url, file_full_path, quiet=False)
         else:
             write_url_content_to_file(file_full_path, url)
 
-    elif file_full_path.exists() and force_redownload:
+    elif force_redownload:
         if is_gdrivefile:
             gdown.download(url, file_full_path, quiet=False)
         else:
@@ -85,7 +170,18 @@ def download_file(
     return file_full_path
 
 
-def write_url_content_to_file(file_full_path: Path, url) -> bool:
+def write_url_content_to_file(file_full_path: Path, url: str) -> bool:
+    """
+    Write the content of a url to a file.
+
+    Args:
+        file_full_path (Path): The path to the file to write.
+        url (str): The url to download the content from.
+
+    Returns:
+        bool: True if the file was written, False otherwise.
+    """
+
     data = requests.get(url).content
 
     logger.debug(f"writing {url} to {file_full_path}")
@@ -93,7 +189,19 @@ def write_url_content_to_file(file_full_path: Path, url) -> bool:
     return write_to_file(file_full_path, data)
 
 
-def write_to_file(file_full_path, data, overwrite=False) -> bool:
+def write_to_file(file_full_path: str, data: Any, overwrite: bool = False) -> bool:
+    """
+    Write data to a file.
+
+    Args:
+        file_full_path (str): The path to the file to write.
+        data (Any): The data to write.
+        overwrite (bool): Overwrite the file if it already exists. (default: False)
+
+    Returns:
+        bool: True if the file was written, False otherwise.
+    """
+
     if isinstance(file_full_path, str):
         file_full_path = Path(file_full_path)
 
@@ -111,13 +219,17 @@ def write_to_file(file_full_path, data, overwrite=False) -> bool:
                 handler.write(data)
 
 
-def generate_random_filename(upload_directory, extension):
-    filename = str(uuid4())
-    filename = os.path.join(upload_directory, filename + "." + extension)
-    return filename
-
-
 def delete_file(filepath: str) -> bool:
+    """
+    Delete a file.
+
+    Args:
+        filepath (str): The path to the file to delete.
+
+    Returns:
+        bool: True if the file was deleted, False otherwise.
+    """
+
     if os.path.exists(filepath):
         return os.remove(filepath)
     else:
@@ -125,20 +237,71 @@ def delete_file(filepath: str) -> bool:
 
 
 def delete_all_files(files: list) -> list:
+    """
+    Delete all files in a given list
+
+    Args:
+        files (list): The list of files to delete.
+
+    Returns:
+        list: The list of files that were deleted.
+    """
+
     out = dict()
     for file in files:
         out[file] = delete_file(file)
     return out
 
 
+def delete_directory(dirpath: str) -> bool:
+    """
+    Delete a file.
+
+    Args:
+        dirpath (str): The path to the directory to delete.
+
+    Returns:
+        bool: True if the directory was deleted, False otherwise.
+    """
+
+    delete_file(dirpath)
+
+
 def create_directory(path: str) -> bool:
+    """
+    Create a directory.
+
+    Args:
+        path (str): The path to the directory to create.
+
+    Returns:
+        bool: True if the directory was created, False otherwise.
+    """
+
     if len(os.path.dirname(path)) > 0:
         return os.makedirs(os.path.dirname(path), exist_ok=True)
     else:
         return False
 
 
-def uncompress(path: str, destination=None, delete_after_uncompress=True) -> str:
+def uncompress(
+    path: str, destination: str = None, delete_after_uncompress: bool = True
+) -> str:
+    """
+    Uncompress a file.
+
+    Args:
+        path (str): The path to the file to uncompress.
+        destination (str): The path to the destination directory. If None, the destination is the same as the path. (default: None)
+        delete_after_uncompress (bool): Delete the file after uncompress. (default: True)
+
+    Returns:
+        str: The path to the uncompressed file.
+
+    Raises:
+        Exception: If the file is not a supported compression format.
+    """
+
     try:
         logger.debug(f"Extracting archive from {path} to {destination}")
         output = xtract(path, destination=destination, overwrite=True, all=False)
@@ -156,9 +319,23 @@ def uncompress(path: str, destination=None, delete_after_uncompress=True) -> str
 
 
 def compress_directory(
-    path: str, compression_format="gzip", destination=None, delete_after_compress=False
+    path: str,
+    compression_format: str = "gzip",
+    destination: str = None,
+    delete_after_compress: bool = False,
 ) -> str:
-    """compression format accepted rar, tar, zip, bz2, gz, xz"""
+    """
+    Compress a directory and returns the path of the compressed file.
+
+    Args:
+        path (str): path to the directory to compress
+        compression_format (str): format of the compression (rar, tar, zip, bz2, gz, xz) (default: gzip)
+        destination (str): path to the destination of the compressed file. if None, the compressed file is in the same directory as the directory to compress (default: None)
+        delete_after_compress (bool): delete the directory after compression (default: False)
+
+    Returns:
+        str: path to the compressed file
+    """
     output = ""
 
     if destination:
@@ -189,6 +366,10 @@ def compress_directory(
     if compression_format == "xz":
         output = XZ(path, destination=destination)
 
+    if delete_after_compress:
+        logger.debug(f"Deleting directory {path}")
+        delete_directory(path)
+
     return output
 
 
@@ -196,11 +377,11 @@ def is_uncompressable(file_path: str) -> bool:
     """
     Returns True if the file is an uncompressable file.
 
-            Parameters:
-                    file_path (str): path of the file to be analyzed.
+    Args:
+        file_path (str): The path to the file to analyze.
 
-            Returns:
-                    is_uncompressable (bool): Boolean True if file is an archive filetype.
+    Returns:
+        bool: True if the file is an uncompressable file.
     """
 
     # used for relative paths
@@ -225,11 +406,11 @@ def is_archive(file_path: str) -> bool:
     """
     Returns True if the file is an archive file.
 
-            Parameters:
-                    file_path (str): path of the file to be analyzed.
+    Args:
+        file_path (str): The path to the file to analyze.
 
-            Returns:
-                    is_archived (bool): Boolean True if file is an archive filetype.
+    Returns:
+        bool: True if the file is an archive file.
     """
 
     # used for relative paths
@@ -245,6 +426,15 @@ def is_archive(file_path: str) -> bool:
 
 
 def is_image(file_path: str) -> bool:
+    """
+    Returns True if the file is an image file.
+
+    Args:
+        file_path (str): The path to the file to analyze.
+
+    Returns:
+        bool: True if the file is an image file.
+    """
 
     # used for relative paths
     namespace = sys._getframe(1).f_globals
@@ -261,6 +451,15 @@ def is_image(file_path: str) -> bool:
 
 
 def is_audio(file_path: str) -> bool:
+    """
+    Returns True if the file is an audio file.
+
+    Args:
+        file_path (str): The path to the file to analyze.
+
+    Returns:
+        bool: True if the file is an audio file.
+    """
 
     # used for relative paths
     namespace = sys._getframe(1).f_globals
@@ -277,6 +476,15 @@ def is_audio(file_path: str) -> bool:
 
 
 def is_video(file_path: str) -> bool:
+    """
+    Returns True if the file is a video file.
+
+    Args:
+        file_path (str): The path to the file to analyze.
+
+    Returns:
+        bool: True if the file is a video file.
+    """
 
     # used for relative paths
     namespace = sys._getframe(1).f_globals
@@ -293,6 +501,15 @@ def is_video(file_path: str) -> bool:
 
 
 def is_structured_data(file_path: str) -> bool:
+    """
+    Returns True if the file is a structured data file.
+
+    Args:
+        file_path (str): The path to the file to analyze.
+
+    Returns:
+        bool: True if the file is a structured data file.
+    """
 
     # used for relative paths
     namespace = sys._getframe(1).f_globals
@@ -309,6 +526,15 @@ def is_structured_data(file_path: str) -> bool:
 
 
 def is_word(file_path: str) -> bool:
+    """
+    Returns True if the file is a word file.
+
+    Args:
+        file_path (str): The path to the file to analyze.
+
+    Returns:
+        bool: True if the file is a word file.
+    """
 
     # used for relative paths
     namespace = sys._getframe(1).f_globals
@@ -325,6 +551,15 @@ def is_word(file_path: str) -> bool:
 
 
 def is_pdf(file_path: str) -> bool:
+    """
+    Returns True if the file is a pdf file.
+
+    Args:
+        file_path (str): The path to the file to analyze.
+
+    Returns:
+        bool: True if the file is a pdf file.
+    """
 
     # used for relative paths
     namespace = sys._getframe(1).f_globals
@@ -341,6 +576,15 @@ def is_pdf(file_path: str) -> bool:
 
 
 def is_web_content(file_path: str) -> bool:
+    """
+    Returns True if the file is a web content file.
+
+    Args:
+        file_path (str): The path to the file to analyze.
+
+    Returns:
+        bool: True if the file is a web content file.
+    """
 
     # used for relative paths
     namespace = sys._getframe(1).f_globals
@@ -356,11 +600,30 @@ def is_web_content(file_path: str) -> bool:
     return file_mime_type == "web_content"
 
 
-def get_buffer_category(buffer) -> str:
+def get_buffer_category(buffer: bytes) -> str:
+    """
+    Returns the category of the buffer.
+
+    Args:
+        buffer (bytes): The buffer to analyze.
+
+    Returns:
+        str: The category of the buffer.
+    """
+
     return get_mime_category(get_buffer_type(buffer))
 
 
 def get_file_category(file_path: str) -> str:
+    """
+    Returns the category of the file.
+
+    Args:
+        file_path (str): The path to the file to analyze.
+
+    Returns:
+        str: The category of the file.
+    """
 
     output = ""
     # used for relative paths
@@ -378,6 +641,16 @@ def get_file_category(file_path: str) -> str:
 
 
 def get_mime_category(mime_type: str) -> str:
+    """
+    Returns the category of the mime type.
+
+    Args:
+        mime_type (str): The mime type to analyze.
+
+    Returns:
+        str: The category of the mime type.
+    """
+
     if mime_type in [
         "audio/aac",
         "audio/midi",
@@ -492,9 +765,17 @@ def get_mime_category(mime_type: str) -> str:
 
 
 def get_file_type(file_path: str) -> str:
-    """return the file mime type with mime type
-    see full list here : https://developer.mozilla.org/fr/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
     """
+    Return the file mime type with mime type
+    see full list here : https://developer.mozilla.org/fr/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+
+    Args:
+        file_path (str): The path to the file to analyze.
+
+    Returns:
+        str: The mime type of the file.
+    """
+
     # used for relative paths
     namespace = sys._getframe(1).f_globals
     cwd = os.getcwd()
@@ -507,19 +788,27 @@ def get_file_type(file_path: str) -> str:
     return magic.from_file(str(file_path), mime=True)
 
 
-def get_buffer_type(buffer) -> str:
-    """return the buffer mime type with mime type
+def get_buffer_type(buffer: bytes) -> str:
+    """
+    Return the buffer mime type with mime type
     see full list here : https://developer.mozilla.org/fr/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+
+    Args:
+        buffer (bytes): The buffer to analyze.
+
+    Returns:
+        str: The mime type of the buffer.
     """
 
     return magic.from_buffer(buffer, mime=True)
 
 
 def random_string(lenght: int = 10) -> str:
-    """Generate a random string composed of lower cased ascii characters
+    """
+    Generate a random string composed of lower cased ascii characters
 
     Args:
-        lenght (int, optional): lenght of the string to generate. Defaults to 10.
+        lenght (int): The length of the string to generate. (default: 10)
 
     Returns:
         str: random string of lenght `lenght` composed of lower cased ascii characters
@@ -533,13 +822,33 @@ def random_string(lenght: int = 10) -> str:
 
 
 def create_random_directory(root_path: str) -> str:
+    """
+    Create a random directory in the root_path.
+
+    Args:
+        root_path (str): The path to the root directory to create the file into.
+
+    Returns:
+        str: The path to the created directory.
+    """
     full_path = os.path.join(root_path, random_string(10))
     create_directory(full_path)
 
     return full_path
 
 
-def generate_random_filename(root_path: str, extension: str) -> str:
+def generate_random_filename(root_path: str, extension: str) -> Tuple[str, str]:
+    """
+    Generate a random filename in the root_path.
+
+    Args:
+        root_path (str): The path to the root directory to create the file into.
+        extension (str): The extension of the file.
+
+    Returns:
+        str: The path to the created file.
+    """
+
     filename = ".".join([random_string(10), extension])
     full_path = os.path.join(root_path, filename)
 
