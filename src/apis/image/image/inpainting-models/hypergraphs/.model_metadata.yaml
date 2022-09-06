@@ -3,7 +3,7 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  example: {}
+  example: ''
   examples: {}
   format: ''
   latency: ''

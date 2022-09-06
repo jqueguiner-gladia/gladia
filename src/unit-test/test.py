@@ -158,7 +158,8 @@ def get_task_inputs(task_details):
         # Create a first request testing url version of files
         url_data = data.copy()
         for url_file in urls_files:
-            url_data.update(url_file)
+            key, value = list(url_file.keys())[0], list(url_file.values())[0]
+            url_data.update({key: list(value.values())[0]})
         task_inputs.append({"data": url_data, "files": {}})
 
         # Then, for each input type (audio, video, image),
@@ -182,11 +183,13 @@ def get_task_inputs(task_details):
                 for type_file in types_files[1]:
                     input_name = list(type_file.keys())[0]
                     # Retieve the test files in examples
-                    examples_files = openapi_json_inputs[input_name].get(
+                    examples_data = openapi_json_inputs[input_name].get(
                         "examples", None
                     )
+                    if examples_data:
+                        examples_files = [value for value in list(examples_data.values())]
                     # If examples does'nt exist or is empty, retieve it in current directory
-                    if not examples_files:
+                    else:
                         examples_files = os.listdir(CURRENT_DIRECTORY)
 
                     file = [file for file in examples_files if file.endswith(format)][0]
