@@ -3,7 +3,12 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: bannister
+      prediction_raw:
+        bannister: 0.15585002303123474
+  examples: {}
   format: ''
   latency: ''
 huggingface:

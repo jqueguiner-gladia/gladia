@@ -3,7 +3,14 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: "Input text to start generation from\n                       </TextBlock>\n\
+        \                "
+      prediction_raw:
+      - generated_text: "Input text to start generation from\n                   \
+          \    </TextBlock>\n                "
+  examples: {}
   format: ''
   latency: ''
 huggingface:

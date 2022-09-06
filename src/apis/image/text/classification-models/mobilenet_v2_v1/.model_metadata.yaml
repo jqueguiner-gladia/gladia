@@ -3,7 +3,12 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: abaya
+      prediction_raw:
+        abaya: 0.08071760088205338
+  examples: {}
   format: ''
   latency: ''
 huggingface:

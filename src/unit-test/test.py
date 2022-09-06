@@ -6,6 +6,8 @@ from urllib.request import Request, urlopen
 
 import click
 import requests
+import yaml
+from gladia_api_utils.OvhObjectStorageHelper import OVH_file_manager
 from validators import url as is_url
 
 global nb_total_tests
@@ -156,7 +158,8 @@ def get_task_inputs(task_details):
         # Create a first request testing url version of files
         url_data = data.copy()
         for url_file in urls_files:
-            url_data.update(url_file)
+            key, value = list(url_file.keys())[0], list(url_file.values())[0]
+            url_data.update({key: list(value.values())[0]})
         task_inputs.append({"data": url_data, "files": {}})
 
         # Then, for each input type (audio, video, image),
@@ -180,11 +183,15 @@ def get_task_inputs(task_details):
                 for type_file in types_files[1]:
                     input_name = list(type_file.keys())[0]
                     # Retieve the test files in examples
-                    examples_files = openapi_json_inputs[input_name].get(
+                    examples_data = openapi_json_inputs[input_name].get(
                         "examples", None
                     )
+                    if examples_data:
+                        examples_files = [
+                            value for value in list(examples_data.values())
+                        ]
                     # If examples does'nt exist or is empty, retieve it in current directory
-                    if not examples_files:
+                    else:
                         examples_files = os.listdir(CURRENT_DIRECTORY)
 
                     file = [file for file in examples_files if file.endswith(format)][0]
@@ -287,6 +294,112 @@ def get_file_message(data, files) -> str:
     return files_message
 
 
+def create_metadata_with_reponse(path, params, data, files, response):
+    model = params["model"]
+    task = path
+    input = task.split("/")[1]
+    output = task.split("/")[2]
+
+    if output != "text":
+
+        extensions = {
+            "image/jpeg": "jpg",
+            "image/jpeg": "jpeg",
+            "image/gif": "gif",
+            "image/png": "png",
+            "audio/mpeg": "mp3",
+            "audio/wav": "wav",
+            "audio/x-m4a": "m4a",
+        }
+
+        # Upload file to OVH
+        content_type = response.headers["content-type"]
+        try:
+            output_extension = extensions[content_type]
+        except Exception as e:
+            print(f"Error: '{content_type}' is not a known content-type")
+
+        if input != "text":
+            file_path = (
+                list(files.values())[0][1]
+                if files
+                else [value for key, value in data.items() if key.endswith("_url")][0]
+            )
+            original_file_name_with_extension = os.path.basename(file_path)
+            original_file_name, input_extension = os.path.splitext(
+                original_file_name_with_extension
+            )
+            input_extension = input_extension[1:]
+            file_name = f"from_{original_file_name}_{input_extension}"
+            file_name_with_extesion = f"{file_name}.{output_extension}"
+            ovh_file_name = (
+                f"output{task}{model}/examples/{file_name_with_extesion}"
+                if files
+                else f"output{task}{model}/example/{file_name_with_extesion}"
+            )
+        else:
+            file_name = "output"
+            file_name_with_extesion = f"{file_name}.{output_extension}"
+            ovh_file_name = f"output{task}{model}/example/{file_name}"
+
+        tmp_file_path = "unit-test/tmp-output-file.png"
+        with open(tmp_file_path, "wb") as out_file:
+            out_file.write(response.content)
+        file_manager = OVH_file_manager()
+        file_manager.upload_file_from_path(tmp_file_path, ovh_file_name)
+        os.remove(tmp_file_path)
+
+        # Add file link to model metadata
+        metadata_file_path = get_model_metadata_path(task, model)
+        with open(metadata_file_path, "r") as metadata_file:
+            metadata = yaml.safe_load(metadata_file)
+        if input != "text":
+            example_dict = "examples" if files else "example"
+            metadata["gladia"][example_dict][
+                file_name
+            ] = f"http://files.gladia.io/{ovh_file_name}"
+        else:
+            metadata["gladia"]["example"][
+                "output"
+            ] = f"http://files.gladia.io/{ovh_file_name}"
+        with open(metadata_file_path, "w") as metadata_file:
+            yaml.dump(metadata, metadata_file)
+
+    else:
+        metadata_file_path = get_model_metadata_path(task, model)
+        with open(metadata_file_path, "r") as metadata_file:
+            metadata = yaml.safe_load(metadata_file)
+        metadata["gladia"]["example"]["output"] = response.json()
+        with open(metadata_file_path, "w") as metadata_file:
+            yaml.dump(metadata, metadata_file)
+
+
+def get_model_metadata_path(task, model):
+    task_name = task.split("/")[3]
+    task_models_folder = task.replace(task_name, f"{task_name}-models")
+    path_to_metadata = f"apis{task_models_folder}{model}"
+    metadata_file_name = ".model_metadata.yaml"
+    metadata_file_path = os.path.join(path_to_metadata, metadata_file_name)
+    return metadata_file_path
+
+
+def clean_up_model_output_data(task, model):
+    # Clean up files in OVH Object Storage
+    file_manager = OVH_file_manager()
+    prefix = f"output{task}{model}"
+    files_to_delete = file_manager.get_objects(prefix=prefix)
+    for file_to_delete in files_to_delete:
+        file_manager.delete_file(file_to_delete)
+    # Clean up metadata
+    metadata_file_path = get_model_metadata_path(task, model)
+    with open(metadata_file_path, "r") as metadata_file:
+        metadata = yaml.safe_load(metadata_file)
+    metadata["gladia"]["example"] = {}
+    metadata["gladia"]["examples"] = {}
+    with open(metadata_file_path, "w") as metadata_file:
+        yaml.dump(metadata, metadata_file)
+
+
 def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
 
     tries = 1
@@ -320,6 +433,7 @@ def perform_test(
     max_retry=3,
     specific_models=[],
     default_models_only=False,
+    update_metadata=False,
 ):
     global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
     global test_final_status
@@ -338,6 +452,9 @@ def perform_test(
         if IS_CI:
             sleep(1)
 
+        if update_metadata:
+            clean_up_model_output_data(path, model)
+
         params = {"model": model}
 
         is_model_valid = True
@@ -353,6 +470,10 @@ def perform_test(
 
             if not is_response_valid(response, details):
                 is_model_valid = False
+            elif update_metadata:
+                create_metadata_with_reponse(
+                    path, params, request["data"], request["files"], response
+                )
 
         if is_model_valid:
             nb_test_passed += 1
@@ -530,6 +651,13 @@ def get_formats_to_test(audio_file, image_file, video_file):
     default="",
     help="Format to test for video file (ex: .avi)",
 )
+@click.option(
+    "--update_metadata",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="if True, metada will clear and updated in .metadta files and in OVH file storage",
+)
 def main(
     url,
     bearer_token,
@@ -545,6 +673,7 @@ def main(
     audio_file,
     image_file,
     video_file,
+    update_metadata,
 ):
 
     global endpoints
@@ -612,6 +741,7 @@ def main(
                     max_retry,
                     specific_models,
                     default_models,
+                    update_metadata,
                 )
 
             elif after_endpoint != "":
@@ -628,6 +758,7 @@ def main(
                         max_retry,
                         specific_models,
                         default_models,
+                        update_metadata,
                     )
                 else:
                     print(f"|  |__ {STATUS_SKIPPED}  <Skipped>")
@@ -653,6 +784,7 @@ def main(
                     max_retry,
                     specific_models,
                     default_models,
+                    update_metadata,
                 )
             else:
                 print(f"|  |__ {STATUS_SKIPPED}  <Skipped>")
@@ -668,6 +800,7 @@ def main(
                 max_retry,
                 specific_models,
                 default_models,
+                update_metadata,
             )
 
     if test_final_status == EXIT_STATUS_SUCCESS:

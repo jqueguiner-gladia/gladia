@@ -3,7 +3,13 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: NEGATIVE
+      prediction_raw:
+        label: LABEL_1
+        score: 0.5460877418518066
+  examples: {}
   format: ''
   latency: ''
 huggingface:

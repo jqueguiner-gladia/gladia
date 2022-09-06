@@ -3,7 +3,15 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: ' Clara'
+      prediction_raw:
+      - answer: ' Clara'
+        end: 16
+        score: 0.9977526664733887
+        start: 10
+  examples: {}
   format: ''
   latency: ''
 huggingface:

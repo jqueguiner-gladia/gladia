@@ -3,7 +3,35 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction:
+      - source: Sentence
+        target: "\u6765\u81EA"
+      - source: Sentence
+        target: "\u53E5\u5B50"
+      - source: from
+        target: "\u6765\u81EA"
+      - source: first
+        target: "\u7B2C\u4E00"
+      - source: language
+        target: "\u8BED\u8A00\u7684"
+      - source: language
+        target: "\u53E5\u5B50"
+      prediction_raw:
+      - source: Sentence
+        target: "\u6765\u81EA"
+      - source: Sentence
+        target: "\u53E5\u5B50"
+      - source: from
+        target: "\u6765\u81EA"
+      - source: first
+        target: "\u7B2C\u4E00"
+      - source: language
+        target: "\u8BED\u8A00\u7684"
+      - source: language
+        target: "\u53E5\u5B50"
+  examples: {}
   format: ''
   latency: ''
 huggingface:

@@ -3,7 +3,20 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: "Input text to start generation from text file\n        @param int\
+        \ lineNumber\n        @return\n        @throws Exception\n        @throws\
+        \ IOException\n        @throws InterruptedException\n        */\n        public\
+        \ void generateTextLine(int lineNumber, String s) throws Exception, IOException,\
+        \ InterruptedException {\n           "
+      prediction_raw:
+      - generated_text: "Input text to start generation from text file\n        @param\
+          \ int lineNumber\n        @return\n        @throws Exception\n        @throws\
+          \ IOException\n        @throws InterruptedException\n        */\n      \
+          \  public void generateTextLine(int lineNumber, String s) throws Exception,\
+          \ IOException, InterruptedException {\n           "
+  examples: {}
   format: ''
   latency: ''
 huggingface:

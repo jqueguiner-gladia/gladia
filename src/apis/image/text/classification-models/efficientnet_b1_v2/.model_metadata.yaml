@@ -3,7 +3,12 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: seashore
+      prediction_raw:
+        seashore: 0.10095896571874619
+  examples: {}
   format: ''
   latency: ''
 huggingface:

@@ -3,7 +3,17 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: "def is_palendrome(s): return False\n    if s == 'a':\n        return\
+        \ True\n    if s == 'b':\n        return False\n    if s == 'c':\n       \
+        \ return False\n    if s == 'd':\n        return False\n    if s == 'e':\n\
+        \        return False\n    if s == 'f':\n        return"
+      prediction_raw: 'def is_palendrome(s): return False<N>    if s == ''a'':<N>        return
+        True<N>    if s == ''b'':<N>        return False<N>    if s == ''c'':<N>        return
+        False<N>    if s == ''d'':<N>        return False<N>    if s == ''e'':<N>        return
+        False<N>    if s == ''f'':<N>        return'
+  examples: {}
   format: ''
   latency: ''
 huggingface:

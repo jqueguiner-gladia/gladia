@@ -3,6 +3,11 @@ api:
   tags: []
 gladia:
   accelerator: Local GPU
+  example:
+    output:
+      prediction: "Le texte \xE0 traduire"
+      prediction_raw: "Le texte \xE0 traduire"
+  examples: {}
   format: Torch
   latency: ''
 huggingface:

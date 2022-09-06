@@ -3,7 +3,20 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: POSITIVE
+      prediction_raw:
+        labels:
+        - POSITIVE
+        - NEUTRAL
+        - NEGATIVE
+        scores:
+        - 0.9236152172088623
+        - 0.05980229377746582
+        - 0.016582505777478218
+        sequence: I like you . I love you
+  examples: {}
   format: ''
   latency: ''
 huggingface:

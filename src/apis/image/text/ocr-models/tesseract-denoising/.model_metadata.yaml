@@ -3,7 +3,27 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: '{''prediction'': ''This is a lot of 12 point text to test the\nocr
+        code and see if it works on all types\nof file format.\n\nThe quick brown
+        dog jumped over the\nlazy fox. The quick brown dog jumped\nover the lazy fox.
+        The quick brown dog\njumped over the lazy fox. The quick\nbrown dog jumped
+        over the lazy fox.'', ''prediction_raw'': ''This is a lot of 12 point text
+        to test the\nocr code and see if it works on all types\nof file format.\n\nThe
+        quick brown dog jumped over the\nlazy fox. The quick brown dog jumped\nover
+        the lazy fox. The quick brown dog\njumped over the lazy fox. The quick\nbrown
+        dog jumped over the lazy fox.\n\x0c''}'
+      prediction_raw: '{''prediction'': ''This is a lot of 12 point text to test the\nocr
+        code and see if it works on all types\nof file format.\n\nThe quick brown
+        dog jumped over the\nlazy fox. The quick brown dog jumped\nover the lazy fox.
+        The quick brown dog\njumped over the lazy fox. The quick\nbrown dog jumped
+        over the lazy fox.'', ''prediction_raw'': ''This is a lot of 12 point text
+        to test the\nocr code and see if it works on all types\nof file format.\n\nThe
+        quick brown dog jumped over the\nlazy fox. The quick brown dog jumped\nover
+        the lazy fox. The quick brown dog\njumped over the lazy fox. The quick\nbrown
+        dog jumped over the lazy fox.\n\x0c''}'
+  examples: {}
   format: ''
   latency: ''
 huggingface:

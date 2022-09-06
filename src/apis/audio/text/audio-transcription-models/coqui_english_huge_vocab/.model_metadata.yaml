@@ -3,7 +3,13 @@ api:
   tags: []
 gladia:
   accelerator: ''
-  examples: []
+  example:
+    output:
+      prediction: hi there in the day's english listening practice i'd like to help
+        you with phrases and words about the supermarket
+      prediction_raw: hi there in the day's english listening practice i'd like to
+        help you with phrases and words about the supermarket
+  examples: {}
   format: ''
   latency: ''
 huggingface:
