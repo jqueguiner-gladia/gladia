@@ -3,6 +3,8 @@ name: Gladia Docker Hub Push
 on:
   workflow_dispatch:
   pull_request:
+    branches:
+      - main
     types:
       - closed
 
@@ -16,7 +18,8 @@ jobs:
   build:
     if: |
         !contains(github.event.pull_request.labels.*.name, 'ci') &&
-        !contains(github.event.pull_request.labels.*.name, 'doc')
+        !contains(github.event.pull_request.labels.*.name, 'doc') &&
+        (github.event.pull_request.merged == true)
     runs-on: [self-hosted, linux, STD, builder]
     timeout-minutes: 90
     # map steps output to job output
@@ -118,7 +121,8 @@ jobs:
     needs: build
     if: |
         !contains(github.event.pull_request.labels.*.name, 'ci') &&
-        !contains(github.event.pull_request.labels.*.name, 'doc')
+        !contains(github.event.pull_request.labels.*.name, 'doc') &&
+        (github.event.pull_request.merged == true)
     runs-on: [self-hosted, linux, GPU, tester]
     steps:
       # retrieve the image built in the previous job
