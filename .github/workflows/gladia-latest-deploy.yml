@@ -59,6 +59,30 @@ jobs:
           echo "DOCKER_BUILD_CACHE=" >> $GITHUB_ENV &&
           echo "DOCKER_BUILD_TAG=ci-${{ github.event.pull_request.number }}" >> $GITHUB_ENV &&
           echo "DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE=gladiaio/gladia-base:latest" >> $GITHUB_ENV
+          
+      - name: Get changed files using defaults
+        id: changed-files
+        uses: tj-actions/changed-files@v29.0.3
+          
+      # if gpu.Dockefile changed we need to rebuild the base image
+      - name: Looking for base.Dockerfile changed files
+        if: |
+          contains(steps.changed-files.outputs.modified_files, 'base.Dockerfile') ||
+          contains(steps.changed-files.outputs.deleted_files, 'base.Dockerfile')
+        run: |
+          echo "DOCKER_BASE_BUILD_NEEDED=true" >> $GITHUB_ENV
+          echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
+          
+      # if env.yaml was changed we need to rebuild micromamba envs or
+      # if gpu.Dockefile changed we need to rebuild the gladia image
+      - name: Looking for env.yaml or gpu.Dockerfile changed files
+        if: |
+          contains(steps.changed-files.outputs.modified_files, 'env.yaml') ||
+          contains(steps.changed-files.outputs.deleted_files, 'env.yaml') ||
+          contains(steps.changed-files.outputs.modified_files, 'gpu.Dockerfile') ||
+          contains(steps.changed-files.outputs.deleted_files, 'gpu.Dockerfile')
+        run: |
+          echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
 
       # override DOCKER_BUILD_TAG to "latest" if the PR is merged
       # override DOCKER_REGISTRY to "hub" if the PR is merged
