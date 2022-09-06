@@ -331,8 +331,8 @@ def create_metadata_with_reponse(path, params, data, files, response):
             file_name = f"from_{original_file_name}_{input_extension}"
             file_name_with_extesion = f"{file_name}.{output_extension}"
             ovh_file_name = (
-                f"output{task}{model}/examples/{file_name_with_extesion}" 
-                if files 
+                f"output{task}{model}/examples/{file_name_with_extesion}"
+                if files
                 else f"output{task}{model}/example/{file_name_with_extesion}"
             )
         else:

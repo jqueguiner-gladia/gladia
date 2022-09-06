@@ -355,7 +355,9 @@ def create_description_for_the_endpoint_parameter(endpoint_param: dict) -> dict:
         else endpoint_param.get("default", ...),
         "constructor": File if endpoint_param["type"] in file_types else Form,
         "example": endpoint_param["example"],
-        "examples": {get_example_name(example): example for example in endpoint_param["examples"]} 
+        "examples": {
+            get_example_name(example): example for example in endpoint_param["examples"]
+        }
         if endpoint_param["type"] in file_types and endpoint_param.get("examples", None)
         else {},
         "description": "",  # TODO: retrieve from {task}.py
@@ -368,7 +370,7 @@ def create_description_for_the_endpoint_parameter(endpoint_param: dict) -> dict:
             "data_type": "url",
             "default": None,
             "constructor": Form,
-            "example": endpoint_param["example"],
+            "example": {get_example_name(endpoint_param["example"]): endpoint_param["example"]},
             "examples": {get_example_name(example): example for example in endpoint_param["examples"]}
             if endpoint_param.get("examples", None)
             else {},
