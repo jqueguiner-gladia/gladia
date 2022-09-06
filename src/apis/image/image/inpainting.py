@@ -19,7 +19,7 @@ inputs = [
         "name": "prompt",
         "example": "a cat sitting on a bench",
         "placeholder": "Mask to guide inpainting",
-    }
+    },
 ]
 
 output = {"name": "inpainted_iamge", "type": "image", "example": "inpainted_iamge"}
