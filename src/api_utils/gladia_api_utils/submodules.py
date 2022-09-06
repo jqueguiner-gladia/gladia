@@ -133,37 +133,31 @@ def get_model_versions(root_path=None) -> dict:
 
             # Retieve metadata from metadata file and push it to versions,
             # the output of the get road
-            model_dir_path = os.path.join(package_path, fname)
-            model_metadata = get_model_metadata(model_dir_path)
+            model = fname
+            endpoint = package_path.replace("apis", "").replace("-models", "")
+            model_metadata = get_model_metadata(endpoint, model)
             versions[fname] = model_metadata
 
     return versions, package_path
 
 
-def get_task_dir_relpath_from_py_file(py_rel_path):
-    # Remove extension
-    rel_path = py_rel_path.replace(".py", "")
-    # get the last part corresponding to the task
-    rel_path = rel_path.split("/")
-    rel_path[-1] = to_models_folder_name(rel_path[-1])
-    rel_path = "/".join(rel_path)
-    return rel_path
-
-
-def get_model_metadata(rel_path):
+def get_model_metadata(endpoint, model):
+    splited_endpoint = endpoint.split("/")
+    endpoint = f"/{splited_endpoint[1]}/{splited_endpoint[2]}/{splited_endpoint[3]}-models/"
+    path = f"apis{endpoint}{model}"
     file_name = ".model_metadata.yaml"
     fallback_file_name = ".metadata_model_template.yaml"
-    return get_metadata(rel_path, file_name, fallback_file_name)
+    return get_metadata(path, file_name, fallback_file_name)
 
 
-def get_task_metadata(rel_path):
+def get_task_metadata(endpoint):
+    path = f"apis{endpoint}"
     file_name = ".task_metadata.yaml"
     fallback_file_name = ".metadata_task_template.yaml"
-    return get_metadata(rel_path, file_name, fallback_file_name)
+    return get_metadata(path, file_name, fallback_file_name)
 
 
 def get_metadata(rel_path, file_name, fallback_file_name):
-    print('model_relpath', rel_path)
     file_path = os.path.join(rel_path, file_name)
     if not Path(file_path).exists():
         file_path = os.path.join("apis", fallback_file_name)
@@ -280,6 +274,17 @@ def get_error_reponse(code: int, message: str):
     JSONResponse(status_code=code, content={"message": message})
 
 
+def get_task_examples(endpoint, models):
+    task_example = dict()
+    task_examples = dict()
+    for model in models:
+        model_metadata = get_model_metadata(endpoint, model)
+        model_example = model_metadata["gladia"].get("example", {})
+        model_examples = model_metadata["gladia"].get("examples", {})
+        task_example.update({model: model_example})
+        task_examples.update({model: model_examples})
+    return task_example, task_examples
+
 class TaskRouter:
     def __init__(self, router: APIRouter, input, output, default_model: str):
         self.input = input
@@ -294,8 +299,9 @@ class TaskRouter:
             namespace["__file__"].split("/")[-1],
         )
 
-        self.task, self.plugin, self.tags = get_module_infos(root_path=rel_path)
+        self.task_name, self.plugin, self.tags = get_module_infos(root_path=rel_path)
         self.versions, self.root_package_path = get_model_versions(rel_path)
+        self.endpoint = f"/{rel_path.split('/')[1]}/{rel_path.split('/')[2]}/{self.task_name}/"
 
         if not self.__check_if_model_exist(self.root_package_path, default_model):
             return
@@ -305,13 +311,12 @@ class TaskRouter:
         # displayed in /docs and /openapi.json for the get routes
         @router.get(
             "/",
-            summary=f"Get list of models available for {self.task}",
+            summary=f"Get list of models available for {self.task_name}",
             tags=[self.tags],
         )
         # This function send bask the get road content to the caller
         async def get_versions():
-            task_dir_path = get_task_dir_relpath_from_py_file(rel_path)
-            task_metadata = get_task_metadata(task_dir_path)
+            task_metadata = get_task_metadata(self.endpoint)
             get_content = {"models": dict(sorted(self.versions.items()))}
             # dict(sorted( is used to order
             # the models in alphabetical order
@@ -337,8 +342,15 @@ class TaskRouter:
             }
         )
 
+        models = list(self.versions.keys())
+        task_example, task_examples = get_task_examples(self.endpoint, models)
+
         responses = {
-            200: {"content": {response_class.media_type: {"schema": response_schema}}}
+            200: {
+                "content": {response_class.media_type: {"schema": response_schema}},
+                "example": task_example,
+                "examples": task_examples
+                }
         }
 
         endpoint_parameters_description = dict()
@@ -379,7 +391,7 @@ class TaskRouter:
         # displayed in /docs and /openapi.json for the post routes
         @router.post(
             "/",
-            summary=f"Apply model for the {self.task} task for a given models",
+            summary=f"Apply model for the {self.task_name} task for a given models",
             tags=[self.tags],
             response_class=response_class,
             responses=responses,
@@ -549,17 +561,17 @@ class TaskRouter:
 
         if not os.path.exists(root_package_path):
             logger.warn(
-                f"task dir ({root_package_path}) does not exist, skipping {self.task}"
+                f"task dir ({root_package_path}) does not exist, skipping {self.task_name}"
             )
             return False
 
         elif not os.path.exists(model_dir):
-            logger.warn(f"model_dir ({model_dir}) does not exist, skipping {self.task}")
+            logger.warn(f"model_dir ({model_dir}) does not exist, skipping {self.task_name}")
             return False
 
         elif not os.path.exists(model_file):
             logger.warn(
-                f"model_file ({model_file}) does not exist, skipping {self.task}"
+                f"model_file ({model_file}) does not exist, skipping {self.task_name}"
             )
             return False
 
