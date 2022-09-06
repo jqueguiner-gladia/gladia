@@ -187,7 +187,9 @@ def get_task_inputs(task_details):
                         "examples", None
                     )
                     if examples_data:
-                        examples_files = [value for value in list(examples_data.values())]
+                        examples_files = [
+                            value for value in list(examples_data.values())
+                        ]
                     # If examples does'nt exist or is empty, retieve it in current directory
                     else:
                         examples_files = os.listdir(CURRENT_DIRECTORY)
