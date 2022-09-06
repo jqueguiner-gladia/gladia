@@ -4,6 +4,8 @@ import json
 import logging
 import os
 import pkgutil
+import sys
+from distutils.command.clean import clean
 from logging import StreamHandler
 from logging.handlers import RotatingFileHandler
 from os.path import basename, normpath
@@ -15,6 +17,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
 from fastapi_utils.timing import add_timing_middleware
+from gladia_api_utils.submodules import to_task_name
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.responses import RedirectResponse
 
@@ -181,10 +184,10 @@ def __add_router(module: ModuleType, module_path: str) -> None:
         apis_folder_name, ""
     )[1:].split(".")
 
-    module_task = module_task.upper()
+    module_task = to_task_name(module_task).upper()
     module_config = config["active_tasks"][module_input][module_output]
 
-    active_task_list = list(map(lambda each: each.upper(), module_config))
+    active_task_list = list(map(lambda each: to_task_name(each).upper(), module_config))
 
     if "NONE" not in active_task_list and (
         module_task in active_task_list or "*" in module_config
@@ -194,9 +197,30 @@ def __add_router(module: ModuleType, module_path: str) -> None:
         app.include_router(module.router, prefix=module_prefix)
 
 
-def __module_is_an_input_type(split_module_path):
+def __clean_package_import(module_path: str) -> ModuleType:
     """
-    Check if the module is an input type
+    import package based on path and create an alias for it if needed
+    to avoid import errors when path contains hyphens
+    Args:
+        module_path (str): path to the package to import
+    Returns:
+        ModuleType: imported package
+    """
+    clean_key = module_path.replace("-", "_")
+    module = importlib.import_module(module_path)
+    # clean_key is used to avoid importlib.import_module to import the same module twice
+    # if the module is imported twice, the second import will fail
+    # this is a workaround to avoid this issue
+    # see https://stackoverflow.com/questions/8350853/how-to-import-module-when-module-name-has-a-dash-or-hyphen-in-it
+    if clean_key not in sys.modules:
+        sys.modules[clean_key] = sys.modules[module_path]
+    return module
+
+
+def __module_is_an_input_type(split_module_path: list) -> bool:
+    """
+    Check if the parsed module_path is an input type (Image/Audio/Video/Text)
+    (meaning length is 1)
 
     Args:
         split_module_path (list): module path split by "."
@@ -237,10 +261,10 @@ def __module_is_a_task(split_module_path: List[str], module_config: dict) -> boo
     Returns:
         bool: True if the module is a task, False otherwise
     """
-    return len(split_module_path) == 3 and (
-        split_module_path[2].rstrip("s")
-        in map(lambda each: each.rstrip("s"), module_config)
-        or "*" in module_config
+    return (
+        len(split_module_path) == 2
+        and "None".upper not in map(lambda each: each.upper(), module_config)
+        or len(module_config) == 0
     )
 
 
@@ -286,7 +310,7 @@ def import_submodules(package: ModuleType, recursive: bool = True) -> None:
     """
 
     if isinstance(package, str):
-        package = importlib.import_module(package)
+        package = __clean_package_import(package)
 
     for _, name, is_pkg in pkgutil.walk_packages(package.__path__):
 
@@ -298,7 +322,7 @@ def import_submodules(package: ModuleType, recursive: bool = True) -> None:
         module_file_path = os.path.abspath(module_path.replace(".", "/"))
 
         if not __module_is_subprocess(module_file_path):
-            module = importlib.import_module(module_path)
+            module = __clean_package_import(module_path)
 
         module_relative_path = module_path.replace("apis", "")[1:]
 
