@@ -42,7 +42,6 @@ class OVH_file_manager():
 
 
     def upload_file_from_path(self, file_path, ovh_file_name):
-        
         file_extension = os.path.splitext(file_path)[-1]
         with open(file_path, 'rb') as file:
             try:
