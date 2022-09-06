@@ -73,8 +73,7 @@ Follow Gladia Twitter account to get the latest update
 
 # What's Gladia
 ## Why Gladia
-AI is not an easy topic, we have solved that for you! The web developer 1 stop shop for AI APIs. Translation, Speech and Amazon Polly Text to Speech (TTS), Sentiment Analysis, Voice synthesis (speech-to-text), Offensive Content Detection, Background removal, Face Detection, Object Detection, and more to come. One library to rule them all!
-
+AI is not an easy topic, we have solved that for you! The web developer 1 stop shop for AI APIs. Translation, Speech to Text and Text to Speech (TTS), Sentiment Analysis, Voice synthesis (speech-to-text), Offensive Content Detection, Background removal, Face Detection, Object Detection, and more to come. One library to rule them all!
 ## Why you should contribute ?
 Help us build the biggest treasure trove of State of the Arts AI models, one we all can benefit from.
 

@@ -5,7 +5,8 @@ import os
 def list_tasks_for_modalities(
     root_path: str, input_modaliy: str, output_modaliy: str
 ) -> str:
-    """List every tasks (activated or not) for a certain input/output modality pair
+    """
+    List every tasks (activated or not) for a certain input/output modality pair
 
     Args:
         root_path (str): path to the apis' root folder
@@ -34,7 +35,8 @@ def list_tasks_for_modalities(
 
 
 def get_activated_task_path(path_to_config_file: str, path_to_apis: str) -> str:
-    """Return the path to each task folder that is activated in the config.json file
+    """
+    Return the path to each task folder that is activated in the config.json file
 
     Args:
         path_to_config_file (str): path to the config.json file

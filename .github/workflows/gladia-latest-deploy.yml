@@ -3,6 +3,8 @@ name: Gladia Docker Hub Push
 on:
   workflow_dispatch:
   pull_request:
+    branches:
+      - main
     types:
       - closed
 
@@ -16,7 +18,8 @@ jobs:
   build:
     if: |
         !contains(github.event.pull_request.labels.*.name, 'ci') &&
-        !contains(github.event.pull_request.labels.*.name, 'doc')
+        !contains(github.event.pull_request.labels.*.name, 'doc') &&
+        (github.event.pull_request.merged == true)
     runs-on: [self-hosted, linux, STD, builder]
     timeout-minutes: 90
     # map steps output to job output
@@ -56,6 +59,30 @@ jobs:
           echo "DOCKER_BUILD_CACHE=" >> $GITHUB_ENV &&
           echo "DOCKER_BUILD_TAG=ci-${{ github.event.pull_request.number }}" >> $GITHUB_ENV &&
           echo "DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE=gladiaio/gladia-base:latest" >> $GITHUB_ENV
+          
+      - name: Get changed files using defaults
+        id: changed-files
+        uses: tj-actions/changed-files@v29.0.3
+          
+      # if gpu.Dockefile changed we need to rebuild the base image
+      - name: Looking for base.Dockerfile changed files
+        if: |
+          contains(steps.changed-files.outputs.modified_files, 'base.Dockerfile') ||
+          contains(steps.changed-files.outputs.deleted_files, 'base.Dockerfile')
+        run: |
+          echo "DOCKER_BASE_BUILD_NEEDED=true" >> $GITHUB_ENV
+          echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
+          
+      # if env.yaml was changed we need to rebuild micromamba envs or
+      # if gpu.Dockefile changed we need to rebuild the gladia image
+      - name: Looking for env.yaml or gpu.Dockerfile changed files
+        if: |
+          contains(steps.changed-files.outputs.modified_files, 'env.yaml') ||
+          contains(steps.changed-files.outputs.deleted_files, 'env.yaml') ||
+          contains(steps.changed-files.outputs.modified_files, 'gpu.Dockerfile') ||
+          contains(steps.changed-files.outputs.deleted_files, 'gpu.Dockerfile')
+        run: |
+          echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
 
       # override DOCKER_BUILD_TAG to "latest" if the PR is merged
       # override DOCKER_REGISTRY to "hub" if the PR is merged
@@ -118,7 +145,8 @@ jobs:
     needs: build
     if: |
         !contains(github.event.pull_request.labels.*.name, 'ci') &&
-        !contains(github.event.pull_request.labels.*.name, 'doc')
+        !contains(github.event.pull_request.labels.*.name, 'doc') &&
+        (github.event.pull_request.merged == true)
     runs-on: [self-hosted, linux, GPU, tester]
     steps:
       # retrieve the image built in the previous job
@@ -177,7 +205,7 @@ jobs:
           -e CUDA_VISIBLE_DEVICES=${{steps.gpuid.outputs.gpuid}}
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000
           -v /data/volumes/models:/tmp/gladia/models
-          --name jlmagouille-${{ github.event.pull_request.number	}}
+          --name jlmagouille-${{ github.event.pull_request.number }}
           docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }}
 
       - name: Gladia container readiness
@@ -255,24 +283,24 @@ jobs:
       - name: Promote Gladia-base image to Gladia Registry
         id: tag-gladia-base-gladiaregistry
         run: |
-          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} docker.gladia.io/gladia-base:latest &&
+          docker tag docker.gladia.io/gladia-base:${{ needs.build.outputs.dockerimage }} docker.gladia.io/gladia-base:latest &&
           docker push docker.gladia.io/gladia-base:latest
 
       - name: Promote Gladia-base image to Dockerhub Registry
         id: tag-gladia-base-dockerregistry
         run: |
-          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} gladiaio/gladia-base:latest &&
+          docker tag docker.gladia.io/gladia-base:${{ needs.build.outputs.dockerimage }} gladiaio/gladia-base:latest &&
           docker push gladiaio/gladia-base:latest
 
       - name: Promote Gladia image to Gladia Registry
         id: tag-gladia-gladiaregistry
         run: |
-          docker tag docker.gladia.io/gladia:${{env.DOCKER_BUILD_TAG}} docker.gladia.io/gladia:latest &&
+          docker tag docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }} docker.gladia.io/gladia:latest &&
           docker push docker.gladia.io/gladia:latest
 
       - name: Promote Gladia image to Dockerhub Registry
         id: tag-gladia-dockerregistry
         run: |
-          docker tag docker.gladia.io/gladia-base:${{env.DOCKER_BUILD_TAG}} gladiaio/gladia-base:latest &&
+          docker tag docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }} gladiaio/gladia-base:latest &&
           docker push gladiaio/gladia-base:latest
     

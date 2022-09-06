@@ -53,10 +53,6 @@ jobs:
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
 
-      - name: Lint Markdown
-        if: ${{ steps.filter.outputs.markdown == 'true' }}
-        run: npx textlint ${{ steps.filter.outputs.markdown_files }}
-
       - name: Set default env vars
         id: set-default-env
         run: |
@@ -65,38 +61,33 @@ jobs:
           echo "DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE=gladiaio/gladia-base:latest" >> $GITHUB_ENV
           echo "DOCKER_GLADIA_BUILD_NEEDED=false" >> $GITHUB_ENV
           echo "DOCKER_BASE_BUILD_NEEDED=false" >> $GITHUB_ENV
-
-      # if env.yaml was changed we need to rebuild micromamba envs
-      # if *.Dockefile changed we need to rebuild the image (either base or gladia)
-      - name: Looking for env.yaml or Dockerfile changed files
-        uses: dorny/paths-filter@v2
-        id: found-env_or_docker-changes
-        with:
-          # Enable listing of files matching each filter.
-          # Paths to files will be available in `${FILTER_NAME}_files` output variable.
-          # Paths will be escaped and space-delimited.
-          # Output is usable as command line argument list in linux shell
-          list-files: shell
-
-          # return true if any of the files match the filter
-          filters: |
-            env_yaml:
-              - added|modified|deleted: '*env.yaml'
-            gladia_dockerfile:
-              - added|modified|deleted: '*gpu.Dockerfile'
-            base_dockerfile:
-              - added|modified|deleted: '*base.Dockerfile'
-
-      - name: Setup computed build conditions 
+          
+      - name: Get changed files using defaults
+        id: changed-files
+        uses: tj-actions/changed-files@v29.0.3
+          
+          
+      # if gpu.Dockefile changed we need to rebuild the base image
+      - name: Looking for base.Dockerfile changed files
+        if: |
+          contains(steps.changed-files.outputs.modified_files, 'base.Dockerfile') ||
+          contains(steps.changed-files.outputs.deleted_files, 'base.Dockerfile') ||
+          contains(github.event.pull_request.labels.*.name, 'ci: force-base-build')
         run: |
-          if [[ "${{ steps.found-env_or_docker-changes.outputs.env_yaml }}" == "true" || "${{ steps.found-env_or_docker-changes.outputs.gladia_dockerfile }}" == "true" ]]; then
-            echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
-            echo "Gladia will be forced build based on changes files"
-          fi
-          if [[ "${{ steps.found-env_or_docker-changes.outputs.base_dockerfile }}" == "true" ]]; then
-            echo "DOCKER_BASE_BUILD_NEEDED=true" >> $GITHUB_ENV
-            echo "Gladia-base will be build based on changed files"
-          fi
+          echo "DOCKER_BASE_BUILD_NEEDED=true" >> $GITHUB_ENV
+          echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
+          
+      # if env.yaml was changed we need to rebuild micromamba envs or
+      # if gpu.Dockefile changed we need to rebuild the gladia image
+      - name: Looking for env.yaml or gpu.Dockerfile changed files
+        if: |
+          contains(steps.changed-files.outputs.modified_files, 'env.yaml') ||
+          contains(steps.changed-files.outputs.deleted_files, 'env.yaml') ||
+          contains(steps.changed-files.outputs.modified_files, 'gpu.Dockerfile') ||
+          contains(steps.changed-files.outputs.deleted_files, 'gpu.Dockerfile') ||
+          contains(github.event.pull_request.labels.*.name, 'ci: force-gladia-build')
+        run: |
+          echo "DOCKER_GLADIA_BUILD_NEEDED=true" >> $GITHUB_ENV
 
       # override DOCKER_BUILD_TAG to "latest" if the PR is merged
       # override DOCKER_REGISTRY to "hub" if the PR is merged
@@ -223,6 +214,12 @@ jobs:
             echo "Error : unexpected GPU ID"
             exit 1
           fi
+          
+      - name: Set log debug Level
+        id: set-log-debug-lvl
+        working-directory: ./src
+        run: >-
+          sed -i 's/"log_level": "info",/"log_level": "debug",/' config.json
 
       # Start the container and link the /app
       # to the current directory
@@ -249,7 +246,7 @@ jobs:
           -p ${{steps.gpuid.outputs.gpuid}}8000:8000
           -v /data/volumes/:/tmp/gladia/
           -v $PWD:/app
-          --name jlmagouille-${{ github.event.pull_request.number	}}
+          --name jlmagouille-${{ github.event.pull_request.number }}
           docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }}
 
       - name: Gladia container readiness
@@ -296,10 +293,13 @@ jobs:
         run: |
            docker logs jlmagouille-${{ github.event.pull_request.number }}
 
+      # we need to docker run to remove root artefact directories
+      # this should be done better in the future.
       - name: Clean Docker Test Env
         id: clean
         if: always()
         continue-on-error: True
-        run: |
-          docker stop jlmagouille-${{ github.event.pull_request.number }}
+        run: >-
+          docker stop jlmagouille-${{ github.event.pull_request.number }} &&
+          docker run -d -v $PWD:/app docker.gladia.io/gladia:${{ needs.build.outputs.dockerimage }} bash -c 'rm -rf /app' &&
           docker rm jlmagouille-${{ github.event.pull_request.number }}

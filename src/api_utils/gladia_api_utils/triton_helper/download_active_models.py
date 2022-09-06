@@ -13,7 +13,11 @@ def __filter_directories(directories: List[str]) -> List[str]:
     """
     Remove hidden directories from `directories`
 
-    :param directories: directories to remove hidden dir from
+    Args:
+        directories (List[str]): directories to remove hidden dir from
+
+    Returns:
+        List[str]: list of directories without hidden directories
     """
 
     return list(filter(lambda dir_name: not dir_name[0] in ["_", "."], directories))
@@ -26,12 +30,12 @@ def __get_every_models_git_path_for_given_task(
 
     Args:
         root_path (str): path to the root of apis
-        input_modality (str): modality of the input of `task
-        output_modality (str): modality of the output of `task`
+        input_modality (str): modality of the input of `task` could be "image", "text", "audio" or "video"
+        output_modality (str): modality of the output of `task` could be "image", "text", "audio" or "video"
         task (str): task to get the models from
 
     Returns:
-        [str]: list of path leading to each model for a certain task
+        List[str]: list of path leading to each model for a certain task
     """
 
     models_path = []

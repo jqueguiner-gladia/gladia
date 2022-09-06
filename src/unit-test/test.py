@@ -3,12 +3,12 @@ import os
 import sys
 from time import sleep
 from urllib.request import Request, urlopen
-import yaml
 
 import click
 import requests
-from validators import url as is_url
+import yaml
 from gladia_api_utils.OvhObjectStorageHelper import OVH_file_manager
+from validators import url as is_url
 
 global nb_total_tests
 global nb_test_ran, nb_test_passed, nb_test_failed, nb_test_skipped
@@ -292,36 +292,46 @@ def get_file_message(data, files) -> str:
 def create_metadata_with_reponse(path, params, data, files, response):
     model = params["model"]
     task = path
-    input = task.split('/')[1]
-    output = task.split('/')[2]
+    input = task.split("/")[1]
+    output = task.split("/")[2]
 
     if output != "text":
 
         extensions = {
-                "image/jpeg": "jpg",
-                "image/jpeg": "jpeg",
-                "image/gif": "gif",
-                "image/png": "png",
-                "audio/mpeg": "mp3",
-                "audio/wav": "wav",
-                "audio/x-m4a": "m4a"
-            }
-        
+            "image/jpeg": "jpg",
+            "image/jpeg": "jpeg",
+            "image/gif": "gif",
+            "image/png": "png",
+            "audio/mpeg": "mp3",
+            "audio/wav": "wav",
+            "audio/x-m4a": "m4a",
+        }
+
         # Upload file to OVH
         content_type = response.headers["content-type"]
         try:
             output_extension = extensions[content_type]
         except Exception as e:
             print(f"Error: '{content_type}' is not a known content-type")
-            
+
         if input != "text":
-            file_path = list(files.values())[0][1] if files else [value for key, value in data.items() if key.endswith("_url")][0]
+            file_path = (
+                list(files.values())[0][1]
+                if files
+                else [value for key, value in data.items() if key.endswith("_url")][0]
+            )
             original_file_name_with_extension = os.path.basename(file_path)
-            original_file_name, input_extension = os.path.splitext(original_file_name_with_extension)
+            original_file_name, input_extension = os.path.splitext(
+                original_file_name_with_extension
+            )
             input_extension = input_extension[1:]
             file_name = f"from_{original_file_name}_{input_extension}"
             file_name_with_extesion = f"{file_name}.{output_extension}"
-            ovh_file_name = f"output{task}{model}/examples/{file_name_with_extesion}" if files else f"output{task}{model}/example/{file_name_with_extesion}"
+            ovh_file_name = (
+                f"output{task}{model}/examples/{file_name_with_extesion}" 
+                if files 
+                else f"output{task}{model}/example/{file_name_with_extesion}"
+            )
         else:
             file_name = "output"
             file_name_with_extesion = f"{file_name}.{output_extension}"
@@ -340,9 +350,13 @@ def create_metadata_with_reponse(path, params, data, files, response):
             metadata = yaml.safe_load(metadata_file)
         if input != "text":
             example_dict = "examples" if files else "example"
-            metadata["gladia"][example_dict][file_name] = f"http://files.gladia.io/{ovh_file_name}"
+            metadata["gladia"][example_dict][
+                file_name
+            ] = f"http://files.gladia.io/{ovh_file_name}"
         else:
-            metadata["gladia"]["example"]["output"] = f"http://files.gladia.io/{ovh_file_name}"
+            metadata["gladia"]["example"][
+                "output"
+            ] = f"http://files.gladia.io/{ovh_file_name}"
         with open(metadata_file_path, "w") as metadata_file:
             yaml.dump(metadata, metadata_file)
 
@@ -356,7 +370,7 @@ def create_metadata_with_reponse(path, params, data, files, response):
 
 
 def get_model_metadata_path(task, model):
-    task_name = task.split('/')[3]
+    task_name = task.split("/")[3]
     task_models_folder = task.replace(task_name, f"{task_name}-models")
     path_to_metadata = f"apis{task_models_folder}{model}"
     metadata_file_name = ".model_metadata.yaml"
@@ -379,6 +393,7 @@ def clean_up_model_output_data(task, model):
     metadata["gladia"]["examples"] = {}
     with open(metadata_file_path, "w") as metadata_file:
         yaml.dump(metadata, metadata_file)
+
 
 def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
 
@@ -451,7 +466,9 @@ def perform_test(
             if not is_response_valid(response, details):
                 is_model_valid = False
             elif update_metadata:
-                create_metadata_with_reponse(path, params, request["data"], request["files"], response)
+                create_metadata_with_reponse(
+                    path, params, request["data"], request["files"], response
+                )
 
         if is_model_valid:
             nb_test_passed += 1
@@ -651,7 +668,7 @@ def main(
     audio_file,
     image_file,
     video_file,
-    update_metadata
+    update_metadata,
 ):
 
     global endpoints
@@ -719,7 +736,7 @@ def main(
                     max_retry,
                     specific_models,
                     default_models,
-                    update_metadata
+                    update_metadata,
                 )
 
             elif after_endpoint != "":
@@ -736,7 +753,7 @@ def main(
                         max_retry,
                         specific_models,
                         default_models,
-                        update_metadata
+                        update_metadata,
                     )
                 else:
                     print(f"|  |__ {STATUS_SKIPPED}  <Skipped>")
@@ -762,7 +779,7 @@ def main(
                     max_retry,
                     specific_models,
                     default_models,
-                    update_metadata
+                    update_metadata,
                 )
             else:
                 print(f"|  |__ {STATUS_SKIPPED}  <Skipped>")
@@ -778,7 +795,7 @@ def main(
                 max_retry,
                 specific_models,
                 default_models,
-                update_metadata
+                update_metadata,
             )
 
     if test_final_status == EXIT_STATUS_SUCCESS:

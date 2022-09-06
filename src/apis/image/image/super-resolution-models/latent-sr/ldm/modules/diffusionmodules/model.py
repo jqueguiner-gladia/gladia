@@ -17,7 +17,7 @@ def get_timestep_embedding(timesteps, embedding_dim):
     This matches the implementation in tensor2tensor, but differs slightly
     from the description in Section 3.5 of "Attention Is All You Need".
     """
-    assert len(timesteps.shape) == 1
+    assert len(timesteps.shape) == 17
 
     half_dim = embedding_dim // 2
     emb = math.log(10000) / (half_dim - 1)
@@ -915,11 +915,6 @@ class Resize(nn.Module):
                 f"Note: {self.__class__.__name} uses learned downsampling and will ignore the fixed {mode} mode"
             )
             raise NotImplementedError()
-            assert in_channels is not None
-            # no asymmetric padding in torch conv, must do it ourselves
-            self.conv = torch.nn.Conv2d(
-                in_channels, in_channels, kernel_size=4, stride=2, padding=1
-            )
 
     def forward(self, x, scale_factor=1.0):
         if scale_factor == 1.0:
