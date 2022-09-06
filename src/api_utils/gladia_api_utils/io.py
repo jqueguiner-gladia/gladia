@@ -66,6 +66,7 @@ def to_numpy(buffer: bytes) -> np.ndarray:
     Returns:
         numpy.ndarray: numpy array representing the buffer
     """
+
     return np.array(Image.open(io.BytesIO(buffer)))
 
 
@@ -79,6 +80,7 @@ def to_pil(buffer: bytes) -> Image:
     Returns:
         Image: PIL image
     """
+
     data = to_numpy(buffer)
 
     return Image.fromarray(np.uint8(data))
@@ -95,6 +97,7 @@ def np_to_img_buffer(data: np.ndarray, format: str = "PNG"):
     Returns:
         bytes: image buffer
     """
+
     buf = io.BytesIO()
     img = Image.fromarray(np.uint8(data))
     img.save(buf, format=format)
@@ -112,6 +115,7 @@ def np_to_img_pil(data: np.ndarray) -> Image:
     Returns:
         Image: PIL image
     """
+
     return Image.fromarray(np.uint8(data))
 
 
@@ -125,6 +129,7 @@ def to_pandas(buffer: bytes) -> pd.DataFrame:
     Returns:
         pandas.DataFrame: dataframe
     """
+
     buffer_mime_type = get_buffer_type(buffer)
     get_buffer_category = get_mime_category(buffer_mime_type)
     output = None

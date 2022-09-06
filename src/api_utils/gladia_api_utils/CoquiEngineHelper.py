@@ -10,12 +10,35 @@ from stt import Model
 
 
 class SpeechToTextEngine:
+    """
+    Speech to text engine from Coqui
+
+    Args:
+        model_uri (str): model uri
+        model (str): model file name
+        scorer (str): scorer file name
+
+    Returns:
+        SpeechToTextEngine: speech to text engine instance
+    """
+
     def __init__(
         self,
         model_uri: str = "english/coqui/v1.0.0-huge-vocab",
         model: str = "model.tflite",
         scorer: str = "huge-vocabulary.scorer",
     ):
+        """
+        Initialize the engine
+
+        Args:
+            model_uri (str): model uri
+            model (str): model file name
+            scorer (str): scorer file name
+
+        Returns:
+            SpeechToTextEngine: speech to text engine instance
+        """
 
         model_path_prefix = f"{os.getenv('MODEL_CACHE_ROOT')}/audio/text/{model_uri}"
 
@@ -36,7 +59,20 @@ class SpeechToTextEngine:
         self.model = Model(model_path)
         self.model.enableExternalScorer(scorer_path)
 
-    def normalize_audio(self, audio):
+    def normalize_audio(self, audio: bytes) -> bytes:
+        """
+        Normalize audio to [-1, 1]
+
+        Args:
+            audio (bytes): audio to normalize
+
+        Returns:
+            bytes: normalized audio
+
+        Raises:
+            Exception: if audio normalization fails
+        """
+
         out, err = (
             ffmpeg.input("pipe:0")
             .output(
@@ -54,10 +90,22 @@ class SpeechToTextEngine:
             raise Exception(err)
         return out
 
-    def run(self, audio):
+    def run(self, audio: bytes) -> str:
+        """
+        Run the model on audio
+
+        Args:
+            audio (bytes): audio to run the model on
+
+        Returns:
+            str: transcription
+        """
+
         audio = self.normalize_audio(audio)
         audio = BytesIO(audio)
+
         with wave.Wave_read(audio) as wav:
             audio = np.frombuffer(wav.readframes(wav.getnframes()), np.int16)
         result = self.model.stt(audio)
+
         return result

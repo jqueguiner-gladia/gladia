@@ -11,7 +11,18 @@ from genericpath import isdir
 from torch.cuda import is_available as cuda_is_available
 
 
-def copy(source, destination):
+def copy(source: str, destination: str) -> None:
+    """
+    Copy file from source to destination.
+
+    Args:
+        source (str): source path to copy from
+        destination (str): destination path to copy to
+
+    Returns:
+        None
+    """
+
     # used for relative paths
     namespace = sys._getframe(1).f_globals
     cwd = os.getcwd()
@@ -23,19 +34,37 @@ def copy(source, destination):
     if not isabs(Path(destination)):
         destination = os.path.join(root_path, destination)
 
-    return distutils.dir_util.copy_tree(source, destination)
+    distutils.dir_util.copy_tree(source, destination)
 
 
 def get_cwd():
+    """
+    Get the current working directory.
+
+    Returns:
+        str: current working directory
+    """
+
     # used for relative paths
     namespace = sys._getframe(1).f_globals
     cwd = os.getcwd()
     rel_path = namespace["__file__"]
     root_path = os.path.dirname(os.path.join(cwd, rel_path))
+
     return root_path
 
 
-def path_to_absolute(path):
+def path_to_absolute(path: str) -> str:
+    """
+    Make a path absolute if it's not already.
+
+    Args:
+        path (str): path to make absolute
+
+    Returns:
+        str: absolute path
+    """
+
     if not isabs(Path(path)):
         # used for relative paths
         namespace = sys._getframe(1).f_globals
@@ -43,10 +72,21 @@ def path_to_absolute(path):
         rel_path = namespace["__file__"]
         root_path = os.path.dirname(os.path.join(cwd, rel_path))
         path = os.path.join(root_path, path)
+
     return path
 
 
-def run(*argv):
+def run(*argv) -> subprocess.CompletedProcess:
+    """
+    Run a command on the system.
+
+    Args:
+        *argv (str): command to run
+
+    Returns:
+        str: output of command
+    """
+
     # used for relative paths
     namespace = sys._getframe(1).f_globals
     cwd = os.getcwd()
@@ -60,7 +100,17 @@ def run(*argv):
     return subprocess.run([cmd], shell=True, capture_output=True)
 
 
-def remove(*paths):
+def remove(*paths) -> None:
+    """
+    Remove a file or directory.
+
+    Args:
+        *paths (str): path to remove
+
+    Returns:
+        None
+    """
+
     for path in paths:
         if isinstance(path, str):
             path = Path(path)
@@ -77,12 +127,26 @@ def remove(*paths):
 
 
 def get_first_available_gpu_id() -> int:
+    """
+    Get the first available GPU id. If no GPUs are available, return None.
+
+    Returns:
+        int: first available GPU id return None if no GPU is available
+    """
+
     available_gpu_ids = get_available_gpu_ids()
 
     return None if len(available_gpu_ids) == 0 else available_gpu_ids[0]
 
 
 def get_random_available_gpu_id() -> int:
+    """
+    Get a random available GPU id. If no GPUs are available, return None.
+
+    Returns:
+        int: random available GPU id return None if no GPU is available
+    """
+
     available_gpu_ids = get_available_gpu_ids()
 
     if available_gpu_ids:
@@ -92,6 +156,13 @@ def get_random_available_gpu_id() -> int:
 
 
 def get_available_gpu_ids() -> list:
+    """
+    Get all available GPU ids. If no GPUs are available, return an empty list.
+
+    Returns:
+        list: all available GPU ids return an empty list if no GPU is available
+    """
+
     gpu_ids = list()
 
     if cuda_is_available() and (
