@@ -4,10 +4,10 @@ api:
 gladia:
   accelerator: ''
   example:
-    from_jpg: http://files.gladia.io/output/image/image/colorization/deoldify-artistic/example/from_rsz_paris_jpg.png
+    from_rsz_paris_jpg: http://files.gladia.io/output/image/image/colorization/deoldify-artistic/example/from_rsz_paris_jpg.png
   examples:
-    from_jpg: http://files.gladia.io/output/image/image/colorization/deoldify-artistic/examples/from_rsz_paris_jpg.png
-    from_png: http://files.gladia.io/output/image/image/colorization/deoldify-artistic/examples/from_rsz_paris_png.png
+    from_rsz_paris_jpg: http://files.gladia.io/output/image/image/colorization/deoldify-artistic/examples/from_rsz_paris_jpg.png
+    from_rsz_paris_png: http://files.gladia.io/output/image/image/colorization/deoldify-artistic/examples/from_rsz_paris_png.png
   format: ''
   latency: ''
 huggingface:

@@ -4,10 +4,10 @@ api:
 gladia:
   accelerator: ''
   example:
-    from_png: http://files.gladia.io/output/image/image/face-bluring/ageitgey/example/from_face-bluring_png.png
+    from_face-bluring_png: http://files.gladia.io/output/image/image/face-bluring/ageitgey/example/from_face-bluring_png.png
   examples:
-    from_jpg: http://files.gladia.io/output/image/image/face-bluring/ageitgey/examples/from_face-bluring_jpg.png
-    from_png: http://files.gladia.io/output/image/image/face-bluring/ageitgey/examples/from_face-bluring_png.png
+    from_face-bluring_jpg: http://files.gladia.io/output/image/image/face-bluring/ageitgey/examples/from_face-bluring_jpg.png
+    from_face-bluring_png: http://files.gladia.io/output/image/image/face-bluring/ageitgey/examples/from_face-bluring_png.png
   format: ''
   latency: ''
 huggingface:

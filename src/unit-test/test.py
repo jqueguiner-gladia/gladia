@@ -319,10 +319,12 @@ def create_metadata_with_reponse(path, params, data, files, response):
             original_file_name_with_extension = os.path.basename(file_path)
             original_file_name, input_extension = os.path.splitext(original_file_name_with_extension)
             input_extension = input_extension[1:]
-            file_name = f"from_{original_file_name}_{input_extension}.{output_extension}"
-            ovh_file_name = f"output{task}{model}/examples/{file_name}" if files else f"output{task}{model}/example/{file_name}"
+            file_name = f"from_{original_file_name}_{input_extension}"
+            file_name_with_extesion = f"{file_name}.{output_extension}"
+            ovh_file_name = f"output{task}{model}/examples/{file_name_with_extesion}" if files else f"output{task}{model}/example/{file_name_with_extesion}"
         else:
-            file_name = f"output.{output_extension}"
+            file_name = "output"
+            file_name_with_extesion = f"{file_name}.{output_extension}"
             ovh_file_name = f"output{task}{model}/example/{file_name}"
 
         tmp_file_path = "unit-test/tmp-output-file.png"
@@ -338,7 +340,7 @@ def create_metadata_with_reponse(path, params, data, files, response):
             metadata = yaml.safe_load(metadata_file)
         if input != "text":
             example_dict = "examples" if files else "example"
-            metadata["gladia"][example_dict][f"from_{input_extension}"] = f"http://files.gladia.io/{ovh_file_name}"
+            metadata["gladia"][example_dict][file_name] = f"http://files.gladia.io/{ovh_file_name}"
         else:
             metadata["gladia"]["example"]["output"] = f"http://files.gladia.io/{ovh_file_name}"
         with open(metadata_file_path, "w") as metadata_file:
@@ -372,7 +374,7 @@ def clean_up_model_output_data(task, model):
     # Clean up metadata
     metadata_file_path = get_model_metadata_path(task, model)
     with open(metadata_file_path, "r") as metadata_file:
-            metadata = yaml.safe_load(metadata_file)
+        metadata = yaml.safe_load(metadata_file)
     metadata["gladia"]["example"] = {}
     metadata["gladia"]["examples"] = {}
     with open(metadata_file_path, "w") as metadata_file:
