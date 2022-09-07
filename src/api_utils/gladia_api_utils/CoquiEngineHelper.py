@@ -1,6 +1,7 @@
 import os
 import wave
 from io import BytesIO
+from logging import getLogger
 from pathlib import Path
 
 import ffmpeg
@@ -8,7 +9,6 @@ import numpy as np
 from gladia_api_utils.model_management import download_model
 from stt import Model
 
-from logging import getLogger
 logger = getLogger(__name__)
 
 
