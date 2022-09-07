@@ -21,7 +21,7 @@ from .file_management import (
 logger = getLogger(__name__)
 
 
-GLADIA_TMP_MODEL_PATH = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/")
+GLADIA_TMP_MODEL_PATH = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models")
 
 def __download_huggingface_model(
     url: str,
@@ -119,6 +119,32 @@ def __download_and_uncompress_model(
     delete_file(dl_tmp_filepath)
     delete_directory(uncompress_tmp_dirpath)
 
+def create_folder_in_model_cache_directory(folder_path: str) -> str:
+    """
+    Create a folder withing a model cache directory
+    No absolute path should be provided
+
+    Args:
+        folder_path (str): absolute path to the folder to create in the model cache directory
+
+    Returns:
+        str: absolute path to the folder created
+    """
+    if not os.path.isabs(folder_path):
+        namespace = sys._getframe(1).f_globals
+        rel_path = str(os.path.dirname(namespace["__file__"]))
+
+        folder_path = GLADIA_TMP_MODEL_PATH + rel_path + "/" + folder_path
+        logger.debug(f"Relative path detected, using {folder_path} as path")
+
+    else:
+        raise ValueError("Absolute path provided")
+    
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path, exist_ok=True)
+    
+    return folder_path
+
 
 def download_model(
     url: str,
@@ -146,11 +172,13 @@ def download_model(
     """
 
 
-
     if not os.path.isabs(output_path):
         namespace = sys._getframe(1).f_globals
-        rel_path = namespace["__file__"]
-        output_path = os.path.join(GLADIA_TMP_MODEL_PATH, rel_path, output_path)
+        rel_path = str(os.path.dirname(namespace["__file__"]))
+
+        output_path = GLADIA_TMP_MODEL_PATH + rel_path + "/" + output_path
+        logger.debug(f"Relative path detected, using {output_path} as output path")
+        
 
     logger.debug(f"Downloading model from {url} to {output_path}")
 
