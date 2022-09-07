@@ -119,6 +119,7 @@ def __download_and_uncompress_model(
     delete_file(dl_tmp_filepath)
     delete_directory(uncompress_tmp_dirpath)
 
+
 def create_folder_in_model_cache_directory(folder_path: str) -> str:
     """
     Create a folder withing a model cache directory
@@ -139,10 +140,10 @@ def create_folder_in_model_cache_directory(folder_path: str) -> str:
 
     else:
         raise ValueError("Absolute path provided")
-    
+
     if not os.path.exists(folder_path):
         os.makedirs(folder_path, exist_ok=True)
-    
+
     return folder_path
 
 
@@ -177,14 +178,13 @@ def download_model(
 
         output_path = GLADIA_TMP_MODEL_PATH + rel_path + "/" + output_path
         logger.debug(f"Relative path detected, using {output_path} as output path")
-        
+
     if not os.path.isabs(output_path):
         namespace = sys._getframe(1).f_globals
         rel_path = str(os.path.dirname(namespace["__file__"]))
 
         output_path = GLADIA_TMP_MODEL_PATH + rel_path + "/" + output_path
         logger.debug(f"Relative path detected, using {output_path} as output path")
-        
 
     logger.debug(f"Downloading model from {url} to {output_path}")
 
