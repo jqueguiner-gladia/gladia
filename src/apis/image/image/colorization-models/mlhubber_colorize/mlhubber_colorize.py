@@ -1,12 +1,11 @@
 import os
+
 import cv2 as cv
 import numpy as np
-
-from PIL import Image
-from keras.models import load_model
 from gladia_api_utils.io import _open
 from gladia_api_utils.model_management import download_models
-
+from keras.models import load_model
+from PIL import Image
 
 models_to_download = {
     "mlhubber_colorize": {
@@ -24,6 +23,7 @@ MODEL_FILE = os.path.join(
 PTS_IN_HULL_FILE = os.path.join(
     models_path["mlhubber_colorize"]["output_path"], "pts_in_hull.npy"
 )
+
 
 def predict(image: bytes) -> Image:
     """
@@ -55,7 +55,7 @@ def predict(image: bytes) -> Image:
     image = cv.resize(image, (h_in, w_in), cv.INTER_CUBIC)
 
     x_test = np.empty((1, h_in, w_in, 1), dtype=np.float32)
-    x_test[0, :, :, 0] = image / 255.
+    x_test[0, :, :, 0] = image / 255.0
 
     X_colorized = model.predict(x_test)
     X_colorized = X_colorized.reshape((h_out * w_out, nb_q))
