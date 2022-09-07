@@ -7,7 +7,7 @@ from urllib.request import Request, urlopen
 import click
 import requests
 import yaml
-from gladia_api_utils.OVHFileManager import ovh_file_manager
+from gladia_api_utils.OVHFileManager import OVHFileManager
 from validators import url as is_url
 
 global nb_total_tests
@@ -345,7 +345,7 @@ def create_metadata_with_reponse(path, params, data, files, response):
         tmp_file_path = "unit-test/tmp-output-file.png"
         with open(tmp_file_path, "wb") as out_file:
             out_file.write(response.content)
-        file_manager = ovh_file_manager()
+        file_manager = OVHFileManager()
         file_manager.upload_file_from_path(tmp_file_path, ovh_file_name)
         os.remove(tmp_file_path)
 
@@ -385,7 +385,7 @@ def get_model_metadata_path(task, model):
 
 def clean_up_model_output_data(task, model):
     # Clean up files in OVH Object Storage
-    file_manager = ovh_file_manager()
+    file_manager = OVHFileManager()
     prefix = f"output{task}{model}"
     files_to_delete = file_manager.get_objects(prefix=prefix)
     for file_to_delete in files_to_delete:
