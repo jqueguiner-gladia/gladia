@@ -90,7 +90,7 @@ def download_model(
 
         downloaded_full_path = download_file(
             url=url,
-            file_full_path=dl_tmp_dirpath,
+            file_full_path=str(dl_tmp_dirpath),
             force_create_dir=True,
             force_redownload=False,
         )
@@ -99,8 +99,8 @@ def download_model(
         if uncompress_after_download and is_uncompressable(str(downloaded_full_path)):
             logger.debug("Uncompressing {downloaded_full_path} to {output_path}")
             uncompress(
-                path=downloaded_full_path,
-                destination=uncompress_tmp_dirpath,
+                path=str(downloaded_full_path),
+                destination=str(uncompress_tmp_dirpath),
                 delete_after_uncompress=True,
             )
             os.system(f"mv {uncompress_tmp_dirpath}/* {output_path}")
