@@ -6,10 +6,10 @@ import subprocess
 import sys
 from pathlib import Path
 from posixpath import isabs
+from typing import Union
 
 from genericpath import isdir
 from torch.cuda import is_available as cuda_is_available
-from typing import Union
 
 
 def copy(source: str, destination: str) -> None:

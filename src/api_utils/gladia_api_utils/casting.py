@@ -15,7 +15,8 @@ from starlette.responses import StreamingResponse
 
 from .file_management import get_file_type
 
-png_media_type="image/png"
+png_media_type = "image/png"
+
 
 class NpEncoder(json.JSONEncoder):
     """
@@ -142,6 +143,7 @@ def __convert_io_response(response: io.IOBase, output_type: str) -> StreamingRes
 
     return response
 
+
 def __load_json_string_representation(json_string: str) -> Union[dict, str]:
     """
     Load a JSON string into a dictionary
@@ -180,6 +182,7 @@ def __load_json_string_representation(json_string: str) -> Union[dict, str]:
             warn(f"Couldn't interpret response returning plain response: {e}")
             return json_string
 
+
 def __load_file_as_response(file_path: str) -> Union[StreamingResponse, JSONResponse]:
     """
     Load a file as a response. JSON files will be loaded as JSON response, other files will be loaded as Streaming response
@@ -195,11 +198,10 @@ def __load_file_as_response(file_path: str) -> Union[StreamingResponse, JSONResp
         return json.load(file_path)
     except Exception as e:
         file_to_stream = open(file_path, "rb")
-        return StreamingResponse(
-            file_to_stream, media_type=get_file_type(file_path)
-        )
+        return StreamingResponse(file_to_stream, media_type=get_file_type(file_path))
     finally:
         os.remove(file_path)
+
 
 def __convert_string_response(
     response: str,

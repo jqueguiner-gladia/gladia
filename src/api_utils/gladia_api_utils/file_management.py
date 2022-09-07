@@ -21,8 +21,10 @@ logger = getLogger(__name__)
 class PathNotExistsException(Exception):
     pass
 
+
 class FileProcessingError(Exception):
     pass
+
 
 MIME_TYPES_CATEGORIES = {
     "audio": "audio",
@@ -57,14 +59,12 @@ MIME_TYPE_TO_CATEGORY = {
     "audio/webm": MIME_TYPES_CATEGORIES["audio"],
     "audio/3gpp": MIME_TYPES_CATEGORIES["audio"],
     "audio/3gpp2": MIME_TYPES_CATEGORIES["audio"],
-
     "video/x-msvideo": MIME_TYPES_CATEGORIES["video"],
     "video/mpeg": MIME_TYPES_CATEGORIES["video"],
     "video/ogg": MIME_TYPES_CATEGORIES["video"],
     "video/webm": MIME_TYPES_CATEGORIES["video"],
     "video/3gpp": MIME_TYPES_CATEGORIES["video"],
     "video/3gpp2": MIME_TYPES_CATEGORIES["video"],
-
     "image/bmp": MIME_TYPES_CATEGORIES["image"],
     "image/gif": MIME_TYPES_CATEGORIES["image"],
     "image/x-icon": MIME_TYPES_CATEGORIES["image"],
@@ -73,17 +73,13 @@ MIME_TYPE_TO_CATEGORY = {
     "image/svg+xml": MIME_TYPES_CATEGORIES["image"],
     "image/tiff": MIME_TYPES_CATEGORIES["image"],
     "image/webp": MIME_TYPES_CATEGORIES["image"],
-
     "font/otf": MIME_TYPES_CATEGORIES["font"],
     "font/ttf": MIME_TYPES_CATEGORIES["font"],
     "font/woff": MIME_TYPES_CATEGORIES["font"],
     "font/woff2": MIME_TYPES_CATEGORIES["font"],
-
     "application/octet-stream": MIME_TYPES_CATEGORIES["binary"],
-
     "application/vnd.amazon.ebook": MIME_TYPES_CATEGORIES["ebook"],
     "application/epub+zip": MIME_TYPES_CATEGORIES["ebook"],
-
     "application/x-bzip": MIME_TYPES_CATEGORIES["archive"],
     "application/x-bzip": MIME_TYPES_CATEGORIES["archive"],
     "application/x-bzip2": MIME_TYPES_CATEGORIES["archive"],
@@ -92,67 +88,97 @@ MIME_TYPE_TO_CATEGORY = {
     "application/x-tar": MIME_TYPES_CATEGORIES["archive"],
     "application/zip": MIME_TYPES_CATEGORIES["archive"],
     "application/x-7z-compressed": MIME_TYPES_CATEGORIES["archive"],
-
     "application/x-csh": MIME_TYPES_CATEGORIES["executable"],
     "application/ogg": MIME_TYPES_CATEGORIES["executable"],
     "application/x-sh": MIME_TYPES_CATEGORIES["executable"],
     "application/x-shockwave-flash": MIME_TYPES_CATEGORIES["executable"],
-
     "text/css": MIME_TYPES_CATEGORIES["web_content"],
     "text/html": MIME_TYPES_CATEGORIES["web_content"],
     "application/javascript": MIME_TYPES_CATEGORIES["web_content"],
     "application/xhtml+xml": MIME_TYPES_CATEGORIES["web_content"],
     "application/vnd.mozilla.xul+xml": MIME_TYPES_CATEGORIES["web_content"],
-    
     "text/csv": MIME_TYPES_CATEGORIES["flat_structured_data"],
     "text/tab-separated-values": MIME_TYPES_CATEGORIES["flat_structured_data"],
-
-    "application/vnd.oasis.opendocument.spreadsheet": MIME_TYPES_CATEGORIES["spreadsheet"],
+    "application/vnd.oasis.opendocument.spreadsheet": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
     "application/vnd.ms-excel": MIME_TYPES_CATEGORIES["spreadsheet"],
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": MIME_TYPES_CATEGORIES["spreadsheet"],
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.template": MIME_TYPES_CATEGORIES["spreadsheet"],
-    "application/vnd.ms-excel.sheet.macroEnabled.12": MIME_TYPES_CATEGORIES["spreadsheet"],
-    "application/vnd.ms-excel.template.macroEnabled.12": MIME_TYPES_CATEGORIES["spreadsheet"],
-    "application/vnd.ms-excel.addin.macroEnabled.12": MIME_TYPES_CATEGORIES["spreadsheet"],
-    "application/vnd.ms-excel.sheet.binary.macroEnabled.12": MIME_TYPES_CATEGORIES["spreadsheet"],
-    "application/vnd.oasis.opendocument.spreadsheet": MIME_TYPES_CATEGORIES["spreadsheet"],
-    "application/vnd.oasis.opendocument.spreadsheet-template": MIME_TYPES_CATEGORIES["spreadsheet"],
-    "application/vnd.oasis.opendocument.spreadsheet-flat-xml": MIME_TYPES_CATEGORIES["spreadsheet"],
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.template": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.ms-excel.sheet.macroEnabled.12": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.ms-excel.template.macroEnabled.12": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.ms-excel.addin.macroEnabled.12": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.ms-excel.sheet.binary.macroEnabled.12": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.oasis.opendocument.spreadsheet": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.oasis.opendocument.spreadsheet-template": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.oasis.opendocument.spreadsheet-flat-xml": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
     "application/vnd.lotus-1-2-3": MIME_TYPES_CATEGORIES["spreadsheet"],
     "application/vnd.lotus-approach": MIME_TYPES_CATEGORIES["spreadsheet"],
     "application/vnd.lotus-freelance": MIME_TYPES_CATEGORIES["spreadsheet"],
     "application/xslt+xml": MIME_TYPES_CATEGORIES["web_content"],
-    
     "application/json": MIME_TYPES_CATEGORIES["multidimensional_structured_data"],
     "application/xml": MIME_TYPES_CATEGORIES["multidimensional_structured_data"],
-
     "application/msword": MIME_TYPES_CATEGORIES["document"],
     "application/x-abiword": MIME_TYPES_CATEGORIES["document"],
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": MIME_TYPES_CATEGORIES["document"],
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": MIME_TYPES_CATEGORIES[
+        "document"
+    ],
     "application/vnd.oasis.opendocument.text": MIME_TYPES_CATEGORIES["document"],
     "application/rtf": MIME_TYPES_CATEGORIES["document"],
-    
     "application/vnd.ms-powerpoint": MIME_TYPES_CATEGORIES["presentation"],
-    "application/vnd.oasis.opendocument.presentation": MIME_TYPES_CATEGORIES["presentation"],
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation": MIME_TYPES_CATEGORIES["presentation"],
-
-
+    "application/vnd.oasis.opendocument.presentation": MIME_TYPES_CATEGORIES[
+        "presentation"
+    ],
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": MIME_TYPES_CATEGORIES[
+        "presentation"
+    ],
     "application/pdf": MIME_TYPES_CATEGORIES["pdf"],
-
     "application/vnd.visio": MIME_TYPES_CATEGORIES["diagram"],
     "application/vnd.oasis.opendocument.graphics": MIME_TYPES_CATEGORIES["diagram"],
-    "application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml": MIME_TYPES_CATEGORIES["diagram"],
-    "application/vnd.openxmlformats-officedocument.drawingml.diagramColors+xml": MIME_TYPES_CATEGORIES["diagram"],
-    "application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml": MIME_TYPES_CATEGORIES["diagram"],
-    "application/vnd.openxmlformats-officedocument.drawingml.diagramStyle+xml": MIME_TYPES_CATEGORIES["diagram"],
-    "application/vnd.ms-office.drawingml.diagramData+xml": MIME_TYPES_CATEGORIES["diagram"],
-    "application/vnd.ms-office.drawingml.diagramColors+xml": MIME_TYPES_CATEGORIES["diagram"],
-    "application/vnd.ms-office.drawingml.diagramLayout+xml": MIME_TYPES_CATEGORIES["diagram"],
-    "application/vnd.ms-office.drawingml.diagramStyle+xml": MIME_TYPES_CATEGORIES["diagram"],
-
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramColors+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramStyle+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.ms-office.drawingml.diagramData+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.ms-office.drawingml.diagramColors+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.ms-office.drawingml.diagramLayout+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.ms-office.drawingml.diagramStyle+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
     "text/plain": MIME_TYPES_CATEGORIES["text"],
     "text/calendar": MIME_TYPES_CATEGORIES["text"],
-    
     "text/x-vcard": MIME_TYPES_CATEGORIES["calendar"],
     "text/x-vcalendar": MIME_TYPES_CATEGORIES["calendar"],
     "text/x-vnote": MIME_TYPES_CATEGORIES["calendar"],
@@ -169,12 +195,6 @@ MIME_TYPE_TO_CATEGORY = {
     "text/x-vrsvp": MIME_TYPES_CATEGORIES["calendar"],
     "text/x-vrsvp-reply": MIME_TYPES_CATEGORIES["calendar"],
 }
-
-
-
-
-
-
 
 
 def is_binary_file(file_path: str) -> bool:

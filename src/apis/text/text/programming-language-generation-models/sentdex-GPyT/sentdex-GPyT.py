@@ -1,4 +1,4 @@
-from typing import Dict, Union, Tuple
+from typing import Dict, Tuple, Union
 
 import torch
 from transformers import (
