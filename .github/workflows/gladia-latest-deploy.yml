@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  REGISTRY_URL: https://docker.gladia.io
+  REGISTRY_URL: https://${{ secrets.DOCKER_GLADIA_FQDN }}
   TAG_PROMOTED: ci-${{ github.event.pull_request.number }}
   TAG_PROMOTE: latest
   CONTENT_TYPE: application/vnd.docker.distribution.manifest.v2+json
@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Promote *gladia-base* image to Gladia Registry
         if: |
-          contains(github.event.pull_request.labels.*.name, 'ci: force-build-base')
+          contains(github.event.pull_request.labels.*.name, 'ci: build-base')
         env:
           REPOSITORY: gladia-base
         run: |
@@ -52,22 +52,22 @@ jobs:
       - name: Login to Gladia Registry
         uses: docker/login-action@v1
         with:
-          registry: docker.gladia.io
+          registry: ${{ secrets.DOCKER_GLADIA_FQDN }}
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
 
       - name: Promote *gladia-base* image to DH Registry
         if: |
-          contains(github.event.pull_request.labels.*.name, 'ci: force-build-base')
+          contains(github.event.pull_request.labels.*.name, 'ci: build-base')
         run: |
-          docker pull docker.gladia.io/gladia-base:${{ env.TAG_PROMOTE }} &&
-          docker tag docker.gladia.io/gladia-base:${{ env.TAG_PROMOTE }} gladiaio/gladia-base:latest &&
+          docker pull ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia-base:${{ env.TAG_PROMOTE }} &&
+          docker tag ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia-base:${{ env.TAG_PROMOTE }} gladiaio/gladia-base:latest &&
           docker push gladiaio/gladia-base:latest
 
       - name: Promote *gladia* image to DH Registry
         run: |
-          docker pull docker.gladia.io/gladia-base:${{ env.TAG_PROMOTE }} &&
-          docker tag docker.gladia.io/gladia-base:${{ env.TAG_PROMOTE }} gladiaio/gladia-base:latest &&
+          docker pull ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia-base:${{ env.TAG_PROMOTE }} &&
+          docker tag ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia-base:${{ env.TAG_PROMOTE }} gladiaio/gladia-base:latest &&
           docker push gladiaio/gladia-base:latest
     
   notify-release:
@@ -94,12 +94,12 @@ jobs:
       - name: Login to Gladia Registry
         uses: docker/login-action@v1
         with:
-          registry: docker.gladia.io
+          registry: ${{ secrets.DOCKER_GLADIA_FQDN }}
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
       
       - name: pull gladia image
-        run: docker pull docker.gladia.io/gladia:${{ env.TAG_PROMOTE }}
+        run: docker pull ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia:${{ env.TAG_PROMOTE }}
 
       - name: stop docker gladia
         run: docker kill gladia-aipi && docker rm gladia-aipi
@@ -108,7 +108,7 @@ jobs:
         run: | 
             docker run -d --name gladia-aipi \
             --gpus all --shm-size=5g \
-            -p 80:8080 \
+            -p ${{ secrets.AIPI_SERVICE_PORT }}:8080 \
             -v /tmp/gladia:/tmp/gladia \
             -e TRITON_SERVER_PORT_HTTP=8000 \
             -e TRITON_SERVER_URL=${{ secrets.TRITON_SERVER_URL }} \
@@ -117,7 +117,7 @@ jobs:
             -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }} \
             -e STABILITY_KEY=${{ secrets.STABILITY_KEY }} \
             -e MODE=server \
-            docker.gladia.io/gladia:${{ env.TAG_PROMOTE }}
+            ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia:${{ env.TAG_PROMOTE }}
       # todo : healthcheck, notify failure
 
   deploy-aipi-2:
@@ -127,12 +127,12 @@ jobs:
       - name: Login to Gladia Registry
         uses: docker/login-action@v1
         with:
-          registry: docker.gladia.io
+          registry: ${{ secrets.DOCKER_GLADIA_FQDN }}
           username: ${{ secrets.DOCKER_GLADIA_USERNAME }}
           password: ${{ secrets.DOCKER_GLADIA_ACCESS_TOKEN }}
       
       - name: pull gladia image
-        run: docker pull docker.gladia.io/gladia:${{ env.TAG_PROMOTE }}
+        run: docker pull ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia:${{ env.TAG_PROMOTE }}
 
       - name: stop docker gladia
         run: docker kill gladia-aipi && docker rm gladia-aipi
@@ -143,7 +143,7 @@ jobs:
             --name gladia-aipi \
             --gpus all \
             --shm-size=5g \
-            -p 80:8080 \
+            -p ${{ secrets.AIPI_SERVICE_PORT }}:8080 \
             -v /tmp/gladia:/tmp/gladia \
             -e TRITON_SERVER_PORT_HTTP=8000 \
             -e TRITON_SERVER_URL=${{ secrets.TRITON_SERVER_URL }} \
@@ -152,7 +152,7 @@ jobs:
             -e HUGGINGFACE_ACCESS_TOKEN=${{ secrets.HUGGINGFACE_ACCESS_TOKEN }} \
             -e STABILITY_KEY=${{ secrets.STABILITY_KEY }} \
             -e MODE=server \
-            docker.gladia.io/gladia:${{ env.TAG_PROMOTE }}
+            ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia:${{ env.TAG_PROMOTE }}
 
   notify-aipi-prod-deployment:
     needs: [deploy-aipi-1, deploy-aipi-2]
