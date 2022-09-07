@@ -149,7 +149,7 @@ def download_file(
         Path: The path to the downloaded file.
     """
 
-    is_gdrivefile = "https://drive.google.com/" in url
+    is_gdrivefile = url.startswith("https://drive.google.com/")
 
     file_full_path = Path(file_full_path)
 
