@@ -87,7 +87,7 @@ class SpeechToTextEngine:
             .run(input=audio, capture_stdout=True, capture_stderr=True)
         )
         if err:
-            raise Exception(err)
+            raise SystemError(err)
         return out
 
     def run(self, audio: bytes) -> str:

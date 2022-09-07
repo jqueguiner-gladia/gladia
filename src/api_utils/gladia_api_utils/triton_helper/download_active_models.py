@@ -20,7 +20,7 @@ def __filter_directories(directories: List[str]) -> List[str]:
         List[str]: list of directories without hidden directories
     """
 
-    return list(filter(lambda dir_name: not dir_name[0] in ["_", "."], directories))
+    return list(filter(lambda dir_name: dir_name[0] not in ["_", "."], directories))
 
 
 def __get_every_models_git_path_for_given_task(

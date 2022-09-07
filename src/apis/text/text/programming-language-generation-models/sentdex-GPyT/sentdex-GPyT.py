@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, Tuple
 
 import torch
 from transformers import (
@@ -14,7 +14,7 @@ def generate(
     tokenizer: PreTrainedTokenizer,
     model: PreTrainedModel,
     max_length: int = 100,
-) -> str:
+) -> Tuple:
     """
     Takes input code, replaces newline chars with <N>,
     tokenizes, feeds through model, decodes, then reformat the newlines back in.

@@ -3,7 +3,7 @@ import os
 import swiftclient
 
 
-class OVH_file_manager:
+class ovh_file_manager:
     def __init__(self):
         self.USERNAME = os.getenv("OVH_OBJECT_STORAGE_USERNAME")
         self.KEY = os.getenv("OVH_OBJECT_STORAGE_KEY")

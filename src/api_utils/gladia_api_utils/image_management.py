@@ -6,7 +6,7 @@ from PIL import Image
 from skimage.filters import gaussian
 
 
-def compress_JPG_image(image: Image, path_original: str, size=(1920, 1080)) -> str:
+def compress_jpg_image(image: Image, path_original: str, size=(1920, 1080)) -> str:
     """
     Convert a given file to JPG file
 
@@ -43,7 +43,7 @@ def compress_JPG_image(image: Image, path_original: str, size=(1920, 1080)) -> s
     return first_name
 
 
-def convert_to_JPG(path_original: str) -> str:
+def convert_to_jpg(path_original: str) -> str:
     """
     Convert a given file to JPG file
 
@@ -54,36 +54,24 @@ def convert_to_JPG(path_original: str) -> str:
         str: path to converted image
     """
     img = Image.open(path_original)
-    name = os.path.basename(path_original).split(".")
-    first_name = os.path.join(os.path.dirname(path_original), name[0] + ".jpg")
 
-    if img.format == "JPEG":
+    if img.format == "JPEG" or img.format == "BMP":
         image = img.convert("RGB")
-        compress_JPG_image(image, path_original)
-        img.close()
 
     elif img.format == "GIF":
         i = img.convert("RGBA")
         bg = Image.new("RGBA", i.size)
         image = Image.composite(i, bg, i)
-        compress_JPG_image(image, path_original)
-        img.close()
 
     elif img.format == "PNG":
         try:
             image = Image.new("RGB", img.size, (255, 255, 255))
             image.paste(img, img)
-            compress_JPG_image(image, path_original)
         except ValueError:
             image = img.convert("RGB")
-            compress_JPG_image(image, path_original)
 
-        img.close()
-
-    elif img.format == "BMP":
-        image = img.convert("RGB")
-        compress_JPG_image(image, path_original)
-        img.close()
+    compress_jpg_image(image, path_original)
+    img.close()
 
     return path_original
 

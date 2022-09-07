@@ -15,6 +15,7 @@ from starlette.responses import StreamingResponse
 
 from .file_management import get_file_type
 
+png_media_type="image/png"
 
 class NpEncoder(json.JSONEncoder):
     """
@@ -53,7 +54,7 @@ def __convert_pillow_image_response(
 
     ioresult.seek(0)
 
-    returned_response = StreamingResponse(ioresult, media_type="image/png")
+    returned_response = StreamingResponse(ioresult, media_type=png_media_type)
 
     if len(additional_metadata) > 0:
         returned_response.headers["gladia_metadata"] = json.dumps(additional_metadata)
@@ -80,7 +81,7 @@ def __convert_ndarray_response(
         ioresult = io.BytesIO(response.tobytes())
         ioresult.seek(0)
 
-        return StreamingResponse(ioresult, media_type="image/png")
+        return StreamingResponse(ioresult, media_type=png_media_type)
 
     elif output_type == "text":
         return JSONResponse(content=jsonable_encoder(response.tolist()))
@@ -108,7 +109,7 @@ def __convert_bytes_response(response: bytes, output_type: str) -> StreamingResp
     ioresult.seek(0)
 
     if output_type == "image":
-        return StreamingResponse(ioresult, media_type="image/png")
+        return StreamingResponse(ioresult, media_type=png_media_type)
 
     else:
         warn(
@@ -132,7 +133,7 @@ def __convert_io_response(response: io.IOBase, output_type: str) -> StreamingRes
     response.seek(0)
 
     if output_type == "image":
-        return StreamingResponse(response, media_type="image/png")
+        return StreamingResponse(response, media_type=png_media_type)
 
     else:
         warn(
@@ -141,6 +142,64 @@ def __convert_io_response(response: io.IOBase, output_type: str) -> StreamingRes
 
     return response
 
+def __load_json_string_representation(json_string: str) -> Union[dict, str]:
+    """
+    Load a JSON string into a dictionary
+
+    Args:
+        json_string (str): JSON string
+
+    Returns:
+        Union[dict, str]: dictionary if the JSON string is valid, else the original string
+    """
+    # I decided to use regex instead of ast.literal_eval
+    # for security reason.
+    # having regex doesn't interpret while
+    # ast.literal_eval will
+    # see this proposition:
+    # https://stackoverflow.com/questions/39491420/python-jsonexpecting-property-name-enclosed-in-double-quotes
+    # which I found very risky
+    # J.L
+    try:
+        p = re.compile("(?<!\\\\)'")
+        replace_map = [("\n", "\\n"), ("\\\n", "\\n"), ("\\x0c", "")]
+        this_response = p.sub('"', json_string)
+        for replacement in replace_map:
+            this_response.replace(replacement[0], replacement[1])
+        return json.loads(this_response)
+    except Exception as e:
+        warn(f"Couldn't interpret response returning plain response: {e}")
+        try:
+            return JSONResponse(
+                content={
+                    "prediction": str(json_string),
+                    "prediction_raw": str(json_string),
+                }
+            )
+        except Exception as e:
+            warn(f"Couldn't interpret response returning plain response: {e}")
+            return json_string
+
+def __load_file_as_response(file_path: str) -> Union[StreamingResponse, JSONResponse]:
+    """
+    Load a file as a response. JSON files will be loaded as JSON response, other files will be loaded as Streaming response
+
+    Args:
+        file_path (str): path to the file
+
+    Returns:
+        Union[StreamingResponse, JSONResponse]: FastAPI streaming response for an image or JSON response for a table
+    """
+
+    try:
+        return json.load(file_path)
+    except Exception as e:
+        file_to_stream = open(file_path, "rb")
+        return StreamingResponse(
+            file_to_stream, media_type=get_file_type(file_path)
+        )
+    finally:
+        os.remove(file_path)
 
 def __convert_string_response(
     response: str,
@@ -161,34 +220,7 @@ def __convert_string_response(
     # try to load it as a json representation
     # else return it as is
     if not os.path.exists(response):
-        try:
-            # I decided to use regex instead of ast.literal_eval
-            # for security reason.
-            # having regex doesn't interpret while
-            # ast.literal_eval will
-            # see this proposition:
-            # https://stackoverflow.com/questions/39491420/python-jsonexpecting-property-name-enclosed-in-double-quotes
-            # which I found very risky
-            # J.L
-            p = re.compile("(?<!\\\\)'")
-            replace_map = [("\n", "\\n"), ("\\\n", "\\n"), ("\\x0c", "")]
-            this_response = p.sub('"', response)
-            for replacement in replace_map:
-                this_response.replace(replacement[0], replacement[1])
-            return json.loads(this_response)
-
-        except Exception as e:
-            warn(f"Couldn't interpret response returning plain response: {e}")
-            try:
-                return JSONResponse(
-                    content={
-                        "prediction": str(response),
-                        "prediction_raw": str(response),
-                    }
-                )
-            except Exception as e:
-                warn(f"Couldn't interpret response returning plain response: {e}")
-                return response
+        __load_json_string_representation(response)
 
     # if the string looks like a filepath
     # try to load it as a json
@@ -196,18 +228,9 @@ def __convert_string_response(
     else:
         try:
             if pathlib.Path(response).is_file():
-                try:
-                    return json.load(response)
-                except Exception as e:
-                    file_to_stream = open(response, "rb")
-                    return StreamingResponse(
-                        file_to_stream, media_type=get_file_type(response)
-                    )
-                finally:
-                    os.remove(response)
+                __load_file_as_response(response)
             else:
                 return response
-
         except OSError as os_error:
             warn(f"Couldn't interpret stream: {os_error}")
             return response
@@ -294,4 +317,4 @@ def cast_response(
         ioresult = response
         ioresult.seek(0)
 
-        return StreamingResponse(ioresult, media_type="image/png")
+        return StreamingResponse(ioresult, media_type=png_media_type)

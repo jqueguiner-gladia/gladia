@@ -53,7 +53,7 @@ def manage_metadata_files(argv):
                                     for dir in dir_list:
                                         if (
                                             dir.endswith(".py")
-                                            and not dir == "__init__.py"
+                                            and dir != "__init__.py"
                                         ):
                                             is_model_dir = True
                                             model_paths.append(model_path)
