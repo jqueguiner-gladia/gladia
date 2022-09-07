@@ -1,8 +1,9 @@
 import os
+import pathlib
+import sys
 import wave
 from io import BytesIO
 from logging import getLogger
-from pathlib import Path
 
 import ffmpeg
 import numpy as np
@@ -43,23 +44,37 @@ class SpeechToTextEngine:
             SpeechToTextEngine: speech to text engine instance
         """
 
-        model_path_prefix = f"{os.getenv('MODEL_CACHE_ROOT')}/audio/text/{model_uri}"
+        # the main path of the application calling this Helper by default /app/apis/"
+        app_prefix = str(
+            pathlib.Path(sys._getframe(1).f_globals["__file__"]).parents[0].absolute()
+        )
+        app_prefix = "/".join(app_prefix[1:].split("/")[:3])
+
+        model_path_prefix = os.path.join(
+            os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models"),
+            app_prefix,
+            "audio",
+            "text",
+            model_uri,
+        )
+
+        logger.debug(f"model_path_prefix: {model_path_prefix}")
 
         model_url = f"https://coqui.gateway.scarf.sh/{model_uri}"
 
         logger.debug(f"Downloading model from {model_url} to {model_path_prefix}")
 
         model_path = download_model(
-            url=f"{model_url}/{model}", output_path=f"{model_path_prefix}/model"
+            url=f"{model_url}/{model}",
+            output_path=os.path.join(model_path_prefix, "model"),
+            uncompress_after_download=False,
         )
 
         scorer_path = download_model(
-            url=f"{model_url}/{scorer}", output_path=f"{model_path_prefix}/scorer"
+            url=f"{model_url}/{scorer}",
+            output_path=os.path.join(model_path_prefix, "scorer"),
+            uncompress_after_download=False,
         )
-
-        model_path = Path(model_path).absolute().as_posix()
-
-        scorer_path = Path(scorer_path).absolute().as_posix()
 
         self.model = Model(model_path)
         self.model.enableExternalScorer(scorer_path)

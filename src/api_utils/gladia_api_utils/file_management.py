@@ -464,7 +464,10 @@ def create_directory(path: str) -> bool:
 
 
 def uncompress(
-    path: str, destination: str = None, delete_after_uncompress: bool = True
+    path: str,
+    destination: str = None,
+    delete_after_uncompress: bool = True,
+    force_create_dir: bool = True,
 ) -> str:
     """
     Uncompress a file.
@@ -482,6 +485,8 @@ def uncompress(
     """
 
     try:
+        if force_create_dir:
+            create_directory(destination)
         logger.debug(f"Extracting archive from {path} to {destination}")
         output = xtract(path, destination=destination, overwrite=True, all=False)
 

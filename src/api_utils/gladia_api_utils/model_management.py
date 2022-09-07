@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 import threading
 from logging import getLogger
@@ -9,6 +10,7 @@ from git import Repo
 
 from .file_management import (
     delete_directory,
+    delete_file,
     download_file,
     get_tmp_filename,
     is_uncompressable,
@@ -19,7 +21,10 @@ logger = getLogger(__name__)
 
 
 def __download_huggingface_model(
-    url: str, output_path: str, reset: bool = False
+    url: str,
+    output_path: str,
+    reset: bool = False,
+    uncompress_after_download: bool = True,
 ) -> bool:
     """
     Download a model from huggingface and uncompress it if necessary.
@@ -57,7 +62,9 @@ def __download_huggingface_model(
                     repo.git.reset("--hard", "origin/main")
                     os.system(f"cd {output_path} && git lfs pull")
         else:
-            __download_and_uncompress_model(url, output_path)
+            __download_and_uncompress_model(
+                url, output_path, uncompress_after_download=uncompress_after_download
+            )
 
     return is_hugging_face
 
@@ -65,39 +72,48 @@ def __download_huggingface_model(
 def __download_and_uncompress_model(
     url: str, output_path: str, uncompress_after_download: bool = True
 ) -> None:
-    logger.debug(f"Downloading {url}")
+    logger.info(f"Downloading {url}")
 
     # if the output_path is not an existing directory create it
-    if not os.path.exists(Path(output_path)):
-        os.makedirs(output_path, exist_ok=True)
+    if not os.path.exists(Path(output_path).parent):
+        os.makedirs(Path(output_path).parent, exist_ok=True)
 
     # create a temporary folder to download the model to
-    dl_tmp_dirpath = get_tmp_filename()
+    dl_tmp_filepath = get_tmp_filename()
     uncompress_tmp_dirpath = get_tmp_filename()
 
-    logger.debug(f"Temporary directory for download: {dl_tmp_dirpath}")
+    logger.debug(f"Temporary filepath for download: {dl_tmp_filepath}")
 
     downloaded_full_path = download_file(
         url=url,
-        file_full_path=dl_tmp_dirpath,
+        file_full_path=dl_tmp_filepath,
         force_create_dir=True,
         force_redownload=False,
     )
     logger.debug(f"Downloaded model to {downloaded_full_path}")
+
     # if the model is uncompressable uncompress it
     if uncompress_after_download and is_uncompressable(str(downloaded_full_path)):
-        logger.debug("Uncompressing {downloaded_full_path} to {output_path}")
+        logger.info("Uncompressing {downloaded_full_path} to {output_path}")
+
         uncompress(
             path=downloaded_full_path,
             destination=uncompress_tmp_dirpath,
             delete_after_uncompress=True,
         )
-        os.system(f"mv {uncompress_tmp_dirpath}/* {output_path}")
+
+        logger.info(
+            f"Uncompressed model from {uncompress_tmp_dirpath} to {output_path}"
+        )
+
+        # move the uncompress model to the output path
+        shutil.move(uncompress_tmp_dirpath, output_path)
     else:
-        os.system(f"mv {dl_tmp_dirpath}/* {output_path}")
+        logger.info(f"Moving {dl_tmp_filepath} to {output_path}")
+        shutil.move(dl_tmp_filepath, output_path)
 
     # clean up temporary folder
-    delete_directory(dl_tmp_dirpath)
+    delete_file(dl_tmp_filepath)
     delete_directory(uncompress_tmp_dirpath)
 
 
@@ -107,6 +123,7 @@ def download_model(
     uncompress_after_download: bool = True,
     file_type: str = None,
     reset: bool = True,
+    force_redownload: bool = False,
     branch: str = "origin",
 ) -> str:
     """
@@ -132,13 +149,25 @@ def download_model(
     # check env to see if mutualized_storage had been set
     mutualized_storage_root = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/")
 
+    logger.debug(f"Downloading model from {url} to {output_path}")
+
     if not os.path.isabs(output_path):
         output_path = os.path.join(mutualized_storage_root, rel_path, output_path)
 
     logger.debug(f"Downloading model from {url} to {output_path}")
 
-    if not __download_huggingface_model(url, output_path, uncompress_after_download):
-        __download_and_uncompress_model(url, output_path, uncompress_after_download)
+    if not os.path.exists(output_path) or force_redownload:
+        if not __download_huggingface_model(
+            url=url,
+            output_path=output_path,
+            reset=reset,
+            uncompress_after_download=uncompress_after_download,
+        ):
+            __download_and_uncompress_model(
+                url=url,
+                output_path=output_path,
+                uncompress_after_download=uncompress_after_download,
+            )
 
     return output_path
 
@@ -162,27 +191,18 @@ def download_models(model_list: dict) -> dict:
     if ".py" in rel_path:
         rel_path = os.path.dirname(rel_path)
 
-    # used in case of relative path
-    model_root_path = os.path.dirname(os.path.join(cwd, rel_path))
-
     logger.debug("Downloading multiple models")
     threads = []
     output = dict()
 
     # check env to see if mutualized_storage had been set
-    mutualized_storage = os.getenv("MODEL_CACHE_ROOT", True)
-    mutualized_storage_root = os.getenv("MODEL_CACHE_ROOT", "/tmp/gladia/models/")
+    mutualized_storage_root = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/")
 
     for key, model in model_list.items():
         if not os.path.isabs(model["output_path"]):
-            if mutualized_storage:
-                model["output_path"] = os.path.join(
-                    mutualized_storage_root, rel_path, model["output_path"]
-                )
-            else:
-                model["output_path"] = os.path.join(
-                    model_root_path, model["output_path"]
-                )
+            model["output_path"] = os.path.join(
+                mutualized_storage_root, rel_path, model["output_path"]
+            )
 
             t = threading.Thread(
                 target=download_model, args=(model["url"], model["output_path"])
