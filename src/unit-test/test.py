@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import sys
 from time import sleep
 from urllib.request import Request, urlopen
@@ -302,7 +303,7 @@ def create_metadata_with_reponse(path, params, data, files, response):
 
         extensions = {
             "image/jpeg": "jpg",
-            "image/jpeg": "jpeg",
+            "image/jpg": "jpg",
             "image/gif": "gif",
             "image/png": "png",
             "audio/mpeg": "mp3",
@@ -375,9 +376,14 @@ def create_metadata_with_reponse(path, params, data, files, response):
 def get_model_metadata_path(task, model):
     task_name = task.split("/")[3]
     task_models_folder = task.replace(task_name, f"{task_name}-models")
-    path_to_metadata = f"apis{task_models_folder}{model}"
+    path_to_metadata = f"/app/apis{task_models_folder}{model}"
     metadata_file_name = ".model_metadata.yaml"
     metadata_file_path = os.path.join(path_to_metadata, metadata_file_name)
+    if not Path(metadata_file_path).exists():
+        with open("/app/apis/.metadata_model_template.yaml", "r") as metadata_file:
+            metadata = yaml.safe_load(metadata_file)
+        with open(metadata_file_path, "w") as metadata_file:
+            yaml.dump(metadata, metadata_file)
     return metadata_file_path
 
 
