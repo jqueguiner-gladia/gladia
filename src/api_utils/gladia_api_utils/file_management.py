@@ -34,7 +34,6 @@ MIME_TYPES_CATEGORIES = {
     "application": "application",
     "flat_structured_data": "flat_structured_data",
     "multidimensional_structured_data": "multidimensional_structured_data",
-    "binary": "binary",
     "ebook": "ebook",
     "unknown": "unknown",
     "archive": "archive",
@@ -85,7 +84,6 @@ MIME_TYPE_TO_CATEGORY = {
     "application/epub+zip": MIME_TYPES_CATEGORIES["ebook"],
 
     "application/x-bzip": MIME_TYPES_CATEGORIES["archive"],
-    "application/x-bzip": MIME_TYPES_CATEGORIES["archive"],
     "application/x-bzip2": MIME_TYPES_CATEGORIES["archive"],
     "application/java-archive": MIME_TYPES_CATEGORIES["archive"],
     "application/x-rar-compressed": MIME_TYPES_CATEGORIES["archive"],
@@ -107,7 +105,6 @@ MIME_TYPE_TO_CATEGORY = {
     "text/csv": MIME_TYPES_CATEGORIES["flat_structured_data"],
     "text/tab-separated-values": MIME_TYPES_CATEGORIES["flat_structured_data"],
 
-    "application/vnd.oasis.opendocument.spreadsheet": MIME_TYPES_CATEGORIES["spreadsheet"],
     "application/vnd.ms-excel": MIME_TYPES_CATEGORIES["spreadsheet"],
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": MIME_TYPES_CATEGORIES["spreadsheet"],
     "application/vnd.openxmlformats-officedocument.spreadsheetml.template": MIME_TYPES_CATEGORIES["spreadsheet"],
@@ -301,8 +298,6 @@ def download_file(
     Returns:
         Path: The path to the downloaded file.
     """
-
-    is_gdrivefile = "https://drive.google.com/" in url
 
     file_full_path = Path(file_full_path)
 
