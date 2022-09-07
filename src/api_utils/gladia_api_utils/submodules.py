@@ -9,7 +9,7 @@ import urllib.parse
 from logging import getLogger
 from pathlib import Path
 from shlex import quote
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple, Union
 from urllib.request import urlopen
 
 import forge
@@ -28,7 +28,6 @@ versions = list()
 available_versions = list()
 logger = getLogger(__name__)
 
-PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
 PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
 ENV_YAML = "env.yaml"
 

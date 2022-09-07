@@ -14,9 +14,11 @@ import requests
 from PIL import Image
 from xtract import XZ, BZip2, GZip, Rar, Tar, Zip, xtract
 from xtract.utils import get_file_type
+import re
 
 logger = getLogger(__name__)
 
+PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
 
 class PathNotExistsException(Exception):
     pass
@@ -56,14 +58,12 @@ MIME_TYPE_TO_CATEGORY = {
     "audio/webm": MIME_TYPES_CATEGORIES["audio"],
     "audio/3gpp": MIME_TYPES_CATEGORIES["audio"],
     "audio/3gpp2": MIME_TYPES_CATEGORIES["audio"],
-
     "video/x-msvideo": MIME_TYPES_CATEGORIES["video"],
     "video/mpeg": MIME_TYPES_CATEGORIES["video"],
     "video/ogg": MIME_TYPES_CATEGORIES["video"],
     "video/webm": MIME_TYPES_CATEGORIES["video"],
     "video/3gpp": MIME_TYPES_CATEGORIES["video"],
     "video/3gpp2": MIME_TYPES_CATEGORIES["video"],
-
     "image/bmp": MIME_TYPES_CATEGORIES["image"],
     "image/gif": MIME_TYPES_CATEGORIES["image"],
     "image/x-icon": MIME_TYPES_CATEGORIES["image"],
@@ -72,7 +72,6 @@ MIME_TYPE_TO_CATEGORY = {
     "image/svg+xml": MIME_TYPES_CATEGORIES["image"],
     "image/tiff": MIME_TYPES_CATEGORIES["image"],
     "image/webp": MIME_TYPES_CATEGORIES["image"],
-
     "font/otf": MIME_TYPES_CATEGORIES["font"],
     "font/ttf": MIME_TYPES_CATEGORIES["font"],
     "font/woff": MIME_TYPES_CATEGORIES["font"],
@@ -90,12 +89,10 @@ MIME_TYPE_TO_CATEGORY = {
     "application/x-tar": MIME_TYPES_CATEGORIES["archive"],
     "application/zip": MIME_TYPES_CATEGORIES["archive"],
     "application/x-7z-compressed": MIME_TYPES_CATEGORIES["archive"],
-
     "application/x-csh": MIME_TYPES_CATEGORIES["executable"],
     "application/ogg": MIME_TYPES_CATEGORIES["executable"],
     "application/x-sh": MIME_TYPES_CATEGORIES["executable"],
     "application/x-shockwave-flash": MIME_TYPES_CATEGORIES["executable"],
-
     "text/css": MIME_TYPES_CATEGORIES["web_content"],
     "text/html": MIME_TYPES_CATEGORIES["web_content"],
     "application/javascript": MIME_TYPES_CATEGORIES["web_content"],
@@ -166,12 +163,6 @@ MIME_TYPE_TO_CATEGORY = {
     "text/x-vrsvp": MIME_TYPES_CATEGORIES["calendar"],
     "text/x-vrsvp-reply": MIME_TYPES_CATEGORIES["calendar"],
 }
-
-
-
-
-
-
 
 
 def is_binary_file(file_path: str) -> bool:

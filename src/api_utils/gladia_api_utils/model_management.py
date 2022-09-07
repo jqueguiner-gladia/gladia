@@ -18,7 +18,13 @@ from .file_management import (
 logger = getLogger(__name__)
 
 
+<<<<<<< HEAD
 def __download_huggingface_model(url: str, output_path: str, reset: bool=False) -> bool:
+=======
+def __download_huggingface_model(
+    url: str, output_path: str, reset: bool = False
+) -> bool:
+>>>>>>> 9fa8c3deb097c735c5f04d2ca513df0c7875df89
     """
     Download a model from huggingface and uncompress it if necessary.
     Return True if the model was an huggingface model, False otherwise
@@ -56,12 +62,21 @@ def __download_huggingface_model(url: str, output_path: str, reset: bool=False) 
                     os.system(f"cd {output_path} && git lfs pull")
         else:
             __download_and_uncompress_model(url, output_path)
+<<<<<<< HEAD
             
+=======
+>>>>>>> 9fa8c3deb097c735c5f04d2ca513df0c7875df89
 
     return is_hugging_face
 
 
+<<<<<<< HEAD
 def __download_and_uncompress_model(url: str, output_path: str, uncompress_after_download: bool=True) -> None:
+=======
+def __download_and_uncompress_model(
+    url: str, output_path: str, uncompress_after_download: bool = True
+) -> None:
+>>>>>>> 9fa8c3deb097c735c5f04d2ca513df0c7875df89
     logger.debug(f"Downloading {url}")
 
     # if the output_path is not an existing directory create it

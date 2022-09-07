@@ -67,7 +67,7 @@ jobs:
         uses: tj-actions/changed-files@v29.0.3
           
           
-      # if gpu.Dockefile changed we need to rebuild the base image
+      # if base.Dockefile changed we need to rebuild the base image
       - name: Looking for base.Dockerfile changed files
         if: |
           contains(steps.changed-files.outputs.modified_files, 'base.Dockerfile') ||
@@ -79,7 +79,7 @@ jobs:
           
       # if env.yaml was changed we need to rebuild micromamba envs or
       # if gpu.Dockefile changed we need to rebuild the gladia image
-      - name: Looking for env.yaml or gpu.Dockerfile changed files
+      - name: Looking for env.yaml or gpu.Dockerfile changed files or if force-gladia-build
         if: |
           contains(steps.changed-files.outputs.modified_files, 'env.yaml') ||
           contains(steps.changed-files.outputs.deleted_files, 'env.yaml') ||

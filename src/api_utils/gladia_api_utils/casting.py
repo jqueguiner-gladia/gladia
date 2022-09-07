@@ -15,7 +15,12 @@ from starlette.responses import StreamingResponse
 
 from .file_management import get_file_type
 
+<<<<<<< HEAD
 png_media_type="image/png"
+=======
+png_media_type = "image/png"
+
+>>>>>>> 9fa8c3deb097c735c5f04d2ca513df0c7875df89
 
 class NpEncoder(json.JSONEncoder):
     """
@@ -200,6 +205,65 @@ def __load_file_as_response(file_path: str) -> Union[StreamingResponse, JSONResp
         )
     finally:
         os.remove(file_path)
+
+def __load_json_string_representation(json_string: str) -> Union[dict, str]:
+    """
+    Load a JSON string into a dictionary
+
+    Args:
+        json_string (str): JSON string
+
+    Returns:
+        Union[dict, str]: dictionary if the JSON string is valid, else the original string
+    """
+    # I decided to use regex instead of ast.literal_eval
+    # for security reason.
+    # having regex doesn't interpret while
+    # ast.literal_eval will
+    # see this proposition:
+    # https://stackoverflow.com/questions/39491420/python-jsonexpecting-property-name-enclosed-in-double-quotes
+    # which I found very risky
+    # J.L
+    try:
+        p = re.compile("(?<!\\\\)'")
+        replace_map = [("\n", "\\n"), ("\\\n", "\\n"), ("\\x0c", "")]
+        this_response = p.sub('"', json_string)
+        for replacement in replace_map:
+            this_response.replace(replacement[0], replacement[1])
+        return json.loads(this_response)
+    except Exception as e:
+        warn(f"Couldn't interpret response returning plain response: {e}")
+        try:
+            return JSONResponse(
+                content={
+                    "prediction": str(json_string),
+                    "prediction_raw": str(json_string),
+                }
+            )
+        except Exception as e:
+            warn(f"Couldn't interpret response returning plain response: {e}")
+            return json_string
+
+
+def __load_file_as_response(file_path: str) -> Union[StreamingResponse, JSONResponse]:
+    """
+    Load a file as a response. JSON files will be loaded as JSON response, other files will be loaded as Streaming response
+
+    Args:
+        file_path (str): path to the file
+
+    Returns:
+        Union[StreamingResponse, JSONResponse]: FastAPI streaming response for an image or JSON response for a table
+    """
+
+    try:
+        return json.load(file_path)
+    except Exception as e:
+        file_to_stream = open(file_path, "rb")
+        return StreamingResponse(file_to_stream, media_type=get_file_type(file_path))
+    finally:
+        os.remove(file_path)
+
 
 def __convert_string_response(
     response: str,
