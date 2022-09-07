@@ -1,3 +1,4 @@
+from lzma import MODE_NORMAL
 import os
 import shutil
 import sys
@@ -19,6 +20,8 @@ from .file_management import (
 
 logger = getLogger(__name__)
 
+
+GLADIA_TMP_MODEL_PATH = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/")
 
 def __download_huggingface_model(
     url: str,
@@ -142,17 +145,12 @@ def download_model(
         str: path to the downloaded model
     """
 
-    namespace = sys._getframe(1).f_globals
 
-    rel_path = namespace["__file__"]
-
-    # check env to see if mutualized_storage had been set
-    mutualized_storage_root = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/")
-
-    logger.debug(f"Downloading model from {url} to {output_path}")
 
     if not os.path.isabs(output_path):
-        output_path = os.path.join(mutualized_storage_root, rel_path, output_path)
+        namespace = sys._getframe(1).f_globals
+        rel_path = namespace["__file__"]
+        output_path = os.path.join(GLADIA_TMP_MODEL_PATH, rel_path, output_path)
 
     logger.debug(f"Downloading model from {url} to {output_path}")
 
@@ -198,13 +196,10 @@ def download_models(model_list: dict) -> dict:
     threads = []
     output = dict()
 
-    # check env to see if mutualized_storage had been set
-    mutualized_storage_root = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/")
-
     for key, model in model_list.items():
         if not os.path.isabs(model["output_path"]):
             model["output_path"] = os.path.join(
-                mutualized_storage_root, rel_path, model["output_path"]
+                GLADIA_TMP_MODEL_PATH, rel_path, model["output_path"]
             )
 
             t = threading.Thread(

@@ -7,10 +7,15 @@ import torch
 from deoldify import device, visualize
 from deoldify.device_id import DeviceId
 from gladia_api_utils.io import _open
-from gladia_api_utils.model_management import download_models
+from gladia_api_utils.model_management import download_model
 from gladia_api_utils.system import get_random_available_gpu_id
 from PIL import Image
 
+MODEL_PATH = download_model(
+    url="https://huggingface.co/databuzzword/deoldify-artistic/resolve/main/ColorizeArtistic_gen.pth",
+    output_path="ColorizeStable_gen.pth",
+    uncompress_after_download=False,
+    )
 
 def predict(image: bytes) -> Image:
     """
@@ -22,17 +27,6 @@ def predict(image: bytes) -> Image:
     Returns:
         Image: Colorized image
     """
-
-    urls = {
-        "deoldify-artistic": {
-            "url": "https://huggingface.co/databuzzword/deoldify-artistic",
-            "output_path": "models",
-        }
-    }
-
-    models_path = download_models(urls)
-
-    current_model_path = path.join(models_path["deoldify-artistic"]["output_path"])
 
     gpu_id = get_random_available_gpu_id()
 
@@ -48,7 +42,7 @@ def predict(image: bytes) -> Image:
     width, height = image.size
 
     image_colorizer = visualize.get_image_colorizer(
-        root_folder=Path(current_model_path).parent,
+        root_folder=Path(MODEL_PATH).parent,
         render_factor=render_factor,
         artistic=True,
     )
