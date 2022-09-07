@@ -59,9 +59,11 @@ def get_tmp_filename() -> str:
     Returns:
         str: The random filepath.
     """
-    return str(os.path.join(
-        tempfile._get_default_tempdir(), next(tempfile._get_candidate_names())
-    ))
+    return str(
+        os.path.join(
+            tempfile._get_default_tempdir(), next(tempfile._get_candidate_names())
+        )
+    )
 
 
 def write_tmp_file(content: Any) -> str:
