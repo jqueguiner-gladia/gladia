@@ -1,11 +1,10 @@
 import io
-import warnings
+from logging import getLogger
 
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from gladia_api_utils import SECRETS
 from PIL import Image
 from stability_sdk import client
-from logging import getLogger
 
 logger = getLogger(__name__)
 

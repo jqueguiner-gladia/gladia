@@ -1,6 +1,5 @@
 import os
 from logging import getLogger
-from warnings import warn
 
 logger = getLogger(__name__)
 

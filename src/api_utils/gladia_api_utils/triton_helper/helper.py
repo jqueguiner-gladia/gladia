@@ -1,6 +1,5 @@
 import json
 import os
-from warnings import warn
 from logging import getLogger
 
 logger = getLogger(__name__)

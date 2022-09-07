@@ -8,6 +8,7 @@ from transformers import (
     PreTrainedTokenizer,
 )
 
+
 def generate(
     code: str,
     tokenizer: PreTrainedTokenizer,
