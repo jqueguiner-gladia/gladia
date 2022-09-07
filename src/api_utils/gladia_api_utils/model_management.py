@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from git import Repo
 
 from .file_management import (
-    delete_directory,
+    delete_file_or_directory,
     download_file,
     get_tmp_filename,
     is_uncompressable,
@@ -108,8 +108,8 @@ def download_model(
             os.system(f"mv {dl_tmp_dirpath}/* {output_path}")
 
         # clean up temporary folder
-        delete_directory(dl_tmp_dirpath)
-        delete_directory(uncompress_tmp_dirpath)
+        delete_file_or_directory(dl_tmp_dirpath)
+        delete_file_or_directory(uncompress_tmp_dirpath)
 
     return output_path
 
