@@ -14,6 +14,10 @@ import requests
 from PIL import Image
 from xtract import XZ, BZip2, GZip, Rar, Tar, Zip, xtract
 from xtract.utils import get_file_type
+import re
+
+PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
+
 
 logger = getLogger(__name__)
 

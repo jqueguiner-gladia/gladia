@@ -27,7 +27,6 @@ versions = list()
 available_versions = list()
 logger = getLogger(__name__)
 
-PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
 PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
 
 models_folder_suffix = "models"
