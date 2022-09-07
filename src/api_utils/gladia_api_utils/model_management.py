@@ -1,4 +1,3 @@
-from lzma import MODE_NORMAL
 import os
 import shutil
 import sys
@@ -22,6 +21,7 @@ logger = getLogger(__name__)
 
 
 GLADIA_TMP_MODEL_PATH = os.getenv("GLADIA_TMP_MODEL_PATH", "/tmp/gladia/models/")
+
 
 def __download_huggingface_model(
     url: str,
@@ -144,8 +144,6 @@ def download_model(
     Returns:
         str: path to the downloaded model
     """
-
-
 
     if not os.path.isabs(output_path):
         namespace = sys._getframe(1).f_globals

@@ -1,5 +1,4 @@
 import gc
-from os import path
 from pathlib import Path
 
 import torch
@@ -10,12 +9,12 @@ from gladia_api_utils.model_management import download_model
 from gladia_api_utils.system import get_random_available_gpu_id
 from PIL import Image
 
-
 MODEL_PATH = download_model(
     url="https://huggingface.co/databuzzword/deoldify-stable/resolve/main/ColorizeStable_gen.pth",
     output_path="ColorizeStable_gen.pth",
     uncompress_after_download=False,
-    )
+)
+
 
 def predict(image: bytes) -> Image:
     """

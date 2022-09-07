@@ -1,4 +1,3 @@
-import os
 from typing import Tuple
 
 import onnxruntime as ort
@@ -13,7 +12,7 @@ MODEL_PATH = download_model(
     url="https://huggingface.co/Gladiaio/databuzzword_mobile-net_onnx/resolve/main/databuzzword_mobile-net_onnx.onnx",
     output_path="mobile-net_onnx.onnx",
     uncompress_after_download=False,
-    )
+)
 
 
 def run(image: Image, fast: bool = True) -> Tuple[Image.Image, ndarray]:

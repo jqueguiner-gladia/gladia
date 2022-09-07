@@ -14,12 +14,12 @@ from skimage import img_as_ubyte
 
 from apis.image.image.deblurring_models.CMFNet.model.CMFNet import CMFNet
 
-
 MODEL_PATH = download_model(
     url="https://github.com/FanChiMao/CMFNet/releases/download/v0.0/deblur_GoPro_CMFNet.pth",
     output_path="deblur_GoPro_CMFNet.pth",
     uncompress_after_download=False,
-    )
+)
+
 
 def load_checkpoint(model: torch.nn.Module, weights: str) -> None:
     """

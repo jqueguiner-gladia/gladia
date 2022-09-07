@@ -1,5 +1,4 @@
 import gc
-from os import path
 from pathlib import Path
 from unittest import result
 
@@ -15,7 +14,8 @@ MODEL_PATH = download_model(
     url="https://huggingface.co/databuzzword/deoldify-artistic/resolve/main/ColorizeArtistic_gen.pth",
     output_path="ColorizeStable_gen.pth",
     uncompress_after_download=False,
-    )
+)
+
 
 def predict(image: bytes) -> Image:
     """
