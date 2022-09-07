@@ -156,18 +156,21 @@ def download_model(
 
     logger.debug(f"Downloading model from {url} to {output_path}")
 
-    if not os.path.exists(output_path) or force_redownload:
-        if not __download_huggingface_model(
+    if (
+        not os.path.exists(output_path)
+        or force_redownload
+        and not __download_huggingface_model(
             url=url,
             output_path=output_path,
             reset=reset,
             uncompress_after_download=uncompress_after_download,
-        ):
-            __download_and_uncompress_model(
-                url=url,
-                output_path=output_path,
-                uncompress_after_download=uncompress_after_download,
-            )
+        )
+    ):
+        __download_and_uncompress_model(
+            url=url,
+            output_path=output_path,
+            uncompress_after_download=uncompress_after_download,
+        )
 
     return output_path
 
@@ -185,7 +188,7 @@ def download_models(model_list: dict) -> dict:
 
     # manage relative imports
     namespace = sys._getframe(1).f_globals
-    cwd = os.getcwd()
+
     rel_path = namespace["__file__"]
     rel_path = rel_path.lstrip("./")
     if ".py" in rel_path:
