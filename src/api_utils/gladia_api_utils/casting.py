@@ -258,7 +258,7 @@ def __load_file_as_response(file_path: str) -> Union[StreamingResponse, JSONResp
 
     try:
         return json.load(file_path)
-    except Exception as e:
+    except Exception:
         file_to_stream = open(file_path, "rb")
         return StreamingResponse(file_to_stream, media_type=get_file_type(file_path))
     finally:
