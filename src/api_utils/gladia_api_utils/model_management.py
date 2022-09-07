@@ -178,13 +178,8 @@ def download_model(
         output_path = GLADIA_TMP_MODEL_PATH + rel_path + "/" + output_path
         logger.debug(f"Relative path detected, using {output_path} as output path")
         
-    if not os.path.isabs(output_path):
-        namespace = sys._getframe(1).f_globals
-        rel_path = str(os.path.dirname(namespace["__file__"]))
-
-        output_path = GLADIA_TMP_MODEL_PATH + rel_path + "/" + output_path
-        logger.debug(f"Relative path detected, using {output_path} as output path")
-        
+    if not os.path.exists(Path(output_path).parent):
+        os.makedirs(Path(output_path).parent, exist_ok=True)
 
     logger.debug(f"Downloading model from {url} to {output_path}")
 
