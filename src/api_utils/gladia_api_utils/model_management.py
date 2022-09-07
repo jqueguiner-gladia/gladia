@@ -18,6 +18,86 @@ from .file_management import (
 logger = getLogger(__name__)
 
 
+def __download_huggingface_model(url: str, output_path: str, reset: bool=False) -> bool:
+    """
+    Download a model from huggingface and uncompress it if necessary.
+    Return True if the model was an huggingface model, False otherwise
+
+    Args:
+        url (str): url of the model to download
+        output_path (str): path to download the model to
+
+    Returns:
+        bool: True if the model was an huggingface model, False otherwise
+    """
+
+    domain = urlparse(url).netloc
+
+    is_hugging_face = False
+    # if domain is huggingface
+    # and if its not a file (resolve) but a git-lfs repo
+    # else if (resolve) or not huggingface consider url as a file
+    if "huggingface.co" in domain:
+        is_hugging_face = True
+        if "/resolve/" not in url:
+            # check if directory exists if not clone it else pull
+            os.environ["GIT_LFS_SKIP_SMUDGE"] = "1"
+
+            if not os.path.isdir(Path(output_path)):
+                logger.debug(f"Cloning HuggingFace Model from {url}")
+                Repo.clone_from(url, output_path)
+                os.system(f"cd {output_path} && git lfs pull")
+
+            else:
+                if reset:
+                    logger.debug(f"Pulling HuggingFace Model from {url}")
+                    repo = Repo(output_path)
+                    repo.git.reset("--hard", "origin/main")
+                    os.system(f"cd {output_path} && git lfs pull")
+        else:
+            __download_and_uncompress_model(url, output_path)
+            
+
+    return is_hugging_face
+
+
+def __download_and_uncompress_model(url: str, output_path: str, uncompress_after_download: bool=True) -> None:
+    logger.debug(f"Downloading {url}")
+
+    # if the output_path is not an existing directory create it
+    if not os.path.exists(Path(output_path)):
+        os.makedirs(output_path, exist_ok=True)
+
+    # create a temporary folder to download the model to
+    dl_tmp_dirpath = get_tmp_filename()
+    uncompress_tmp_dirpath = get_tmp_filename()
+
+    logger.debug(f"Temporary directory for download: {dl_tmp_dirpath}")
+
+    downloaded_full_path = download_file(
+        url=url,
+        file_full_path=dl_tmp_dirpath,
+        force_create_dir=True,
+        force_redownload=False,
+    )
+    logger.debug(f"Downloaded model to {downloaded_full_path}")
+    # if the model is uncompressable uncompress it
+    if uncompress_after_download and is_uncompressable(str(downloaded_full_path)):
+        logger.debug("Uncompressing {downloaded_full_path} to {output_path}")
+        uncompress(
+            path=downloaded_full_path,
+            destination=uncompress_tmp_dirpath,
+            delete_after_uncompress=True,
+        )
+        os.system(f"mv {uncompress_tmp_dirpath}/* {output_path}")
+    else:
+        os.system(f"mv {dl_tmp_dirpath}/* {output_path}")
+
+    # clean up temporary folder
+    delete_directory(dl_tmp_dirpath)
+    delete_directory(uncompress_tmp_dirpath)
+
+
 def download_model(
     url: str,
     output_path: str,
@@ -54,62 +134,8 @@ def download_model(
 
     logger.debug(f"Downloading model from {url} to {output_path}")
 
-    domain = urlparse(url).netloc
-
-    # if domain is huggingface
-    # and if its not a file (resolve) but a git-lfs repo
-    # else if (resolve) or not huggingface consider url as a file
-    if "huggingface.co" in domain and "/resolve/" not in url:
-        # check if directory exists if not clone it else pull
-        os.environ["GIT_LFS_SKIP_SMUDGE"] = "1"
-
-        if not os.path.isdir(Path(output_path)):
-            logger.debug(f"Cloning HuggingFace Model from {url}")
-            Repo.clone_from(url, output_path)
-            os.system(f"cd {output_path} && git lfs pull")
-
-        else:
-            if reset:
-                logger.debug(f"Pulling HuggingFace Model from {url}")
-                repo = Repo(output_path)
-                repo.git.reset("--hard", "origin/main")
-                os.system(f"cd {output_path} && git lfs pull")
-
-    else:
-        logger.debug(f"Downloading {url}")
-
-        # if the output_path is not an existing directory create it
-        if not os.path.exists(Path(output_path)):
-            os.makedirs(output_path, exist_ok=True)
-
-        # create a temporary folder to download the model to
-        dl_tmp_dirpath = get_tmp_filename()
-        uncompress_tmp_dirpath = get_tmp_filename()
-
-        logger.debug(f"Temporary directory for download: {dl_tmp_dirpath}")
-
-        downloaded_full_path = download_file(
-            url=url,
-            file_full_path=dl_tmp_dirpath,
-            force_create_dir=True,
-            force_redownload=False,
-        )
-        logger.debug(f"Downloaded model to {downloaded_full_path}")
-        # if the model is uncompressable uncompress it
-        if uncompress_after_download and is_uncompressable(str(downloaded_full_path)):
-            logger.debug("Uncompressing {downloaded_full_path} to {output_path}")
-            uncompress(
-                path=downloaded_full_path,
-                destination=uncompress_tmp_dirpath,
-                delete_after_uncompress=True,
-            )
-            os.system(f"mv {uncompress_tmp_dirpath}/* {output_path}")
-        else:
-            os.system(f"mv {dl_tmp_dirpath}/* {output_path}")
-
-        # clean up temporary folder
-        delete_directory(dl_tmp_dirpath)
-        delete_directory(uncompress_tmp_dirpath)
+    if not __download_huggingface_model(url, output_path, uncompress_after_download):
+        __download_and_uncompress_model(url, output_path, uncompress_after_download)
 
     return output_path
 

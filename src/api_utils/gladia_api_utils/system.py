@@ -9,6 +9,7 @@ from posixpath import isabs
 
 from genericpath import isdir
 from torch.cuda import is_available as cuda_is_available
+from typing import Union
 
 
 def copy(source: str, destination: str) -> None:
@@ -139,7 +140,7 @@ def get_first_available_gpu_id() -> int:
     return None if len(available_gpu_ids) == 0 else available_gpu_ids[0]
 
 
-def get_random_available_gpu_id() -> int:
+def get_random_available_gpu_id() -> Union[int, None]:
     """
     Get a random available GPU id. If no GPUs are available, return None.
 
