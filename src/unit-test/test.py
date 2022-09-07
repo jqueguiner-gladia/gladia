@@ -7,7 +7,7 @@ from urllib.request import Request, urlopen
 import click
 import requests
 import yaml
-from gladia_api_utils.OvhObjectStorageHelper import ovh_file_manager
+from gladia_api_utils.OVHFileManager import ovh_file_manager
 from validators import url as is_url
 
 global nb_total_tests

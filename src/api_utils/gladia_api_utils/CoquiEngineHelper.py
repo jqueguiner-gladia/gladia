@@ -8,6 +8,9 @@ import numpy as np
 from gladia_api_utils.model_management import download_model
 from stt import Model
 
+from logging import getLogger
+logger = getLogger(__name__)
+
 
 class SpeechToTextEngine:
     """
@@ -43,6 +46,8 @@ class SpeechToTextEngine:
         model_path_prefix = f"{os.getenv('MODEL_CACHE_ROOT')}/audio/text/{model_uri}"
 
         model_url = f"https://coqui.gateway.scarf.sh/{model_uri}"
+
+        logger.debug(f"Downloading model from {model_url} to {model_path_prefix}")
 
         model_path = download_model(
             url=f"{model_url}/{model}", output_path=f"{model_path_prefix}/model"
