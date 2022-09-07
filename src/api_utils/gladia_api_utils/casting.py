@@ -15,12 +15,11 @@ from starlette.responses import StreamingResponse
 
 from .file_management import get_file_type
 
-<<<<<<< HEAD
-png_media_type="image/png"
-=======
-png_media_type = "image/png"
+from logging import getLogger
 
->>>>>>> 9fa8c3deb097c735c5f04d2ca513df0c7875df89
+logger = getLogger(__name__)
+
+png_media_type = "image/png"
 
 class NpEncoder(json.JSONEncoder):
     """
@@ -92,7 +91,7 @@ def __convert_ndarray_response(
         return JSONResponse(content=jsonable_encoder(response.tolist()))
 
     else:
-        warn(
+        logger.warning(
             f"response is numpy array but expected output type {output_type} which is not supported."
         )
 
@@ -117,7 +116,7 @@ def __convert_bytes_response(response: bytes, output_type: str) -> StreamingResp
         return StreamingResponse(ioresult, media_type=png_media_type)
 
     else:
-        warn(
+        logger.warning(
             f"response is bytes but expected output type {output_type} which is not supported."
         )
 
@@ -141,7 +140,7 @@ def __convert_io_response(response: io.IOBase, output_type: str) -> StreamingRes
         return StreamingResponse(response, media_type=png_media_type)
 
     else:
-        warn(
+        logger.warning(
             f"response is io but expected output type {output_type} which is not supported."
         )
 
@@ -173,7 +172,7 @@ def __load_json_string_representation(json_string: str) -> Union[dict, str]:
             this_response.replace(replacement[0], replacement[1])
         return json.loads(this_response)
     except Exception as e:
-        warn(f"Couldn't interpret response returning plain response: {e}")
+        logger.warning(f"Couldn't interpret response returning plain response: {e}")
         try:
             return JSONResponse(
                 content={
@@ -182,7 +181,7 @@ def __load_json_string_representation(json_string: str) -> Union[dict, str]:
                 }
             )
         except Exception as e:
-            warn(f"Couldn't interpret response returning plain response: {e}")
+            logger.warning(f"Couldn't interpret response returning plain response: {e}")
             return json_string
 
 def __load_file_as_response(file_path: str) -> Union[StreamingResponse, JSONResponse]:
@@ -232,7 +231,7 @@ def __load_json_string_representation(json_string: str) -> Union[dict, str]:
             this_response.replace(replacement[0], replacement[1])
         return json.loads(this_response)
     except Exception as e:
-        warn(f"Couldn't interpret response returning plain response: {e}")
+        logger.warning(f"Couldn't interpret response returning plain response: {e}")
         try:
             return JSONResponse(
                 content={
@@ -241,7 +240,7 @@ def __load_json_string_representation(json_string: str) -> Union[dict, str]:
                 }
             )
         except Exception as e:
-            warn(f"Couldn't interpret response returning plain response: {e}")
+            logger.warning(f"Couldn't interpret response returning plain response: {e}")
             return json_string
 
 
@@ -296,7 +295,7 @@ def __convert_string_response(
             else:
                 return response
         except OSError as os_error:
-            warn(f"Couldn't interpret stream: {os_error}")
+            logger.warning(f"Couldn't interpret stream: {os_error}")
             return response
 
 
@@ -376,7 +375,7 @@ def cast_response(
         return JSONResponse({"prediction": response})
 
     else:
-        warn(f"Response type not supported ({type(response)}), returning a stream")
+        logger.warning(f"Response type not supported ({type(response)}), returning a stream")
 
         ioresult = response
         ioresult.seek(0)

@@ -56,7 +56,7 @@ class TritonClient:
         self.__preload_model: bool = kwargs.get("preload_model", False)
 
         if os.getenv("TRITON_MODELS_PATH") == "":
-            warn(
+            logger.warning(
                 "[DEBUG] TRITON_MODELS_PATH is not set, please specify it in order to be able to download models."
             )
 
@@ -177,7 +177,7 @@ class TritonClient:
             if model["name"] == self.__model_name:
                 return
 
-        warn(
+        logger.warning(
             "Downloading model from hugging-face, to prevent lazy downloading please specify TRITON_LAZY_DOWNLOAD=False"
         )
 

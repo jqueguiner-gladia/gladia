@@ -50,7 +50,6 @@ class SecretManager:
             raise RuntimeError(error_message)
 
         if self.__secrets[item]["value"] is None:
-            warn(self.__secrets[item]["error_message"])
             logger.warning(self.__secrets[item]["error_message"])
 
             return None

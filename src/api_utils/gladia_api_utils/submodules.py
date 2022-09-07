@@ -712,19 +712,19 @@ class TaskRouter:
         )
 
         if not os.path.exists(root_package_path):
-            logger.warn(
+            logger.warning(
                 f"task dir ({root_package_path}) does not exist, skipping {self.task_name}"
             )
             return False
 
         elif not os.path.exists(model_dir):
-            logger.warn(
+            logger.warning(
                 f"model_dir ({model_dir}) does not exist, skipping {self.task_name}"
             )
             return False
 
         elif not os.path.exists(model_file):
-            logger.warn(
+            logger.warning(
                 f"model_file ({model_file}) does not exist, skipping {self.task_name}"
             )
             return False

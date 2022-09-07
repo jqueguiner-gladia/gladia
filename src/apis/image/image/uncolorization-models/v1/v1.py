@@ -17,12 +17,6 @@ def predict(image: bytes) -> np.ndarray:
 
     gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-<<<<<<< HEAD
-    _, im_png = cv2.imencode(
-        ".png", gray_image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9]
-    )
-=======
     _, im_png = cv2.imencode(".png", gray_image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
->>>>>>> 9fa8c3deb097c735c5f04d2ca513df0c7875df89
 
     return im_png
