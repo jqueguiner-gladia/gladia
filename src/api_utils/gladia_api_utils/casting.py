@@ -148,7 +148,8 @@ def __convert_io_response(response: io.IOBase, output_type: str) -> StreamingRes
 
 def __load_json_string_representation(json_string: str) -> Union[dict, str]:
     """
-    Load a JSON string into a dictionary
+    Load a candidate JSON string, clean it and try to loed it as a dictionary 
+    if it fails interpret it as a string
 
     Args:
         json_string (str): JSON string
