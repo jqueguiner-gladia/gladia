@@ -152,11 +152,10 @@ jobs:
           DOCKER_BUILDKIT: 1
         working-directory: ./src
         run: |-
-          { docker build -t ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia:latest -f - . <<- EOF
-              FROM ${{env.DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE}}
-              COPY . /app/
-              EOF 
-          }
+          docker build -t ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia:latest -f - . <<- EOF
+            FROM ${{env.DOCKER_BUILD_ARGS_GLADIA_BASE_IMAGE}}
+            COPY . /app/
+          EOF 
           docker push ${{ secrets.DOCKER_GLADIA_FQDN }}/gladia:${{env.DOCKER_BUILD_TAG}}
 
       - name: Set output for later jobs
