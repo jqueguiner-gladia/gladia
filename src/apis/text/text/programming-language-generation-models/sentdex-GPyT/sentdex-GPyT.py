@@ -1,7 +1,9 @@
 <<<<<<< HEAD
-from typing import Dict, Union, Tuple
+from typing import Dict, Tuple, Union
+
 =======
 from typing import Dict, Tuple, Union
+
 >>>>>>> 9fa8c3deb097c735c5f04d2ca513df0c7875df89
 
 import torch
