@@ -119,6 +119,7 @@ def __download_and_uncompress_model(
     delete_file(dl_tmp_filepath)
     delete_directory(uncompress_tmp_dirpath)
 
+
 def create_folder_in_model_cache_directory(folder_path: str) -> str:
     """
     Create a folder withing a model cache directory
@@ -139,10 +140,10 @@ def create_folder_in_model_cache_directory(folder_path: str) -> str:
 
     else:
         raise ValueError("Absolute path provided")
-    
+
     if not os.path.exists(folder_path):
         os.makedirs(folder_path, exist_ok=True)
-    
+
     return folder_path
 
 
