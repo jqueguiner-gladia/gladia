@@ -3,8 +3,8 @@ import json
 import os
 import pathlib
 import re
+from logging import getLogger
 from typing import Union
-from warnings import warn
 
 import numpy as np
 from fastapi.encoders import jsonable_encoder
@@ -15,11 +15,10 @@ from starlette.responses import StreamingResponse
 
 from .file_management import get_file_type
 
-from logging import getLogger
-
 logger = getLogger(__name__)
 
 png_media_type = "image/png"
+
 
 class NpEncoder(json.JSONEncoder):
     """
@@ -146,6 +145,7 @@ def __convert_io_response(response: io.IOBase, output_type: str) -> StreamingRes
 
     return response
 
+
 def __load_json_string_representation(json_string: str) -> Union[dict, str]:
     """
     Load a JSON string into a dictionary
@@ -184,6 +184,7 @@ def __load_json_string_representation(json_string: str) -> Union[dict, str]:
             logger.warning(f"Couldn't interpret response returning plain response: {e}")
             return json_string
 
+
 def __load_file_as_response(file_path: str) -> Union[StreamingResponse, JSONResponse]:
     """
     Load a file as a response. JSON files will be loaded as JSON response, other files will be loaded as Streaming response
@@ -199,11 +200,10 @@ def __load_file_as_response(file_path: str) -> Union[StreamingResponse, JSONResp
         return json.load(file_path)
     except Exception:
         file_to_stream = open(file_path, "rb")
-        return StreamingResponse(
-            file_to_stream, media_type=get_file_type(file_path)
-        )
+        return StreamingResponse(file_to_stream, media_type=get_file_type(file_path))
     finally:
         os.remove(file_path)
+
 
 def __load_json_string_representation(json_string: str) -> Union[dict, str]:
     """
@@ -375,7 +375,9 @@ def cast_response(
         return JSONResponse({"prediction": response})
 
     else:
-        logger.warning(f"Response type not supported ({type(response)}), returning a stream")
+        logger.warning(
+            f"Response type not supported ({type(response)}), returning a stream"
+        )
 
         ioresult = response
         ioresult.seek(0)

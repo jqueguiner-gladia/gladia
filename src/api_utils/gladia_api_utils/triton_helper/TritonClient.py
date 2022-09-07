@@ -4,7 +4,6 @@ import sys
 from logging import getLogger
 from time import sleep
 from typing import Any
-from warnings import warn
 
 import requests
 import tritonclient.http as tritonclient
