@@ -1,5 +1,6 @@
 import os
 from logging import getLogger
+from warnings import warn
 
 logger = getLogger(__name__)
 
@@ -49,7 +50,7 @@ class SecretManager:
             raise RuntimeError(error_message)
 
         if self.__secrets[item]["value"] is None:
-            logger.warning(self.__secrets[item]["error_message"])
+            warn(self.__secrets[item]["error_message"])
 
             return None
 

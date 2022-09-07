@@ -4,6 +4,7 @@ import sys
 from logging import getLogger
 from time import sleep
 from typing import Any
+from warnings import warn
 
 import requests
 import tritonclient.http as tritonclient
@@ -55,7 +56,7 @@ class TritonClient:
         self.__preload_model: bool = kwargs.get("preload_model", False)
 
         if os.getenv("TRITON_MODELS_PATH") == "":
-            logger.warning(
+            warn(
                 "[DEBUG] TRITON_MODELS_PATH is not set, please specify it in order to be able to download models."
             )
 
@@ -176,7 +177,7 @@ class TritonClient:
             if model["name"] == self.__model_name:
                 return
 
-        logger.warning(
+        warn(
             "Downloading model from hugging-face, to prevent lazy downloading please specify TRITON_LAZY_DOWNLOAD=False"
         )
 
