@@ -1,7 +1,6 @@
 import importlib
 import json
 import os
-import re
 import subprocess
 import sys
 import tempfile
@@ -9,7 +8,7 @@ import urllib.parse
 from logging import getLogger
 from pathlib import Path
 from shlex import quote
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple, Union
 from urllib.request import urlopen
 
 import forge
@@ -27,8 +26,8 @@ versions = list()
 available_versions = list()
 logger = getLogger(__name__)
 
-PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
 PATH_TO_GLADIA_SRC = os.getenv("PATH_TO_GLADIA_SRC", "/app")
+ENV_YAML = "env.yaml"
 
 models_folder_suffix = "models"
 
@@ -118,7 +117,7 @@ def dict_model(name: str, dict_def: dict) -> BaseModel:
     return create_model(name, **fields)
 
 
-def get_module_infos(root_path=None) -> list:
+def get_module_infos(root_path=None) -> Tuple:
     """
     Get the list of available module infos
 
@@ -126,7 +125,7 @@ def get_module_infos(root_path=None) -> list:
         root_path (str): path to the root of the project
 
     Returns:
-        list: list of available module infos
+        Tuple: tuple of available module infos
     """
 
     if root_path:
@@ -143,7 +142,7 @@ def get_module_infos(root_path=None) -> list:
     return task, plugin, tags
 
 
-def get_model_versions(root_path: str = None) -> dict:
+def get_model_versions(root_path: str = None) -> Tuple:
     """
     Get the list of available model versions.
     We use the -{models_folder_suffix} in order to
@@ -153,7 +152,7 @@ def get_model_versions(root_path: str = None) -> dict:
         root_path (str): path to the root of the project
 
     Returns:
-        dict: dictionary of available model versions
+        Tuple: Tuple of available model versions
     """
 
     # used for relative paths
@@ -271,7 +270,7 @@ def exec_in_subprocess(
         raise RuntimeError(error_message)
 
 
-def get_module_env_name(module_path: str) -> str:
+def get_module_env_name(module_path: str) -> Union[str, None]:
     """
     Get the name of the environment from the module path.
 
@@ -282,15 +281,15 @@ def get_module_env_name(module_path: str) -> str:
         str: name of the associated micromamba environment. None if no environment is found.
     """
 
-    if os.path.isfile(os.path.join(module_path, "env.yaml")):
-        path = os.path.join(module_path, "env.yaml").split("/")
+    if os.path.isfile(os.path.join(module_path, ENV_YAML)):
+        path = os.path.join(module_path, ENV_YAML).split("/")
 
         task = path[-3]
         model = path[-2]
 
         return f"{task}-{model}"
 
-    elif os.path.isfile(os.path.join(module_path, "../", "env.yaml")):
+    elif os.path.isfile(os.path.join(module_path, "../", ENV_YAML)):
         return os.path.split(os.path.split(os.path.split(module_path)[0])[0])[1]
 
     else:
@@ -370,8 +369,13 @@ def create_description_for_the_endpoint_parameter(endpoint_param: dict) -> dict:
             "data_type": "url",
             "default": None,
             "constructor": Form,
-            "example": {get_example_name(endpoint_param["example"]): endpoint_param["example"]},
-            "examples": {get_example_name(example): example for example in endpoint_param["examples"]}
+            "example": {
+                get_example_name(endpoint_param["example"]): endpoint_param["example"]
+            },
+            "examples": {
+                get_example_name(example): example
+                for example in endpoint_param["examples"]
+            }
             if endpoint_param.get("examples", None)
             else {},
             "description": "",  # TODO: copy description from above param
@@ -685,6 +689,8 @@ class TaskRouter:
                         ):
                             os.system(f"rm {result}")
                     except:
+                        # not a valid path
+                        # skip
                         pass
 
     def __check_if_model_exist(
@@ -704,19 +710,19 @@ class TaskRouter:
         )
 
         if not os.path.exists(root_package_path):
-            logger.warn(
+            logger.warning(
                 f"task dir ({root_package_path}) does not exist, skipping {self.task_name}"
             )
             return False
 
         elif not os.path.exists(model_dir):
-            logger.warn(
+            logger.warning(
                 f"model_dir ({model_dir}) does not exist, skipping {self.task_name}"
             )
             return False
 
         elif not os.path.exists(model_file):
-            logger.warn(
+            logger.warning(
                 f"model_file ({model_file}) does not exist, skipping {self.task_name}"
             )
             return False
