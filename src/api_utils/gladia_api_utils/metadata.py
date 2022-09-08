@@ -1,8 +1,9 @@
-from gladia_api_utils.OvhObjectStorageHelper import OVH_file_manager
 import os
 import pathlib
-import yaml
 from pathlib import Path
+
+import yaml
+from gladia_api_utils.OvhObjectStorageHelper import OVH_file_manager
 
 dir_ignore = ["__pycache__"]
 root_path = os.getcwd()
@@ -58,6 +59,7 @@ def get_all_metadata_files_path():
 
     return task_paths, model_paths
 
+
 def update_all_metadata_fields_from_template():
     """
     Add new field from template to every metadata files.
@@ -69,7 +71,7 @@ def update_all_metadata_fields_from_template():
     """
 
     task_paths, model_paths = get_all_metadata_files_path()
-    
+
     template_task_metadata_path = os.path.join(
         root_path, "apis/.metadata_task_template.yaml"
     )
@@ -91,10 +93,9 @@ def update_all_metadata_fields_from_template():
         # Update the task metadata from template
         for key, value in source_metadata.items():
             if key not in list(metadata.keys()):
-                metadata[key]=value
+                metadata[key] = value
         with open(task_file_path, "w") as metadata_file:
             yaml.dump(metadata, metadata_file)
-
 
     # Create or delete model metadata files
     for model_path in model_paths:
@@ -108,7 +109,7 @@ def update_all_metadata_fields_from_template():
         # Update the model metadata from template
         for key, value in source_metadata.items():
             if key not in list(metadata.keys()):
-                metadata[key]=value
+                metadata[key] = value
         with open(model_file_path, "w") as metadata_file:
             yaml.dump(metadata, metadata_file)
 
@@ -207,7 +208,7 @@ def create_metadata_examples_with_reponse(endpoint, params, data, files, respons
 def get_model_metadata_path(endpoint, model):
     """
     Retieve the path of the model metadata file.
-    
+
     Args:
         endpoint (str): /<input>/<output>/<task>/
         model (str): model name
@@ -221,7 +222,9 @@ def get_model_metadata_path(endpoint, model):
     metadata_file_name = ".model_metadata.yaml"
     metadata_file_path = os.path.join(path_to_metadata, metadata_file_name)
     if not Path(metadata_file_path).exists():
-        with open(f"{source_folder}/apis/.metadata_model_template.yaml", "r") as metadata_file:
+        with open(
+            f"{source_folder}/apis/.metadata_model_template.yaml", "r"
+        ) as metadata_file:
             metadata = yaml.safe_load(metadata_file)
         with open(metadata_file_path, "w") as metadata_file:
             yaml.dump(metadata, metadata_file)
