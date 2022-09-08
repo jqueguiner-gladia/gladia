@@ -243,7 +243,7 @@ jobs:
           contains(github.event.pull_request.labels.*.name, 'ci: test-continue-when-fail')
         id: set-test-env-continue
         run: |
-          echo "GLADIA_TEST_CONTINUE_WHEN_FAILED="-c" >> $GITHUB_ENV
+          echo "GLADIA_TEST_CONTINUE_WHEN_FAILED=-c" >> $GITHUB_ENV
 
       - name: Set env variables for depth of tests
         if: |

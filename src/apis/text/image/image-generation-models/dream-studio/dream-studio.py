@@ -1,10 +1,12 @@
 import io
-import warnings
+from logging import getLogger
 
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from gladia_api_utils import SECRETS
 from PIL import Image
 from stability_sdk import client
+
+logger = getLogger(__name__)
 
 
 def predict(
@@ -44,7 +46,7 @@ def predict(
     for resp in answers:
         for artifact in resp.artifacts:
             if artifact.finish_reason == generation.FILTER:
-                warnings.warn(
+                logger.warning(
                     "Your request activated the API's safety filters and could not be processed."
                     "Please modify the prompt and try again."
                 )
