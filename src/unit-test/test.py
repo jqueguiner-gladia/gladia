@@ -1,14 +1,12 @@
 import json
 import os
-from pathlib import Path
 import sys
 from time import sleep
 from urllib.request import Request, urlopen
 
 import click
 import requests
-import yaml
-from gladia_api_utils.OvhObjectStorageHelper import OVH_file_manager
+from gladia_api_utils.metadata import create_metadata_examples_with_reponse, clean_up_model_output_data
 from validators import url as is_url
 
 global nb_total_tests
@@ -293,117 +291,6 @@ def get_file_message(data, files) -> str:
     return files_message
 
 
-def create_metadata_with_reponse(path, params, data, files, response):
-    model = params["model"]
-    task = path
-    input = task.split("/")[1]
-    output = task.split("/")[2]
-
-    if output != "text":
-
-        extensions = {
-            "image/jpeg": "jpg",
-            "image/jpg": "jpg",
-            "image/gif": "gif",
-            "image/png": "png",
-            "audio/mpeg": "mp3",
-            "audio/wav": "wav",
-            "audio/x-m4a": "m4a",
-        }
-
-        # Upload file to OVH
-        content_type = response.headers["content-type"]
-        try:
-            output_extension = extensions[content_type]
-        except Exception as e:
-            print(f"Error: '{content_type}' is not a known content-type")
-
-        if input != "text":
-            file_path = (
-                list(files.values())[0][1]
-                if files
-                else [value for key, value in data.items() if key.endswith("_url")][0]
-            )
-            original_file_name_with_extension = os.path.basename(file_path)
-            original_file_name, input_extension = os.path.splitext(
-                original_file_name_with_extension
-            )
-            input_extension = input_extension[1:]
-            file_name = f"from_{original_file_name}_{input_extension}"
-            file_name_with_extesion = f"{file_name}.{output_extension}"
-            ovh_file_name = (
-                f"output{task}{model}/examples/{file_name_with_extesion}"
-                if files
-                else f"output{task}{model}/example/{file_name_with_extesion}"
-            )
-        else:
-            file_name = "output"
-            file_name_with_extesion = f"{file_name}.{output_extension}"
-            ovh_file_name = f"output{task}{model}/example/{file_name}"
-
-        tmp_file_path = "unit-test/tmp-output-file.png"
-        with open(tmp_file_path, "wb") as out_file:
-            out_file.write(response.content)
-        file_manager = OVH_file_manager()
-        file_manager.upload_file_from_path(tmp_file_path, ovh_file_name)
-        os.remove(tmp_file_path)
-
-        # Add file link to model metadata
-        metadata_file_path = get_model_metadata_path(task, model)
-        with open(metadata_file_path, "r") as metadata_file:
-            metadata = yaml.safe_load(metadata_file)
-        if input != "text":
-            example_dict = "examples" if files else "example"
-            metadata["gladia"][example_dict][
-                file_name
-            ] = f"http://files.gladia.io/{ovh_file_name}"
-        else:
-            metadata["gladia"]["example"][
-                "output"
-            ] = f"http://files.gladia.io/{ovh_file_name}"
-        with open(metadata_file_path, "w") as metadata_file:
-            yaml.dump(metadata, metadata_file)
-
-    else:
-        metadata_file_path = get_model_metadata_path(task, model)
-        with open(metadata_file_path, "r") as metadata_file:
-            metadata = yaml.safe_load(metadata_file)
-        metadata["gladia"]["example"]["output"] = response.json()
-        with open(metadata_file_path, "w") as metadata_file:
-            yaml.dump(metadata, metadata_file)
-
-
-def get_model_metadata_path(task, model):
-    task_name = task.split("/")[3]
-    task_models_folder = task.replace(task_name, f"{task_name}-models")
-    path_to_metadata = f"/app/apis{task_models_folder}{model}"
-    metadata_file_name = ".model_metadata.yaml"
-    metadata_file_path = os.path.join(path_to_metadata, metadata_file_name)
-    if not Path(metadata_file_path).exists():
-        with open("/app/apis/.metadata_model_template.yaml", "r") as metadata_file:
-            metadata = yaml.safe_load(metadata_file)
-        with open(metadata_file_path, "w") as metadata_file:
-            yaml.dump(metadata, metadata_file)
-    return metadata_file_path
-
-
-def clean_up_model_output_data(task, model):
-    # Clean up files in OVH Object Storage
-    file_manager = OVH_file_manager()
-    prefix = f"output{task}{model}"
-    files_to_delete = file_manager.get_objects(prefix=prefix)
-    for file_to_delete in files_to_delete:
-        file_manager.delete_file(file_to_delete)
-    # Clean up metadata
-    metadata_file_path = get_model_metadata_path(task, model)
-    with open(metadata_file_path, "r") as metadata_file:
-        metadata = yaml.safe_load(metadata_file)
-    metadata["gladia"]["example"] = {}
-    metadata["gladia"]["examples"] = {}
-    with open(metadata_file_path, "w") as metadata_file:
-        yaml.dump(metadata, metadata_file)
-
-
 def request_endpoint(url, path, params={}, data={}, files={}, max_retry=3):
 
     tries = 1
@@ -475,7 +362,7 @@ def perform_test(
             if not is_response_valid(response, details):
                 is_model_valid = False
             elif update_metadata:
-                create_metadata_with_reponse(
+                create_metadata_examples_with_reponse(
                     path, params, request["data"], request["files"], response
                 )
 
