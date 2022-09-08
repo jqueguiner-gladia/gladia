@@ -1,4 +1,4 @@
-from gladia_api_utils.OvhObjectStorageHelper import OVH_file_manager
+from gladia_api_utils.OvhObjectStorageHelper import OVHFileManager
 import os
 import pathlib
 import yaml
@@ -175,7 +175,7 @@ def create_metadata_examples_with_reponse(endpoint, params, data, files, respons
         tmp_file_path = "unit-test/tmp-output-file.png"
         with open(tmp_file_path, "wb") as out_file:
             out_file.write(response.content)
-        file_manager = OVH_file_manager()
+        file_manager = OVHFileManager()
         file_manager.upload_file_from_path(tmp_file_path, ovh_file_name)
         os.remove(tmp_file_path)
 
@@ -239,7 +239,7 @@ def clean_up_model_output_data(endpoint, model):
         None
     """
     # Clean up files in OVH Object Storage
-    file_manager = OVH_file_manager()
+    file_manager = OVHFileManager()
     prefix = f"output{endpoint}{model}"
     files_to_delete = file_manager.get_objects(prefix=prefix)
     for file_to_delete in files_to_delete:
