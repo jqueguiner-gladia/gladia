@@ -21,6 +21,182 @@ PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
 
 logger = getLogger(__name__)
 
+PATTERN = re.compile(r'((\w:)|(\.))((/(?!/)(?!/)|\\{2})[^\n?"|></\\:*]+)+')
+
+
+class PathNotExistsException(Exception):
+    pass
+
+
+class FileProcessingError(Exception):
+    pass
+
+
+MIME_TYPES_CATEGORIES = {
+    "audio": "audio",
+    "video": "video",
+    "image": "image",
+    "text": "text",
+    "font": "font",
+    "binary": "binary",
+    "application": "application",
+    "flat_structured_data": "flat_structured_data",
+    "multidimensional_structured_data": "multidimensional_structured_data",
+    "ebook": "ebook",
+    "unknown": "unknown",
+    "archive": "archive",
+    "executable": "executable",
+    "web_content": "web_content",
+    "document": "document",
+    "spreadsheet": "spreadsheet",
+    "presentation": "presentation",
+    "database": "database",
+    "pdf": "pdf",
+    "diagram": "diagram",
+    "calendar": "calendar",
+}
+
+MIME_TYPE_TO_CATEGORY = {
+    "audio/aac": MIME_TYPES_CATEGORIES["audio"],
+    "audio/midi": MIME_TYPES_CATEGORIES["audio"],
+    "audio/ogg": MIME_TYPES_CATEGORIES["audio"],
+    "audio/x-wav": MIME_TYPES_CATEGORIES["audio"],
+    "audio/webm": MIME_TYPES_CATEGORIES["audio"],
+    "audio/3gpp": MIME_TYPES_CATEGORIES["audio"],
+    "audio/3gpp2": MIME_TYPES_CATEGORIES["audio"],
+    "video/x-msvideo": MIME_TYPES_CATEGORIES["video"],
+    "video/mpeg": MIME_TYPES_CATEGORIES["video"],
+    "video/ogg": MIME_TYPES_CATEGORIES["video"],
+    "video/webm": MIME_TYPES_CATEGORIES["video"],
+    "video/3gpp": MIME_TYPES_CATEGORIES["video"],
+    "video/3gpp2": MIME_TYPES_CATEGORIES["video"],
+    "image/bmp": MIME_TYPES_CATEGORIES["image"],
+    "image/gif": MIME_TYPES_CATEGORIES["image"],
+    "image/x-icon": MIME_TYPES_CATEGORIES["image"],
+    "image/jpeg": MIME_TYPES_CATEGORIES["image"],
+    "image/png": MIME_TYPES_CATEGORIES["image"],
+    "image/svg+xml": MIME_TYPES_CATEGORIES["image"],
+    "image/tiff": MIME_TYPES_CATEGORIES["image"],
+    "image/webp": MIME_TYPES_CATEGORIES["image"],
+    "font/otf": MIME_TYPES_CATEGORIES["font"],
+    "font/ttf": MIME_TYPES_CATEGORIES["font"],
+    "font/woff": MIME_TYPES_CATEGORIES["font"],
+    "font/woff2": MIME_TYPES_CATEGORIES["font"],
+    "application/octet-stream": MIME_TYPES_CATEGORIES["binary"],
+    "application/vnd.amazon.ebook": MIME_TYPES_CATEGORIES["ebook"],
+    "application/epub+zip": MIME_TYPES_CATEGORIES["ebook"],
+    "application/x-bzip": MIME_TYPES_CATEGORIES["archive"],
+    "application/x-bzip2": MIME_TYPES_CATEGORIES["archive"],
+    "application/java-archive": MIME_TYPES_CATEGORIES["archive"],
+    "application/x-rar-compressed": MIME_TYPES_CATEGORIES["archive"],
+    "application/x-tar": MIME_TYPES_CATEGORIES["archive"],
+    "application/zip": MIME_TYPES_CATEGORIES["archive"],
+    "application/x-7z-compressed": MIME_TYPES_CATEGORIES["archive"],
+    "application/x-csh": MIME_TYPES_CATEGORIES["executable"],
+    "application/ogg": MIME_TYPES_CATEGORIES["executable"],
+    "application/x-sh": MIME_TYPES_CATEGORIES["executable"],
+    "application/x-shockwave-flash": MIME_TYPES_CATEGORIES["executable"],
+    "text/css": MIME_TYPES_CATEGORIES["web_content"],
+    "text/html": MIME_TYPES_CATEGORIES["web_content"],
+    "application/javascript": MIME_TYPES_CATEGORIES["web_content"],
+    "application/xhtml+xml": MIME_TYPES_CATEGORIES["web_content"],
+    "application/vnd.mozilla.xul+xml": MIME_TYPES_CATEGORIES["web_content"],
+    "text/csv": MIME_TYPES_CATEGORIES["flat_structured_data"],
+    "text/tab-separated-values": MIME_TYPES_CATEGORIES["flat_structured_data"],
+    "application/vnd.ms-excel": MIME_TYPES_CATEGORIES["spreadsheet"],
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.template": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.ms-excel.sheet.macroEnabled.12": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.ms-excel.template.macroEnabled.12": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.ms-excel.addin.macroEnabled.12": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.ms-excel.sheet.binary.macroEnabled.12": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.oasis.opendocument.spreadsheet": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.oasis.opendocument.spreadsheet-template": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.oasis.opendocument.spreadsheet-flat-xml": MIME_TYPES_CATEGORIES[
+        "spreadsheet"
+    ],
+    "application/vnd.lotus-1-2-3": MIME_TYPES_CATEGORIES["spreadsheet"],
+    "application/vnd.lotus-approach": MIME_TYPES_CATEGORIES["spreadsheet"],
+    "application/vnd.lotus-freelance": MIME_TYPES_CATEGORIES["spreadsheet"],
+    "application/xslt+xml": MIME_TYPES_CATEGORIES["web_content"],
+    "application/json": MIME_TYPES_CATEGORIES["multidimensional_structured_data"],
+    "application/xml": MIME_TYPES_CATEGORIES["multidimensional_structured_data"],
+    "application/msword": MIME_TYPES_CATEGORIES["document"],
+    "application/x-abiword": MIME_TYPES_CATEGORIES["document"],
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": MIME_TYPES_CATEGORIES[
+        "document"
+    ],
+    "application/vnd.oasis.opendocument.text": MIME_TYPES_CATEGORIES["document"],
+    "application/rtf": MIME_TYPES_CATEGORIES["document"],
+    "application/vnd.ms-powerpoint": MIME_TYPES_CATEGORIES["presentation"],
+    "application/vnd.oasis.opendocument.presentation": MIME_TYPES_CATEGORIES[
+        "presentation"
+    ],
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": MIME_TYPES_CATEGORIES[
+        "presentation"
+    ],
+    "application/pdf": MIME_TYPES_CATEGORIES["pdf"],
+    "application/vnd.visio": MIME_TYPES_CATEGORIES["diagram"],
+    "application/vnd.oasis.opendocument.graphics": MIME_TYPES_CATEGORIES["diagram"],
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramColors+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramStyle+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.ms-office.drawingml.diagramData+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.ms-office.drawingml.diagramColors+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.ms-office.drawingml.diagramLayout+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "application/vnd.ms-office.drawingml.diagramStyle+xml": MIME_TYPES_CATEGORIES[
+        "diagram"
+    ],
+    "text/plain": MIME_TYPES_CATEGORIES["text"],
+    "text/calendar": MIME_TYPES_CATEGORIES["text"],
+    "text/x-vcard": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vcalendar": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vnote": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vtodo": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vjournal": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vmessage": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vfreebusy": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vtimezone": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vavailability": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vpoll": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vdirectory": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vconference": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vexample": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vrsvp": MIME_TYPES_CATEGORIES["calendar"],
+    "text/x-vrsvp-reply": MIME_TYPES_CATEGORIES["calendar"],
+}
+
 
 def is_binary_file(file_path: str) -> bool:
     """
@@ -149,29 +325,18 @@ def download_file(
         Path: The path to the downloaded file.
     """
 
-    is_gdrivefile = url.startswith("https://drive.google.com/")
-
     file_full_path = Path(file_full_path)
 
     if not os.path.exists(file_full_path.parent):
         if force_create_dir:
             create_directory(file_full_path.parent)
         else:
-            raise Exception(
+            raise PathNotExistsException(
                 "Parent directory doesn't exists : change the path or use force_create_dir = True"
             )
 
-    if not file_full_path.exists():
-        if is_gdrivefile:
-            gdown.download(url, file_full_path, quiet=False)
-        else:
-            write_url_content_to_file(file_full_path, url)
-
-    elif force_redownload:
-        if is_gdrivefile:
-            gdown.download(url, file_full_path, quiet=False)
-        else:
-            write_url_content_to_file(file_full_path, url)
+    if not file_full_path.exists() or force_redownload:
+        write_url_content_to_file(file_full_path, url)
 
     return file_full_path
 
@@ -187,12 +352,15 @@ def write_url_content_to_file(file_full_path: Path, url: str) -> bool:
     Returns:
         bool: True if the file was written, False otherwise.
     """
+    if url.startswith("https://drive.google.com/"):
+        gdown.download(url, file_full_path, quiet=False)
+        return True
+    else:
+        data = requests.get(url).content
 
-    data = requests.get(url).content
+        logger.debug(f"writing {url} to {file_full_path}")
 
-    logger.debug(f"writing {url} to {file_full_path}")
-
-    return write_to_file(file_full_path, data)
+        return write_to_file(file_full_path, data)
 
 
 def write_to_file(file_full_path: str, data: Any, overwrite: bool = False) -> bool:
@@ -237,12 +405,17 @@ def delete_file(filepath: str) -> bool:
     """
 
     if os.path.exists(filepath):
-        return os.remove(filepath)
+        try:
+            os.remove(filepath)
+            return True
+        except Exception as e:
+            logger.error(f"Couldn't delete file {filepath}: {e}")
+            return False
     else:
         return False
 
 
-def delete_all_files(files: list) -> list:
+def delete_all_files(files: list) -> dict:
     """
     Delete all files in a given list
 
@@ -285,13 +458,21 @@ def create_directory(path: str) -> bool:
     """
 
     if len(os.path.dirname(path)) > 0:
-        return os.makedirs(os.path.dirname(path), exist_ok=True)
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            return True
+        except Exception as e:
+            logger.error(f"Couldn't create directory {path}: {e}")
+            return False
     else:
         return False
 
 
 def uncompress(
-    path: str, destination: str = None, delete_after_uncompress: bool = True
+    path: str,
+    destination: str = None,
+    delete_after_uncompress: bool = True,
+    force_create_dir: bool = True,
 ) -> str:
     """
     Uncompress a file.
@@ -309,6 +490,8 @@ def uncompress(
     """
 
     try:
+        if force_create_dir:
+            create_directory(destination)
         logger.debug(f"Extracting archive from {path} to {destination}")
         output = xtract(path, destination=destination, overwrite=True, all=False)
 
@@ -321,7 +504,7 @@ def uncompress(
         return output
 
     except:
-        raise Exception(f"Error while uncompressing {path}")
+        raise FileProcessingError(f"Error while uncompressing {path}")
 
 
 def compress_directory(
@@ -631,7 +814,6 @@ def get_file_category(file_path: str) -> str:
         str: The category of the file.
     """
 
-    output = ""
     # used for relative paths
     namespace = sys._getframe(1).f_globals
     cwd = os.getcwd()
@@ -657,117 +839,10 @@ def get_mime_category(mime_type: str) -> str:
         str: The category of the mime type.
     """
 
-    if mime_type in [
-        "audio/aac",
-        "audio/midi",
-        "audio/ogg",
-        "audio/x-wav",
-        "audio/webm",
-        "audio/3gpp",
-        "audio/3gpp2",
-    ]:
-        output = "audio"
+    if mime_type in MIME_TYPE_TO_CATEGORY:
+        return MIME_TYPE_TO_CATEGORY[mime_type]
 
-    elif mime_type in ["application/octet-stream"]:
-        output = "binary"
-
-    elif mime_type in [
-        "video/x-msvideo",
-        "video/mpeg",
-        "video/ogg",
-        "video/webm",
-        "video/3gpp",
-        "video/3gpp2",
-    ]:
-        output = "video"
-
-    elif mime_type in [
-        "image/bmp",
-        "image/gif",
-        "image/x-icon",
-        "image/jpeg",
-        "image/png",
-        "image/svg+xml",
-        "image/tiff",
-        "image/webp",
-    ]:
-        output = "image"
-
-    elif mime_type in ["font/otf", "font/ttf", "font/woff", "font/woff2"]:
-        output = "font"
-
-    elif mime_type in ["application/vnd.amazon.ebook", "application/epub+zip"]:
-        output = "ebook"
-
-    elif mime_type in [
-        "application/x-bzip",
-        "application/x-bzip",
-        "application/x-bzip2",
-        "application/java-archive",
-        "application/x-rar-compressed",
-        "application/x-tar",
-        "application/zip",
-        "application/x-7z-compressed",
-    ]:
-        output = "archive"
-
-    elif mime_type in [
-        "application/x-csh",
-        "application/ogg",
-        "application/x-sh",
-        "application/x-shockwave-flash",
-    ]:
-        output = "executable"
-
-    elif mime_type in [
-        "text/css",
-        "text/html",
-        "application/javascript",
-        "application/xhtml+xml",
-        "application/vnd.mozilla.xul+xml",
-    ]:
-        output = "web_content"
-
-    elif mime_type in [
-        "text/csv",
-        "application/vnd.oasis.opendocument.spreadsheet",
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ]:
-        output = "flat_structured_data"
-
-    elif mime_type in ["application/json", "application/xml"]:
-        output = "multidimensional_structured_data"
-
-    elif mime_type in [
-        "application/msword",
-        "application/x-abiword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/vnd.oasis.opendocument.text",
-        "application/rtf",
-    ]:
-        output = "word"
-
-    elif mime_type in [
-        "application/vnd.ms-powerpoint",
-        "application/vnd.oasis.opendocument.presentation",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ]:
-        output = "presentation"
-
-    elif mime_type in ["application/pdf"]:
-        output = "pdf"
-
-    elif mime_type in ["application/vnd.visio"]:
-        output = "diagram"
-
-    elif mime_type in ["text/plain"]:
-        output = "text"
-
-    else:
-        output = "other"
-
-    return output
+    return MIME_TYPES_CATEGORIES["unknown"]
 
 
 def get_file_type(file_path: str) -> str:
