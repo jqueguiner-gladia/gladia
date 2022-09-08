@@ -1,27 +1,22 @@
-import os
-
 import cv2 as cv
 import numpy as np
-from gladia_api_utils.io import _open
-from gladia_api_utils.model_management import download_models
-from keras.models import load_model
+
 from PIL import Image
+from keras.models import load_model
+from gladia_api_utils.io import _open
+from gladia_api_utils.model_management import download_model
 
-models_to_download = {
-    "mlhubber_colorize": {
-        "url": "https://huggingface.co/Gladiaio/mlhubber_colorize",
-        "output_path": "models",
-    }
-}
 
-models_path = download_models(models_to_download)
-
-MODEL_FILE = os.path.join(
-    models_path["mlhubber_colorize"]["output_path"], "model.06-2.5489.hdf5"
+MODEL_FILE = download_model(
+    url="https://huggingface.co/Gladiaio/mlhubber_colorize/resolve/main/model.06-2.5489.hdf5",
+    output_path="model.06-2.5489.hdf5",
+    uncompress_after_download=False,
 )
 
-PTS_IN_HULL_FILE = os.path.join(
-    models_path["mlhubber_colorize"]["output_path"], "pts_in_hull.npy"
+PTS_IN_HULL_FILE = download_model(
+    url="https://huggingface.co/Gladiaio/mlhubber_colorize/resolve/main/pts_in_hull.npy",
+    output_path="pts_in_hull.npy",
+    uncompress_after_download=False,
 )
 
 
@@ -85,8 +80,7 @@ def predict(image: bytes) -> Image:
     out_bgr = cv.cvtColor(out_lab, cv.COLOR_LAB2BGR)
 
     out_bgr = out_bgr.astype(np.uint8)
-    out_bgr = cv.cvtColor(out_bgr, cv.COLOR_BGR2RGB)
 
-    out_bgr = Image.fromarray(out_bgr)
-
-    return out_bgr
+    return Image.fromarray(
+        cv.cvtColor(out_bgr, cv.COLOR_BGR2RGB)
+    )
