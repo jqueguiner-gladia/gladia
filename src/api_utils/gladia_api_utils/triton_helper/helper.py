@@ -1,6 +1,8 @@
 import json
 import os
-from warnings import warn
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 def check_if_model_needs_to_be_preloaded(model_name: str) -> bool:
@@ -17,7 +19,7 @@ def check_if_model_needs_to_be_preloaded(model_name: str) -> bool:
     path_to_config_file = os.getenv("API_CONFIG_FILE", "config.json")
 
     if not os.path.isfile(path_to_config_file):
-        warn(
+        logger.warning(
             f"[TritonClient] Couldn't load config file {path_to_config_file}, setting __preload_model to False."
         )
 
@@ -30,7 +32,7 @@ def check_if_model_needs_to_be_preloaded(model_name: str) -> bool:
         "triton" not in config_file.keys()
         or "models_to_preload" not in config_file["triton"].keys()
     ):
-        warn(
+        logger.warning(
             f"[TritonClient] Couldn't find 'models_to_preload' param key in the config file {path_to_config_file}, setting __preload_model to False."
         )
 

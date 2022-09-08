@@ -7,12 +7,12 @@ from gladia_api_utils.io import _open, np_to_img_pil
 
 
 @input_to_files
-def predict(image: bytes) -> BytesIO:
+def predict(image: str) -> BytesIO:
     """
     Call the model returning the image with the faces blured
 
     Args:
-        image (bytes): Image to blur
+        image (str): Path to the Image to blur
 
     Returns:
         BytesIO: Image with the faces blured

@@ -4,7 +4,7 @@ import os
 
 def list_tasks_for_modalities(
     root_path: str, input_modaliy: str, output_modaliy: str
-) -> str:
+) -> list:
     """
     List every tasks (activated or not) for a certain input/output modality pair
 
@@ -14,7 +14,7 @@ def list_tasks_for_modalities(
         output_modaliy (str): modality of the model output
 
     Returns:
-        str: path to the tasks founded for the input/output modality pair
+        list: list of paths to the tasks founded for the input/output modality pair
     """
 
     tasks = os.listdir(os.path.join(root_path, input_modaliy, output_modaliy))
