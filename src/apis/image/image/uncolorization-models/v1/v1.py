@@ -17,11 +17,6 @@ def predict(image: bytes) -> np.ndarray:
 
     gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    is_successful, im_png = cv2.imencode(
-        ".png", gray_image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9]
-    )
+    _, im_png = cv2.imencode(".png", gray_image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
-    if is_successful:
-        return im_png
-
-    raise Exception("Error encoding image")
+    return im_png

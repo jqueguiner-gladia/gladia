@@ -1,22 +1,18 @@
-import os
 from typing import Tuple
 
 import onnxruntime as ort
 from gladia_api_utils.image_management import draw_segment
 from gladia_api_utils.io import _open
-from gladia_api_utils.model_management import download_models
+from gladia_api_utils.model_management import download_model
 from numpy import asarray as as_nparray
 from numpy import ndarray
 from PIL import Image
 
-models_to_download = {
-    "xception": {
-        "url": "https://huggingface.co/Gladiaio/databuzzword_xception_onnx",
-        "output_path": "models",
-    }
-}
-
-models_path = download_models(models_to_download)
+MODEL_PATH = download_model(
+    url="https://huggingface.co/Gladiaio/databuzzword_xception_onnx/resolve/main/databuzzword_xception_onnx.onnx",
+    output_path="xception_onnx.onnx",
+    uncompress_after_download=False,
+)
 
 
 def run(image: Image, fast: bool = True) -> Tuple[Image.Image, ndarray]:
@@ -34,9 +30,7 @@ def run(image: Image, fast: bool = True) -> Tuple[Image.Image, ndarray]:
     del fast
 
     INPUT_SIZE = 513
-    MODEL_PATH = os.path.join(
-        models_path["xception"]["output_path"], "databuzzword_xception_onnx.onnx"
-    )
+
     INPUT_TENSOR_NAME = "ImageTensor:0"
 
     width, height = image.size
