@@ -7,7 +7,10 @@ from urllib.request import Request, urlopen
 
 import click
 import requests
-from gladia_api_utils.metadata import create_metadata_examples_with_reponse, clean_up_model_output_data
+from gladia_api_utils.metadata import (
+    clean_up_model_output_data,
+    create_metadata_examples_with_reponse,
+)
 from validators import url as is_url
 
 global nb_total_tests
